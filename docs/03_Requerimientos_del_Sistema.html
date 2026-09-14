@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>03 Requerimientos del Sistema</title>
+  <style>
+  * { box-sizing: border-box; }
+  body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    color: #1e293b; 
+    line-height: 1.7; 
+    max-width: 210mm; 
+    margin: 0 auto; 
+    padding: 20mm;
+    font-size: 13px;
+  }
+  h1 { 
+    color: #059669; 
+    border-bottom: 3px solid #059669; 
+    padding-bottom: 10px; 
+    font-size: 26px; 
+    margin-top: 0;
+  }
+  h2 { 
+    color: #1e293b; 
+    border-bottom: 1px solid #e2e8f0; 
+    padding-bottom: 6px; 
+    margin-top: 35px; 
+    font-size: 20px;
+    page-break-after: avoid;
+  }
+  h3 { 
+    color: #334155; 
+    margin-top: 22px; 
+    font-size: 16px;
+    page-break-after: avoid;
+  }
+  p { margin: 8px 0; }
+  table { 
+    border-collapse: collapse; 
+    width: 100%; 
+    margin: 12px 0; 
+    font-size: 12px;
+    page-break-inside: avoid;
+  }
+  th { 
+    background-color: #f1f5f9; 
+    color: #334155; 
+    padding: 8px 10px; 
+    text-align: left; 
+    border: 1px solid #e2e8f0; 
+    font-weight: 600; 
+  }
+  td { 
+    padding: 6px 10px; 
+    border: 1px solid #e2e8f0; 
+    vertical-align: top;
+  }
+  tr:nth-child(even) { background-color: #f8fafc; }
+  code { 
+    background-color: #f1f5f9; 
+    padding: 1px 5px; 
+    border-radius: 3px; 
+    font-size: 11px; 
+    color: #059669;
+    font-family: 'Consolas', 'Courier New', monospace;
+  }
+  pre { 
+    background-color: #1e293b; 
+    color: #e2e8f0; 
+    padding: 14px; 
+    border-radius: 6px; 
+    font-size: 11px; 
+    overflow-x: auto;
+    page-break-inside: avoid;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  pre code {
+    background: none;
+    color: #e2e8f0;
+    padding: 0;
+  }
+  blockquote { 
+    border-left: 4px solid #059669; 
+    padding: 10px 14px; 
+    background: #f0fdf4; 
+    margin: 14px 0; 
+    color: #166534;
+    border-radius: 0 6px 6px 0;
+  }
+  blockquote p { margin: 4px 0; }
+  hr { 
+    border: none; 
+    border-top: 2px solid #e2e8f0; 
+    margin: 25px 0; 
+  }
+  strong { color: #0f172a; }
+  ul, ol { padding-left: 20px; }
+  li { margin: 4px 0; }
+  .page-break { page-break-after: always; }
+  
+  @media print {
+    body { padding: 15mm; }
+    h2 { page-break-after: avoid; }
+    table { page-break-inside: avoid; }
+    .page-break { page-break-after: always; }
+  }
+
+  .header-bar {
+    background: linear-gradient(135deg, #059669, #0d9488);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+  <div class="header-bar">
+    FinBootcamp — Proyecto Final | Analista de Sistemas de Información | Agosto 2026
+  </div>
+  <h1>FinBootcamp — Documento de Requerimientos</h1>
+<p><strong>Especificación de Requerimientos del Software (SRS)</strong><br><strong>Versión:</strong> 1.0<br><strong>Fecha:</strong> Agosto 2026<br><strong>Autor:</strong> [Tu Nombre]</p>
+<hr>
+<h2>1. Introducción</h2>
+<h3>1.1 Propósito</h3>
+<p>Este documento especifica los requerimientos funcionales y no funcionales de FinBootcamp, una plataforma web educativa de educación financiera orientada al mercado argentino.</p>
+<h3>1.2 Alcance</h3>
+<p>FinBootcamp es una aplicación web que permite a los usuarios:</p>
+<ul>
+<li>Aprender sobre instrumentos de inversión bursátiles y criptomonedas</li>
+<li>Consultar el tratamiento impositivo de cada instrumento</li>
+<li>Simular inversiones con interés compuesto</li>
+<li>Visualizar cotizaciones en tiempo real</li>
+</ul>
+<h3>1.3 Público objetivo</h3>
+<p>Jóvenes argentinos de 18 a 35 años interesados en comenzar a invertir, sin conocimientos financieros previos requeridos.</p>
+<hr>
+<h2>2. Descripción General</h2>
+<h3>2.1 Perspectiva del producto</h3>
+<p>FinBootcamp se posiciona como un complemento educativo a las plataformas de trading existentes (IOL, Balanz, Cocos, etc.), enfocándose en la formación del usuario antes de que realice su primera inversión.</p>
+<h3>2.2 Funciones principales</h3>
+<ol>
+<li>Catálogo educativo de instrumentos bursátiles</li>
+<li>Catálogo educativo de criptomonedas</li>
+<li>Información impositiva por instrumento</li>
+<li>Simulador de inversiones</li>
+<li>Cotizaciones en tiempo real (TradingView)</li>
+<li>Monetización con Google AdSense</li>
+</ol>
+<h3>2.3 Restricciones</h3>
+<ul>
+<li>No constituye asesoramiento financiero</li>
+<li>No permite operar (comprar/vender) instrumentos</li>
+<li>Información impositiva sujeta a cambios regulatorios</li>
+</ul>
+<div class="page-break"></div><h2>3. Requerimientos Funcionales</h2>
+<h3>RF01 — Catálogo de Instrumentos Bursátiles</h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Detalle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Descripción</strong></td>
+<td>El sistema debe mostrar un catálogo navegable de instrumentos del mercado bursátil argentino</td>
+</tr>
+<tr>
+<td><strong>Instrumentos</strong></td>
+<td>Bonos, LECAPs, CEDEARs, Acciones, ETFs, FCIs, Cauciones, Licitaciones</td>
+</tr>
+<tr>
+<td><strong>Datos por instrumento</strong></td>
+<td>Nombre, descripción, nivel de riesgo, horizonte temporal, inversión mínima</td>
+</tr>
+<tr>
+<td><strong>Prioridad</strong></td>
+<td>Alta</td>
+</tr>
+<tr>
+<td><strong>Estado</strong></td>
+<td>✅ Implementado</td>
+</tr>
+</tbody></table>
+<h3>RF02 — Catálogo de Criptomonedas</h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Detalle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Descripción</strong></td>
+<td>El sistema debe mostrar contenido educativo sobre criptomonedas</td>
+</tr>
+<tr>
+<td><strong>Temas</strong></td>
+<td>Principales criptos, Fundamentos BTC, Minado, FOMO, Quemado de monedas, Memecoins</td>
+</tr>
+<tr>
+<td><strong>Datos por tema</strong></td>
+<td>Título, contenido educativo, puntos clave, nivel de riesgo</td>
+</tr>
+<tr>
+<td><strong>Prioridad</strong></td>
+<td>Alta</td>
+</tr>
+<tr>
+<td><strong>Estado</strong></td>
+<td>✅ Implementado</td>
+</tr>
+</tbody></table>
+<h3>RF03 — Resumen Educativo por Instrumento</h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Detalle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Descripción</strong></td>
+<td>Cada instrumento debe tener una página de detalle con información completa</td>
+</tr>
+<tr>
+<td><strong>Contenido</strong></td>
+<td>Qué es, cómo funciona, para quién es, ejemplo práctico con números</td>
+</tr>
+<tr>
+<td><strong>Prioridad</strong></td>
+<td>Alta</td>
+</tr>
+<tr>
+<td><strong>Estado</strong></td>
+<td>✅ Implementado</td>
+</tr>
+</tbody></table>
+<h3>RF04 — Información Impositiva</h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Detalle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Descripción</strong></td>
+<td>Cada instrumento debe mostrar su tratamiento fiscal en Argentina</td>
+</tr>
+<tr>
+<td><strong>Impuestos cubiertos</strong></td>
+<td>Impuesto a las Ganancias, Bienes Personales, ITF, IVA</td>
+</tr>
+<tr>
+<td><strong>Formato</strong></td>
+<td>Tabla con indicadores de color (verde = exento, rojo = gravado)</td>
+</tr>
+<tr>
+<td><strong>Disclaimer</strong></td>
+<td>Incluir nota legal indicando que no constituye asesoramiento fiscal</td>
+</tr>
+<tr>
+<td><strong>Prioridad</strong></td>
+<td>Alta</td>
+</tr>
+<tr>
+<td><strong>Estado</strong></td>
+<td>✅ Implementado</td>
+</tr>
+</tbody></table>
+<h3>RF05 — Simulador de Inversión</h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Detalle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Descripción</strong></td>
+<td>Herramienta interactiva para calcular rendimientos de inversiones</td>
+</tr>
+<tr>
+<td><strong>Inputs</strong></td>
+<td>Capital inicial, instrumento, tasa anual, plazo (1-120 meses), frecuencia de capitalización</td>
+</tr>
+<tr>
+<td><strong>Outputs</strong></td>
+<td>Valor final, ganancia total, rendimiento %, ganancia mensual promedio</td>
+</tr>
+<tr>
+<td><strong>Visualización</strong></td>
+<td>Gráfico de área (Recharts) con curva de crecimiento</td>
+</tr>
+<tr>
+<td><strong>Comparativas</strong></td>
+<td>vs. Plazo fijo (35%), vs. Inflación estimada (50%)</td>
+</tr>
+<tr>
+<td><strong>Fórmula</strong></td>
+<td>VF = C × (1 + r)^n (interés compuesto)</td>
+</tr>
+<tr>
+<td><strong>Prioridad</strong></td>
+<td>Alta</td>
+</tr>
+<tr>
+<td><strong>Estado</strong></td>
+<td>✅ Implementado</td>
+</tr>
+</tbody></table>
+<div class="page-break"></div><h3>RE01 — Cotizaciones en Tiempo Real</h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Detalle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Descripción</strong></td>
+<td>Mostrar cotizaciones actuales del mercado</td>
+</tr>
+<tr>
+<td><strong>Implementación</strong></td>
+<td>Widgets embebidos de TradingView</td>
+</tr>
+<tr>
+<td><strong>Mercados</strong></td>
+<td>MERVAL (BCBA:IMV), BTC, ETH, SOL, tipos de dólar</td>
+</tr>
+<tr>
+<td><strong>Prioridad</strong></td>
+<td>Media</td>
+</tr>
+<tr>
+<td><strong>Estado</strong></td>
+<td>✅ Implementado</td>
+</tr>
+</tbody></table>
+<h3>RE02 — Sistema de Usuarios</h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Detalle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Descripción</strong></td>
+<td>Registro y autenticación de usuarios</td>
+</tr>
+<tr>
+<td><strong>Implementación</strong></td>
+<td>Firebase Authentication</td>
+</tr>
+<tr>
+<td><strong>Providers</strong></td>
+<td>Email/Password, Google Sign-In</td>
+</tr>
+<tr>
+<td><strong>Prioridad</strong></td>
+<td>Media</td>
+</tr>
+<tr>
+<td><strong>Estado</strong></td>
+<td>📋 Pendiente</td>
+</tr>
+</tbody></table>
+<h3>RE03 — Google AdSense</h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Detalle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Descripción</strong></td>
+<td>Monetización mediante anuncios display</td>
+</tr>
+<tr>
+<td><strong>Implementación</strong></td>
+<td>Componente AdBanner con Google AdSense SDK</td>
+</tr>
+<tr>
+<td><strong>Ubicaciones</strong></td>
+<td>Header, sidebar, in-article, footer</td>
+</tr>
+<tr>
+<td><strong>Requisitos</strong></td>
+<td>Dominio propio, cuenta AdSense aprobada</td>
+</tr>
+<tr>
+<td><strong>Prioridad</strong></td>
+<td>Media</td>
+</tr>
+<tr>
+<td><strong>Estado</strong></td>
+<td>✅ Componente creado (pendiente cuenta AdSense)</td>
+</tr>
+</tbody></table>
+<h3>RE04 — Plan VIP</h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Detalle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Descripción</strong></td>
+<td>Suscripción premium sin anuncios con features extra</td>
+</tr>
+<tr>
+<td><strong>Features VIP</strong></td>
+<td>Sin ads, info extra, alertas, bot de licitaciones</td>
+</tr>
+<tr>
+<td><strong>Pasarela de pago</strong></td>
+<td>Mercado Pago (a implementar)</td>
+</tr>
+<tr>
+<td><strong>Prioridad</strong></td>
+<td>Baja</td>
+</tr>
+<tr>
+<td><strong>Estado</strong></td>
+<td>📋 Pendiente</td>
+</tr>
+</tbody></table>
+<div class="page-break"></div><h2>4. Requerimientos No Funcionales</h2>
+<h3>RNF01 — Rendimiento</h3>
+<table>
+<thead>
+<tr>
+<th>Criterio</th>
+<th>Especificación</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Tiempo de carga inicial</td>
+<td>&lt; 3 segundos</td>
+</tr>
+<tr>
+<td>Estrategia</td>
+<td>SSG (Static Site Generation) para todas las páginas de contenido</td>
+</tr>
+<tr>
+<td>Bundle size</td>
+<td>Optimizado con Next.js tree-shaking</td>
+</tr>
+</tbody></table>
+<h3>RNF02 — Diseño Responsive</h3>
+<table>
+<thead>
+<tr>
+<th>Breakpoint</th>
+<th>Comportamiento</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Mobile (&lt; 768px)</td>
+<td>Menú hamburguesa, columna única, cards apiladas</td>
+</tr>
+<tr>
+<td>Tablet (768-1024px)</td>
+<td>Grid de 2 columnas</td>
+</tr>
+<tr>
+<td>Desktop (&gt; 1024px)</td>
+<td>Grid de 3 columnas, sidebar en detalles</td>
+</tr>
+</tbody></table>
+<h3>RNF03 — SEO</h3>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Implementación</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Metadata</td>
+<td>Title y description por página</td>
+</tr>
+<tr>
+<td>Generación estática</td>
+<td>generateStaticParams para todas las rutas dinámicas</td>
+</tr>
+<tr>
+<td>Semántica HTML</td>
+<td>Uso correcto de h1-h6, section, nav, main, footer</td>
+</tr>
+</tbody></table>
+<h3>RNF04 — Seguridad</h3>
+<table>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th>Implementación</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>HTTPS</td>
+<td>Vercel provee SSL automático</td>
+</tr>
+<tr>
+<td>Inputs</td>
+<td>Validación de tipos en el simulador</td>
+</tr>
+<tr>
+<td>Auth</td>
+<td>Firebase Authentication (OAuth2)</td>
+</tr>
+</tbody></table>
+<h3>RNF05 — Mantenibilidad</h3>
+<table>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th>Implementación</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Lenguaje</td>
+<td>TypeScript con tipos estrictos</td>
+</tr>
+<tr>
+<td>Datos</td>
+<td>Archivos .ts centralizados (fácil de actualizar)</td>
+</tr>
+<tr>
+<td>Componentes</td>
+<td>Reutilizables y modulares</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>5. Glosario</h2>
+<table>
+<thead>
+<tr>
+<th>Término</th>
+<th>Definición</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>CEDEAR</strong></td>
+<td>Certificado de Depósito Argentino — permite invertir en acciones extranjeras desde Argentina</td>
+</tr>
+<tr>
+<td><strong>LECAP</strong></td>
+<td>Letra de Capitalización del Tesoro Nacional — bono de corto plazo con interés compuesto</td>
+</tr>
+<tr>
+<td><strong>FCI</strong></td>
+<td>Fondo Común de Inversión — vehículo de inversión colectiva</td>
+</tr>
+<tr>
+<td><strong>ITF</strong></td>
+<td>Impuesto a los Débitos y Créditos bancarios</td>
+</tr>
+<tr>
+<td><strong>FOMO</strong></td>
+<td>Fear Of Missing Out — miedo a perderse una oportunidad de inversión</td>
+</tr>
+<tr>
+<td><strong>SSG</strong></td>
+<td>Static Site Generation — generación de páginas estáticas en build time</td>
+</tr>
+<tr>
+<td><strong>SSR</strong></td>
+<td>Server Side Rendering — renderizado del lado del servidor</td>
+</tr>
+<tr>
+<td><strong>CPC</strong></td>
+<td>Cost Per Click — costo por clic en publicidad digital</td>
+</tr>
+</tbody></table>
+
+</body>
+</html>

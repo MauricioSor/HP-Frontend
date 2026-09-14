@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>01 Plan de Implementacion</title>
+  <style>
+  * { box-sizing: border-box; }
+  body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    color: #1e293b; 
+    line-height: 1.7; 
+    max-width: 210mm; 
+    margin: 0 auto; 
+    padding: 20mm;
+    font-size: 13px;
+  }
+  h1 { 
+    color: #059669; 
+    border-bottom: 3px solid #059669; 
+    padding-bottom: 10px; 
+    font-size: 26px; 
+    margin-top: 0;
+  }
+  h2 { 
+    color: #1e293b; 
+    border-bottom: 1px solid #e2e8f0; 
+    padding-bottom: 6px; 
+    margin-top: 35px; 
+    font-size: 20px;
+    page-break-after: avoid;
+  }
+  h3 { 
+    color: #334155; 
+    margin-top: 22px; 
+    font-size: 16px;
+    page-break-after: avoid;
+  }
+  p { margin: 8px 0; }
+  table { 
+    border-collapse: collapse; 
+    width: 100%; 
+    margin: 12px 0; 
+    font-size: 12px;
+    page-break-inside: avoid;
+  }
+  th { 
+    background-color: #f1f5f9; 
+    color: #334155; 
+    padding: 8px 10px; 
+    text-align: left; 
+    border: 1px solid #e2e8f0; 
+    font-weight: 600; 
+  }
+  td { 
+    padding: 6px 10px; 
+    border: 1px solid #e2e8f0; 
+    vertical-align: top;
+  }
+  tr:nth-child(even) { background-color: #f8fafc; }
+  code { 
+    background-color: #f1f5f9; 
+    padding: 1px 5px; 
+    border-radius: 3px; 
+    font-size: 11px; 
+    color: #059669;
+    font-family: 'Consolas', 'Courier New', monospace;
+  }
+  pre { 
+    background-color: #1e293b; 
+    color: #e2e8f0; 
+    padding: 14px; 
+    border-radius: 6px; 
+    font-size: 11px; 
+    overflow-x: auto;
+    page-break-inside: avoid;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  pre code {
+    background: none;
+    color: #e2e8f0;
+    padding: 0;
+  }
+  blockquote { 
+    border-left: 4px solid #059669; 
+    padding: 10px 14px; 
+    background: #f0fdf4; 
+    margin: 14px 0; 
+    color: #166534;
+    border-radius: 0 6px 6px 0;
+  }
+  blockquote p { margin: 4px 0; }
+  hr { 
+    border: none; 
+    border-top: 2px solid #e2e8f0; 
+    margin: 25px 0; 
+  }
+  strong { color: #0f172a; }
+  ul, ol { padding-left: 20px; }
+  li { margin: 4px 0; }
+  .page-break { page-break-after: always; }
+  
+  @media print {
+    body { padding: 15mm; }
+    h2 { page-break-after: avoid; }
+    table { page-break-inside: avoid; }
+    .page-break { page-break-after: always; }
+  }
+
+  .header-bar {
+    background: linear-gradient(135deg, #059669, #0d9488);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+  <div class="header-bar">
+    FinBootcamp — Proyecto Final | Analista de Sistemas de Información | Agosto 2026
+  </div>
+  <h1>FinBootcamp — Plataforma de Educación Financiera</h1>
+<p><strong>Proyecto Final — Analista de Sistemas de Información</strong><br><strong>Fecha:</strong> Agosto 2026<br><strong>Autor:</strong> [Tu Nombre]</p>
+<hr>
+<h2>1. Visión General del Proyecto</h2>
+<h3>1.1 Problema que resuelve</h3>
+<p>En Argentina, la educación financiera es escasa. La mayoría de las personas desconocen los instrumentos de inversión disponibles (bonos, LECAPs, CEDEARs, etc.), sus implicancias impositivas, y cómo simular rendimientos antes de invertir. Esta plataforma centraliza información educativa, impositiva y simulación en un solo lugar.</p>
+<h3>1.2 Propuesta de valor</h3>
+<table>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Público objetivo</strong></td>
+<td>Jóvenes argentinos (18-35) interesados en invertir por primera vez</td>
+</tr>
+<tr>
+<td><strong>Diferenciador</strong></td>
+<td>Combina educación + información fiscal + simulación en una sola app</td>
+</tr>
+<tr>
+<td><strong>Modelo</strong></td>
+<td>Freemium: acceso gratuito con ads + plan VIP sin ads con features extra</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>2. Análisis de Requerimientos</h2>
+<h3>2.1 Requerimientos Funcionales — MVP</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requerimiento</th>
+<th>Descripción</th>
+<th>Prioridad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>RF01</td>
+<td>Catálogo de instrumentos bursátiles</td>
+<td>Listado navegable de: Bonos, LECAPs, CEDEARs, Acciones, ETFs, FCIs, Cauciones, Licitaciones</td>
+<td>🔴 Alta</td>
+</tr>
+<tr>
+<td>RF02</td>
+<td>Catálogo de instrumentos cripto</td>
+<td>Sección dedicada a: Principales criptos, Fundamentos BTC, Minado, FOMO, Quemado, Memecoins</td>
+<td>🔴 Alta</td>
+</tr>
+<tr>
+<td>RF03</td>
+<td>Resumen educativo por instrumento</td>
+<td>Cada instrumento muestra: qué es, cómo funciona, riesgo, horizonte de inversión, ejemplo práctico</td>
+<td>🔴 Alta</td>
+</tr>
+<tr>
+<td>RF04</td>
+<td>Información impositiva</td>
+<td>Panel por instrumento: Ganancias, Bienes Personales, ITF, IVA, IIBB según tipo</td>
+<td>🔴 Alta</td>
+</tr>
+<tr>
+<td>RF05</td>
+<td>Simulador de inversión</td>
+<td>Ingreso de capital, selección de instrumento, plazo temporal → cálculo de rendimiento con interés compuesto</td>
+<td>🔴 Alta</td>
+</tr>
+</tbody></table>
+<h3>2.2 Requerimientos Funcionales — Extras</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requerimiento</th>
+<th>Descripción</th>
+<th>Prioridad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>RE01</td>
+<td>Cotización en tiempo real</td>
+<td>Consumir APIs / widgets TradingView para mostrar precios actuales</td>
+<td>🟡 Media</td>
+</tr>
+<tr>
+<td>RE02</td>
+<td>Datos históricos / TradingView</td>
+<td>Incrustar widgets de TradingView para gráficos de cotización</td>
+<td>🟡 Media</td>
+</tr>
+<tr>
+<td>RE03</td>
+<td>Base de datos de usuarios</td>
+<td>Sistema de registro/login con Firebase Auth + Firestore</td>
+<td>🟡 Media</td>
+</tr>
+<tr>
+<td>RE04</td>
+<td>Plan de suscripción VIP</td>
+<td>Tier sin anuncios con: info extra, acceso anticipado, alertas por mail</td>
+<td>🟠 Baja</td>
+</tr>
+<tr>
+<td>RE05</td>
+<td>Anuncios con Google Ads</td>
+<td>Integración de Google AdSense para monetización</td>
+<td>🟡 Media</td>
+</tr>
+</tbody></table>
+<h3>2.3 Requerimientos No Funcionales</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requerimiento</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>RNF01</td>
+<td>Responsive Design</td>
+<td>Funcionar en desktop, tablet y mobile</td>
+</tr>
+<tr>
+<td>RNF02</td>
+<td>Performance</td>
+<td>Carga inicial &lt; 3 segundos</td>
+</tr>
+<tr>
+<td>RNF03</td>
+<td>Accesibilidad</td>
+<td>Estándares básicos WCAG 2.1</td>
+</tr>
+<tr>
+<td>RNF04</td>
+<td>SEO</td>
+<td>Metadata, Open Graph tags, sitemap</td>
+</tr>
+<tr>
+<td>RNF05</td>
+<td>Seguridad</td>
+<td>HTTPS, sanitización de inputs, autenticación segura</td>
+</tr>
+</tbody></table>
+<div class="page-break"></div><h2>3. Stack Tecnológico</h2>
+<table>
+<thead>
+<tr>
+<th>Capa</th>
+<th>Tecnología</th>
+<th>Justificación</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Frontend</strong></td>
+<td>Next.js 16 (React)</td>
+<td>SSR para SEO, App Router, componentes reutilizables</td>
+</tr>
+<tr>
+<td><strong>Estilos</strong></td>
+<td>Tailwind CSS 4</td>
+<td>Desarrollo rápido, diseño profesional, responsive</td>
+</tr>
+<tr>
+<td><strong>Auth</strong></td>
+<td>Firebase Authentication</td>
+<td>Gratis hasta 50K MAU, Google/Email login</td>
+</tr>
+<tr>
+<td><strong>Base de datos</strong></td>
+<td>Cloud Firestore</td>
+<td>NoSQL, gratis (Spark plan), tiempo real</td>
+</tr>
+<tr>
+<td><strong>Gráficos</strong></td>
+<td>Recharts</td>
+<td>Simulador de rendimientos, gráficos interactivos</td>
+</tr>
+<tr>
+<td><strong>Deploy</strong></td>
+<td>Vercel (free tier)</td>
+<td>Deploy automático, dominio gratuito</td>
+</tr>
+<tr>
+<td><strong>APIs crypto</strong></td>
+<td>CoinGecko API (free)</td>
+<td>Cotizaciones cripto sin API key</td>
+</tr>
+<tr>
+<td><strong>Gráficos bursátiles</strong></td>
+<td>TradingView Widgets</td>
+<td>Embed gratuito copy-paste</td>
+</tr>
+</tbody></table>
+<h3>Arquitectura del Sistema</h3>
+<pre><code>┌─────────────────────────────────────────────────┐
+│               CLIENTE (Browser)                  │
+├─────────────────────────────────────────────────┤
+│           Next.js Frontend + SSR/SSG             │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────────┐ │
+│  │ React UI │ │ Recharts │ │ TradingView      │ │
+│  │ Tailwind │ │ Charts   │ │ Widgets          │ │
+│  └──────────┘ └──────────┘ └──────────────────┘ │
+├─────────────────────────────────────────────────┤
+│  Firebase Auth │ Firestore DB │ Google AdSense   │
+├─────────────────────────────────────────────────┤
+│              Vercel (Hosting)                    │
+└─────────────────────────────────────────────────┘
+</code></pre>
+<div class="page-break"></div><h2>4. Análisis de Dificultad por Feature</h2>
+<h3>4.1 Matriz de Dificultad — MVP</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th align="center">Dificultad</th>
+<th align="center">Esfuerzo</th>
+<th align="center">Complejidad</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Catálogo bursátil</td>
+<td align="center">🟢 Fácil</td>
+<td align="center">8-12 hs</td>
+<td align="center">Baja</td>
+<td>Contenido estático/JSON, cards</td>
+</tr>
+<tr>
+<td>Catálogo cripto</td>
+<td align="center">🟢 Fácil</td>
+<td align="center">6-8 hs</td>
+<td align="center">Baja</td>
+<td>Similar al bursátil</td>
+</tr>
+<tr>
+<td>Resumen educativo</td>
+<td align="center">🟢 Fácil</td>
+<td align="center">10-15 hs</td>
+<td align="center">Baja</td>
+<td>Redacción + componentes UI</td>
+</tr>
+<tr>
+<td>Info impositiva</td>
+<td align="center">🟡 Medio</td>
+<td align="center">8-12 hs</td>
+<td align="center">Media</td>
+<td>Investigar normativa vigente</td>
+</tr>
+<tr>
+<td>Simulador inversión</td>
+<td align="center">🟡 Medio</td>
+<td align="center">15-20 hs</td>
+<td align="center">Media</td>
+<td>Fórmulas, gráficos, validaciones</td>
+</tr>
+</tbody></table>
+<p><strong>Total MVP estimado: 47-67 horas</strong></p>
+<h3>4.2 Matriz de Dificultad — Extras</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th align="center">Dificultad</th>
+<th align="center">Esfuerzo</th>
+<th align="center">Riesgo</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cotización real (APIs)</td>
+<td align="center">🔴 Difícil</td>
+<td align="center">20-30 hs</td>
+<td align="center">⚠️ Alto</td>
+<td>Solo IOL tiene API pública</td>
+</tr>
+<tr>
+<td>TradingView embed</td>
+<td align="center">🟢 Fácil</td>
+<td align="center">3-5 hs</td>
+<td align="center">✅ Bajo</td>
+<td>Copy-paste de widgets</td>
+</tr>
+<tr>
+<td>BD usuarios (Firebase)</td>
+<td align="center">🟡 Medio</td>
+<td align="center">12-18 hs</td>
+<td align="center">✅ Bajo</td>
+<td>Bien documentado, gratis</td>
+</tr>
+<tr>
+<td>Plan VIP (suscripción)</td>
+<td align="center">🔴 Difícil</td>
+<td align="center">25-35 hs</td>
+<td align="center">⚠️ Medio</td>
+<td>Requiere pasarela de pago</td>
+</tr>
+<tr>
+<td>Google AdSense</td>
+<td align="center">🟡 Medio</td>
+<td align="center">5-8 hs</td>
+<td align="center">⚠️ Medio</td>
+<td>Requiere aprobación de Google</td>
+</tr>
+</tbody></table>
+<p><strong>Total Extras estimado: 65-96 horas</strong></p>
+<h3>⚠️ APIs de Brokers — Hallazgo Crítico</h3>
+<ul>
+<li><strong>IOL (InvertirOnline):</strong> Tiene API con OAuth2, pero requiere credenciales reales.</li>
+<li><strong>Balanz:</strong> ❌ NO tiene API pública para clientes minoristas.</li>
+<li><strong>Bull Market:</strong> ❌ NO tiene API oficial. Solo scrapers no oficiales.</li>
+</ul>
+<p><strong>Alternativa implementada:</strong> Widgets gratuitos de TradingView + CoinGecko API para cripto.</p>
+<div class="page-break"></div><h2>5. Monetización con Google AdSense</h2>
+<h3>5.1 Viabilidad</h3>
+<table>
+<thead>
+<tr>
+<th>Criterio</th>
+<th align="center">Estado</th>
+<th>Detalle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Contenido original y de valor</td>
+<td align="center">✅ Viable</td>
+<td>Contenido educativo financiero</td>
+</tr>
+<tr>
+<td>Dominio propio</td>
+<td align="center">⚠️ Requerido</td>
+<td>~$5 USD/año (.com.ar)</td>
+</tr>
+<tr>
+<td>Páginas legales</td>
+<td align="center">✅ Fácil</td>
+<td>Privacidad, contacto, &quot;acerca de&quot;</td>
+</tr>
+<tr>
+<td>15-20 artículos mínimo</td>
+<td align="center">✅ Natural</td>
+<td>Cada instrumento = 1 artículo</td>
+</tr>
+<tr>
+<td>Tráfico mínimo</td>
+<td align="center">⚠️ Desafío</td>
+<td>Se recomienda tráfico orgánico constante</td>
+</tr>
+</tbody></table>
+<h3>5.2 Proyección de Ingresos</h3>
+<table>
+<thead>
+<tr>
+<th>Escenario</th>
+<th align="center">Visitas/mes</th>
+<th align="center">CPC Promedio</th>
+<th align="center">Ingreso/mes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Inicial (mes 1-3)</td>
+<td align="center">500-1,000</td>
+<td align="center">~$0.50 USD</td>
+<td align="center">$2-5 USD</td>
+</tr>
+<tr>
+<td>Crecimiento (mes 4-6)</td>
+<td align="center">2,000-5,000</td>
+<td align="center">~$0.50 USD</td>
+<td align="center">$10-25 USD</td>
+</tr>
+<tr>
+<td>Maduro (mes 6+)</td>
+<td align="center">10,000+</td>
+<td align="center">~$0.50 USD</td>
+<td align="center">$50-150 USD</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>¿Es &quot;insignificante pero representativo&quot;?</strong> Sí. Con ~500 visitas/mes se generan $2-5 USD, suficiente para demostrar el modelo de negocio en la defensa del proyecto.</p>
+</blockquote>
+<h3>5.3 Ubicación de Anuncios</h3>
+<pre><code>┌────────────────────────────────────┐
+│  HEADER / NAVBAR                   │
+├────────────────────────────────────┤
+│  [Banner Ad - Leaderboard 728x90]  │
+├──────────┬─────────────────────────┤
+│ SIDEBAR  │  CONTENIDO PRINCIPAL    │
+│ [Ad      │  Descripción del       │
+│  300x250]│  instrumento           │
+│          │  [In-Article Ad]        │
+│          │  Información impositiva │
+│          │  Simulador              │
+├──────────┴─────────────────────────┤
+│  [Banner Ad - Footer 728x90]       │
+│  FOOTER                            │
+└────────────────────────────────────┘
+</code></pre>
+<div class="page-break"></div><h2>6. Información Impositiva por Instrumento</h2>
+<h3>6.1 Mercado Bursátil</h3>
+<table>
+<thead>
+<tr>
+<th>Instrumento</th>
+<th align="center">Imp. Ganancias</th>
+<th align="center">Bienes Personales</th>
+<th align="center">ITF</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Bonos soberanos (ARS)</td>
+<td align="center">Exento</td>
+<td align="center">Exento</td>
+<td align="center">Sí</td>
+</tr>
+<tr>
+<td>Bonos soberanos (USD)</td>
+<td align="center">Exento</td>
+<td align="center">Gravado</td>
+<td align="center">Sí</td>
+</tr>
+<tr>
+<td>LECAPs</td>
+<td align="center">Exento</td>
+<td align="center">Exento</td>
+<td align="center">Sí</td>
+</tr>
+<tr>
+<td>CEDEARs</td>
+<td align="center">Exento*</td>
+<td align="center">Gravado</td>
+<td align="center">Sí</td>
+</tr>
+<tr>
+<td>Acciones argentinas</td>
+<td align="center">Exento</td>
+<td align="center">Exento</td>
+<td align="center">Sí</td>
+</tr>
+<tr>
+<td>ETFs</td>
+<td align="center">Depende</td>
+<td align="center">Depende</td>
+<td align="center">Sí</td>
+</tr>
+<tr>
+<td>FCIs</td>
+<td align="center">Exento**</td>
+<td align="center">Exento**</td>
+<td align="center">Sí</td>
+</tr>
+<tr>
+<td>Cauciones bursátiles</td>
+<td align="center">Exento</td>
+<td align="center">N/A</td>
+<td align="center">Sí</td>
+</tr>
+<tr>
+<td>Licitaciones públicas</td>
+<td align="center">Exento</td>
+<td align="center">Depende</td>
+<td align="center">Sí</td>
+</tr>
+</tbody></table>
+<p>* Dividendos de CEDEARs gravados como renta de fuente extranjera<br>** Si más del 75% del activo subyacente está compuesto por bienes exentos</p>
+<h3>6.2 Mercado Cripto</h3>
+<table>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th align="center">Ganancias</th>
+<th align="center">Bienes Personales</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Compraventa cripto</td>
+<td align="center">Gravado (15%)</td>
+<td align="center">Gravado</td>
+</tr>
+<tr>
+<td>Staking / Yield</td>
+<td align="center">Gravado</td>
+<td align="center">Gravado</td>
+</tr>
+<tr>
+<td>Minado</td>
+<td align="center">Gravado</td>
+<td align="center">Gravado</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>Disclaimer:</strong> La información impositiva es a título informativo y no constituye asesoramiento fiscal. Consultá con un contador público matriculado.</p>
+</blockquote>
+<div class="page-break"></div><h2>7. Diseño del Simulador de Inversión</h2>
+<h3>7.1 Fórmulas</h3>
+<p><strong>Interés compuesto (LECAPs, plazos fijos):</strong></p>
+<p>VF = C × (1 + r)^n</p>
+<ul>
+<li>VF = Valor futuro</li>
+<li>C = Capital inicial</li>
+<li>r = Tasa efectiva del período</li>
+<li>n = Cantidad de períodos</li>
+</ul>
+<p><strong>Rendimiento por precio (Bonos, CEDEARs):</strong></p>
+<p>Rendimiento = ((Precio_venta - Precio_compra) / Precio_compra) × 100</p>
+<h3>7.2 Inputs del simulador</h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Validación</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Capital inicial</td>
+<td>Número</td>
+<td>Mínimo $1.000 ARS</td>
+</tr>
+<tr>
+<td>Instrumento</td>
+<td>Selector</td>
+<td>Lista predefinida (8 instrumentos)</td>
+</tr>
+<tr>
+<td>Tasa de rendimiento</td>
+<td>Número</td>
+<td>Auto-completado al seleccionar instrumento</td>
+</tr>
+<tr>
+<td>Plazo (meses)</td>
+<td>Slider + Número</td>
+<td>1-120 meses</td>
+</tr>
+<tr>
+<td>Frecuencia capitalización</td>
+<td>Selector</td>
+<td>Mensual / Trimestral / Anual / Al vencimiento</td>
+</tr>
+</tbody></table>
+<h3>7.3 Outputs del simulador</h3>
+<table>
+<thead>
+<tr>
+<th>Dato</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Valor final</td>
+<td>Capital + rendimientos acumulados</td>
+</tr>
+<tr>
+<td>Ganancia total</td>
+<td>Rendimiento total en $</td>
+</tr>
+<tr>
+<td>Rendimiento %</td>
+<td>Ganancia / Capital × 100</td>
+</tr>
+<tr>
+<td>Ganancia mensual promedio</td>
+<td>Ganancia / meses</td>
+</tr>
+<tr>
+<td>Gráfico temporal</td>
+<td>Curva de crecimiento (Recharts AreaChart)</td>
+</tr>
+<tr>
+<td>Comparativa</td>
+<td>vs. Plazo fijo (35%) y vs. Inflación estimada (50%)</td>
+</tr>
+</tbody></table>
+<div class="page-break"></div><h2>8. Estructura de la Aplicación</h2>
+<pre><code>finbootcamp/
+├── src/
+│   ├── app/                    # Páginas (App Router)
+│   │   ├── page.tsx            # Landing page
+│   │   ├── layout.tsx          # Layout (Navbar + Footer)
+│   │   ├── mercado-bursatil/
+│   │   │   ├── page.tsx        # Listado instrumentos
+│   │   │   └── [slug]/page.tsx # Detalle instrumento
+│   │   ├── cripto/
+│   │   │   ├── page.tsx        # Listado temas
+│   │   │   └── [slug]/page.tsx # Detalle tema
+│   │   ├── simulador/page.tsx  # Simulador interactivo
+│   │   └── cotizaciones/page.tsx # TradingView widgets
+│   ├── components/
+│   │   ├── Navbar.tsx          # Navegación responsive
+│   │   ├── Footer.tsx          # Footer con disclaimer
+│   │   └── AdBanner.tsx        # Google AdSense
+│   ├── data/
+│   │   ├── instruments.ts      # 8 instrumentos bursátiles
+│   │   ├── crypto-topics.ts    # 6 temas cripto
+│   │   └── tax-info.ts         # Información impositiva
+│   └── lib/
+│       ├── simulator.ts        # Motor del simulador
+│       └── utils.ts            # Utilidades
+└── docs/                       # Documentación PDF
+</code></pre>
+<div class="page-break"></div><h2>9. Análisis FODA</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Positivo</th>
+<th>Negativo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Interno</strong></td>
+<td><strong>Fortalezas:</strong> Tema actual y relevante; Stack moderno y gratuito; Contenido diferenciador</td>
+<td><strong>Debilidades:</strong> Requiere actualización constante; APIs de brokers limitadas</td>
+</tr>
+<tr>
+<td><strong>Externo</strong></td>
+<td><strong>Oportunidades:</strong> Creciente interés en inversiones; Nicho poco explotado; Posibilidad de app mobile</td>
+<td><strong>Amenazas:</strong> Cambios regulatorios; Competencia de apps de brokers</td>
+</tr>
+</tbody></table>
+<h2>10. Costos del Proyecto</h2>
+<table>
+<thead>
+<tr>
+<th>Recurso</th>
+<th align="center">Costo</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Vercel (hosting)</td>
+<td align="center">$0</td>
+<td>Free tier: 100 GB bandwidth/mes</td>
+</tr>
+<tr>
+<td>Firebase Spark</td>
+<td align="center">$0</td>
+<td>50K MAU auth, 1 GB Firestore</td>
+</tr>
+<tr>
+<td>Dominio .com.ar</td>
+<td align="center">~$5 USD/año</td>
+<td>Necesario para AdSense</td>
+</tr>
+<tr>
+<td>CoinGecko API</td>
+<td align="center">$0</td>
+<td>Free tier</td>
+</tr>
+<tr>
+<td>TradingView Widgets</td>
+<td align="center">$0</td>
+<td>Embed gratuito</td>
+</tr>
+<tr>
+<td><strong>Total inicial</strong></td>
+<td align="center"><strong>~$5 USD</strong></td>
+<td>Solo el dominio</td>
+</tr>
+</tbody></table>
+<h2>11. Cronograma</h2>
+<table>
+<thead>
+<tr>
+<th>Fase</th>
+<th align="center">Duración</th>
+<th>Contenido</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Investigación</td>
+<td align="center">2 semanas</td>
+<td>Instrumentos, normativa, contenido</td>
+</tr>
+<tr>
+<td>MVP</td>
+<td align="center">3 semanas</td>
+<td>Catálogos, info impositiva, simulador, landing</td>
+</tr>
+<tr>
+<td>Extras</td>
+<td align="center">2 semanas</td>
+<td>TradingView, Firebase, AdSense</td>
+</tr>
+<tr>
+<td>Documentación</td>
+<td align="center">1 semana</td>
+<td>Documentos, presentación</td>
+</tr>
+<tr>
+<td>Testing + ajustes</td>
+<td align="center">1 semana</td>
+<td>Pruebas, responsive, deploy</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td align="center"><strong>~9-10 semanas</strong></td>
+<td></td>
+</tr>
+</tbody></table>
+<h2>12. Resumen Ejecutivo</h2>
+<table>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th align="center">Evaluación</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Viabilidad del MVP</td>
+<td align="center">✅ Altamente viable</td>
+</tr>
+<tr>
+<td>Viabilidad de AdSense</td>
+<td align="center">✅ Viable (requiere dominio ~$5)</td>
+</tr>
+<tr>
+<td>Monetización representativa</td>
+<td align="center">✅ Centavos suficientes como prueba</td>
+</tr>
+<tr>
+<td>Dificultad MVP</td>
+<td align="center">🟢 Baja-Media (~50-65 hs)</td>
+</tr>
+<tr>
+<td>Dificultad Extras</td>
+<td align="center">🟡 Media-Alta (~65-96 hs)</td>
+</tr>
+<tr>
+<td>Riesgo principal</td>
+<td align="center">⚠️ APIs de brokers inexistentes</td>
+</tr>
+<tr>
+<td>Recomendación</td>
+<td align="center">🎯 MVP + TradingView + Firebase + AdSense</td>
+</tr>
+</tbody></table>
+
+</body>
+</html>

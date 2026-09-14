@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>02 Walkthrough Desarrollo</title>
+  <style>
+  * { box-sizing: border-box; }
+  body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    color: #1e293b; 
+    line-height: 1.7; 
+    max-width: 210mm; 
+    margin: 0 auto; 
+    padding: 20mm;
+    font-size: 13px;
+  }
+  h1 { 
+    color: #059669; 
+    border-bottom: 3px solid #059669; 
+    padding-bottom: 10px; 
+    font-size: 26px; 
+    margin-top: 0;
+  }
+  h2 { 
+    color: #1e293b; 
+    border-bottom: 1px solid #e2e8f0; 
+    padding-bottom: 6px; 
+    margin-top: 35px; 
+    font-size: 20px;
+    page-break-after: avoid;
+  }
+  h3 { 
+    color: #334155; 
+    margin-top: 22px; 
+    font-size: 16px;
+    page-break-after: avoid;
+  }
+  p { margin: 8px 0; }
+  table { 
+    border-collapse: collapse; 
+    width: 100%; 
+    margin: 12px 0; 
+    font-size: 12px;
+    page-break-inside: avoid;
+  }
+  th { 
+    background-color: #f1f5f9; 
+    color: #334155; 
+    padding: 8px 10px; 
+    text-align: left; 
+    border: 1px solid #e2e8f0; 
+    font-weight: 600; 
+  }
+  td { 
+    padding: 6px 10px; 
+    border: 1px solid #e2e8f0; 
+    vertical-align: top;
+  }
+  tr:nth-child(even) { background-color: #f8fafc; }
+  code { 
+    background-color: #f1f5f9; 
+    padding: 1px 5px; 
+    border-radius: 3px; 
+    font-size: 11px; 
+    color: #059669;
+    font-family: 'Consolas', 'Courier New', monospace;
+  }
+  pre { 
+    background-color: #1e293b; 
+    color: #e2e8f0; 
+    padding: 14px; 
+    border-radius: 6px; 
+    font-size: 11px; 
+    overflow-x: auto;
+    page-break-inside: avoid;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  pre code {
+    background: none;
+    color: #e2e8f0;
+    padding: 0;
+  }
+  blockquote { 
+    border-left: 4px solid #059669; 
+    padding: 10px 14px; 
+    background: #f0fdf4; 
+    margin: 14px 0; 
+    color: #166534;
+    border-radius: 0 6px 6px 0;
+  }
+  blockquote p { margin: 4px 0; }
+  hr { 
+    border: none; 
+    border-top: 2px solid #e2e8f0; 
+    margin: 25px 0; 
+  }
+  strong { color: #0f172a; }
+  ul, ol { padding-left: 20px; }
+  li { margin: 4px 0; }
+  .page-break { page-break-after: always; }
+  
+  @media print {
+    body { padding: 15mm; }
+    h2 { page-break-after: avoid; }
+    table { page-break-inside: avoid; }
+    .page-break { page-break-after: always; }
+  }
+
+  .header-bar {
+    background: linear-gradient(135deg, #059669, #0d9488);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+  <div class="header-bar">
+    FinBootcamp — Proyecto Final | Analista de Sistemas de Información | Agosto 2026
+  </div>
+  <h1>FinBootcamp — Walkthrough de Desarrollo</h1>
+<p><strong>Documento de Resumen Técnico</strong><br><strong>Fecha:</strong> Agosto 2026</p>
+<hr>
+<h2>Resumen General</h2>
+<p>Se desarrolló una plataforma web educativa completa sobre finanzas para el mercado argentino usando <strong>Next.js 16 + TypeScript + Tailwind CSS 4</strong>. El proyecto incluye el MVP completo con simulador de inversiones, información impositiva, y extras como widgets de TradingView y soporte para Google AdSense.</p>
+<hr>
+<h2>Archivos Creados (20 archivos)</h2>
+<h3>Estructura base</h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>src/app/layout.tsx</code></td>
+<td>Layout principal con Navbar + Footer, metadata SEO, fuente Geist</td>
+</tr>
+<tr>
+<td><code>src/app/globals.css</code></td>
+<td>Estilos globales con paleta emerald/blue/amber</td>
+</tr>
+<tr>
+<td><code>src/components/Navbar.tsx</code></td>
+<td>Barra de navegación responsive con hamburger menu mobile</td>
+</tr>
+<tr>
+<td><code>src/components/Footer.tsx</code></td>
+<td>Footer con 3 columnas y disclaimer legal</td>
+</tr>
+<tr>
+<td><code>src/lib/utils.ts</code></td>
+<td>Utilidades: cn(), formatCurrency(), formatPercent()</td>
+</tr>
+</tbody></table>
+<h3>Datos (contenido educativo)</h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Contenido</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>src/data/instruments.ts</code></td>
+<td>8 instrumentos bursátiles con descripciones, ejemplos, tasas y datos fiscales</td>
+</tr>
+<tr>
+<td><code>src/data/crypto-topics.ts</code></td>
+<td>6 temas cripto con contenido educativo, key points y niveles de riesgo</td>
+</tr>
+<tr>
+<td><code>src/data/tax-info.ts</code></td>
+<td>11 escenarios fiscales (8 bursátiles + 3 cripto) con disclaimer legal</td>
+</tr>
+</tbody></table>
+<h3>Páginas de la aplicación</h3>
+<table>
+<thead>
+<tr>
+<th>Ruta</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/</code></td>
+<td>Landing: hero con gradient, stats, feature cards, preview impositiva, CTA</td>
+</tr>
+<tr>
+<td><code>/mercado-bursatil</code></td>
+<td>Grid de 8 instrumentos con badges de riesgo y horizonte</td>
+</tr>
+<tr>
+<td><code>/mercado-bursatil/[slug]</code></td>
+<td>Detalle: descripción, ejemplo práctico, tabla impositiva, link al simulador</td>
+</tr>
+<tr>
+<td><code>/cripto</code></td>
+<td>Grid de 6 temas cripto con badges de riesgo</td>
+</tr>
+<tr>
+<td><code>/cripto/[slug]</code></td>
+<td>Detalle: contenido educativo, key points, advertencia de riesgo</td>
+</tr>
+<tr>
+<td><code>/simulador</code></td>
+<td>Simulador interactivo con gráfico Recharts y tabla comparativa</td>
+</tr>
+<tr>
+<td><code>/cotizaciones</code></td>
+<td>Widgets TradingView embebidos (MERVAL, BTC, tipos de dólar)</td>
+</tr>
+</tbody></table>
+<h3>Lógica y componentes extra</h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>src/lib/simulator.ts</code></td>
+<td>Motor del simulador: interés compuesto con capitalización variable</td>
+</tr>
+<tr>
+<td><code>src/components/AdBanner.tsx</code></td>
+<td>Componente Google AdSense con placeholder en desarrollo</td>
+</tr>
+<tr>
+<td><code>README.md</code></td>
+<td>README profesional con badges, estructura y modelo de negocio</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Verificación Técnica</h2>
+<table>
+<thead>
+<tr>
+<th>Criterio</th>
+<th align="center">Resultado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Build de producción</td>
+<td align="center">✅ Exitosa</td>
+</tr>
+<tr>
+<td>TypeScript sin errores</td>
+<td align="center">✅ Limpio</td>
+</tr>
+<tr>
+<td>Páginas estáticas generadas</td>
+<td align="center">✅ 22 páginas</td>
+</tr>
+<tr>
+<td>Dev server funcional</td>
+<td align="center">✅ localhost:3000</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Problemas Encontrados y Resueltos</h2>
+<table>
+<thead>
+<tr>
+<th>Problema</th>
+<th>Causa</th>
+<th>Solución</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Import incorrecto en simulador</td>
+<td>Subagente usó <code>calculateInvestment</code> en vez de <code>simulateInvestment</code></td>
+<td>Reescritura completa del archivo con API correcta</td>
+</tr>
+<tr>
+<td>Propiedad <code>riskWarning</code> inexistente</td>
+<td>Tipo <code>CryptoTopic</code> no tiene esa propiedad</td>
+<td>Reemplazada con lógica basada en <code>topic.risk</code></td>
+</tr>
+<tr>
+<td>Error de tipo en ITF</td>
+<td><code>boolean</code> pasado a función que espera <code>string</code></td>
+<td>Renderizado directo como &quot;Aplica&quot;/&quot;No aplica&quot;</td>
+</tr>
+<tr>
+<td>Incompatibilidad en Recharts Tooltip</td>
+<td>Tipo <code>ValueType</code> no asignable a <code>number</code></td>
+<td>Conversión con <code>Number(value)</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Estado del Proyecto</h2>
+<h3>✅ Completado</h3>
+<ul>
+<li>MVP completo (catálogos, info impositiva, simulador)</li>
+<li>Extras: TradingView widgets, componente AdSense</li>
+<li>README profesional</li>
+<li>Build de producción exitosa</li>
+</ul>
+<h3>📋 Pendiente (Futuro Desarrollo)</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th align="center">Dificultad</th>
+<th align="center">Horas estimadas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Firebase Auth (login/register)</td>
+<td align="center">🟡 Media</td>
+<td align="center">12-18 hs</td>
+</tr>
+<tr>
+<td>Firestore (guardar simulaciones)</td>
+<td align="center">🟡 Media</td>
+<td align="center">8-12 hs</td>
+</tr>
+<tr>
+<td>Plan VIP con Mercado Pago</td>
+<td align="center">🔴 Alta</td>
+<td align="center">25-35 hs</td>
+</tr>
+<tr>
+<td>Deploy en Vercel</td>
+<td align="center">🟢 Fácil</td>
+<td align="center">1 hs</td>
+</tr>
+<tr>
+<td>Dominio propio para AdSense</td>
+<td align="center">🟢 Fácil</td>
+<td align="center">~$5 USD</td>
+</tr>
+</tbody></table>
+
+</body>
+</html>
