@@ -1,5 +1,5 @@
 'use client';
-
+import {supabase} from '@/lib/supabase';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { instruments } from '@/data/instruments';
@@ -11,21 +11,45 @@ import { Calculator, Info, TrendingUp } from 'lucide-react';
 function SimuladorContent() {
   const searchParams = useSearchParams();
   const preselectedInstrument = searchParams?.get('instrument');
-
   const [capital, setCapital] = useState<number>(100000);
   const [instrumentSlug, setInstrumentSlug] = useState<string>(preselectedInstrument || instruments[0]?.slug || '');
   const [rate, setRate] = useState<number>(0.45);
   const [months, setMonths] = useState<number>(12);
   const [frequency, setFrequency] = useState<CapitalizationFrequency>('mensual');
   const [result, setResult] = useState<SimulationResult | null>(null);
-
+  const [supabaseData, setSupabaseData] = useState<any>(null);
+  const [supabaseError, setSupabaseError] = useState<any>(null);
   const selectedInstrument = instruments.find(i => i.slug === instrumentSlug);
 
   useEffect(() => {
+    const client = supabase;
+
+    if (!client) {
+      setSupabaseData(null);
+      setSupabaseError(null);
+      return;
+    }
+
+    const loadData = async () => {
+      console.log('Loading data from Supabase...');
+      const { data, error } = await client.from('persona').select('*');
+      console.log('Supabase response:', { data, error });
+      setSupabaseData(data);
+      setSupabaseError(error);
+    };
+
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    if (supabaseError) {
+      console.log('data from supabase:', supabaseError);
+    }
+
     if (selectedInstrument && selectedInstrument.defaultRate) {
       setRate(selectedInstrument.defaultRate);
     }
-  }, [instrumentSlug, selectedInstrument]);
+  }, [supabaseError, instrumentSlug, selectedInstrument]);
 
   const handleSimulate = () => {
     const sim = simulateInvestment(capital, rate, months, frequency);
@@ -34,7 +58,6 @@ function SimuladorContent() {
 
   useEffect(() => {
     handleSimulate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
