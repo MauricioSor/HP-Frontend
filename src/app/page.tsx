@@ -1,7 +1,12 @@
+'use client';
+
 import Link from 'next/link';
-import { TrendingUp, Bitcoin, Calculator, CheckCircle2, ArrowRight } from 'lucide-react';
+import { TrendingUp, Bitcoin, Calculator, CheckCircle2, ArrowRight, LogIn, UserPlus } from 'lucide-react';
+import { useAuth } from '@/components/AuthProvider';
 
 export default function Home() {
+  const { isAuthenticated, isLoading } = useAuth();
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -28,6 +33,25 @@ export default function Home() {
             >
               Simular Inversión
             </Link>
+            {/* Botones de auth visibles solo cuando no está autenticado */}
+            {!isLoading && !isAuthenticated && (
+              <>
+                <Link
+                  href="/auth/registro"
+                  className="px-8 py-4 bg-amber-500 text-white font-bold rounded-lg shadow-lg hover:bg-amber-400 hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2"
+                >
+                  <UserPlus className="w-5 h-5" />
+                  Registrarse
+                </Link>
+                <Link
+                  href="/auth/login"
+                  className="px-8 py-4 bg-white/20 border border-white/40 text-white font-bold rounded-lg hover:bg-white/30 hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2"
+                >
+                  <LogIn className="w-5 h-5" />
+                  Iniciar Sesión
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </section>
