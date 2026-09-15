@@ -1,8 +1,12 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
+import { createClient } from '@/lib/client'
+import type { User as SupabaseUser } from '@supabase/supabase-js'
 
 interface User {
+  id: string
+  email: string
   usuario: string
   rol: number
 }
@@ -11,63 +15,101 @@ interface AuthContextType {
   user: User | null
   isAuthenticated: boolean
   isLoading: boolean
-  login: (usuario: string, contraseña: string) => Promise<{ success: boolean; error?: string }>
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
   logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+const supabase = createClient()
+
+/** Extrae los datos de usuario de Supabase Auth + tabla usuario */
+async function buildUser(supabaseUser: SupabaseUser): Promise<User> {
+  const usuario = supabaseUser.user_metadata?.usuario || supabaseUser.email || ''
+
+  // Obtener rol desde la tabla usuario
+  let rol = 0
+  const { data } = await supabase
+    .from('usuario')
+    .select('rol')
+    .eq('usuario', usuario)
+    .single()
+
+  if (data) {
+    rol = data.rol
+  }
+
+  return {
+    id: supabaseUser.id,
+    email: supabaseUser.email || '',
+    usuario,
+    rol,
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Verificar sesión al montar
+  // Verificar sesión al montar y escuchar cambios
   useEffect(() => {
-    async function checkSession() {
-      try {
-        const res = await fetch('/api/auth/me')
-        if (res.ok) {
-          const data = await res.json()
-          setUser(data.user)
-        }
-      } catch {
-        // Sin sesión
-      } finally {
-        setIsLoading(false)
+    // Verificar sesión existente
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session?.user) {
+        const userData = await buildUser(session.user)
+        setUser(userData)
       }
-    }
-    checkSession()
+      setIsLoading(false)
+    })
+
+    // Escuchar cambios de autenticación
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        const userData = await buildUser(session.user)
+        setUser(userData)
+      } else {
+        setUser(null)
+      }
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
-  const login = useCallback(async (usuario: string, contraseña: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ usuario, contraseña }),
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       })
 
-      const data = await res.json()
+      if (error) {
+        // Traducir mensajes comunes
+        if (error.message === 'Invalid login credentials') {
+          return { success: false, error: 'Email o contraseña incorrectos' }
+        }
+        if (error.message === 'Email not confirmed') {
+          return { success: false, error: 'Debés confirmar tu email antes de iniciar sesión' }
+        }
+        return { success: false, error: error.message }
+      }
 
-      if (res.ok && data.success) {
-        setUser(data.user)
+      if (data.user) {
+        const userData = await buildUser(data.user)
+        setUser(userData)
         return { success: true }
       }
 
-      return { success: false, error: data.error || 'Error al iniciar sesión' }
+      return { success: false, error: 'Error al iniciar sesión' }
     } catch {
       return { success: false, error: 'Error de conexión' }
     }
   }, [])
 
   const logout = useCallback(async () => {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' })
-    } catch {
-      // Ignorar errores de red en logout
-    } finally {
-      setUser(null)
-    }
+    await supabase.auth.signOut()
+    setUser(null)
   }, [])
 
   return (

@@ -7,7 +7,7 @@ import { LogIn, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 
 export default function LoginPage() {
-  const [usuario, setUsuario] = useState('')
+  const [email, setEmail] = useState('')
   const [contraseña, setContraseña] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
@@ -23,7 +23,7 @@ export default function LoginPage() {
     setError('')
     setIsSubmitting(true)
 
-    const result = await login(usuario, contraseña)
+    const result = await login(email, contraseña)
 
     if (result.success) {
       router.push(redirect)
@@ -43,7 +43,7 @@ export default function LoginPage() {
             <span className="text-3xl font-bold text-emerald-600">📊 FinBootcamp</span>
           </Link>
           <h1 className="mt-4 text-2xl font-bold text-slate-900">Iniciar Sesión</h1>
-          <p className="mt-2 text-slate-500">Ingresá tus credenciales para acceder a la plataforma</p>
+          <p className="mt-2 text-slate-500">Ingresá tu email y contraseña para acceder</p>
         </div>
 
         {/* Card del formulario */}
@@ -57,19 +57,19 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* Campo usuario */}
+            {/* Campo email */}
             <div>
-              <label htmlFor="usuario" className="block text-sm font-medium text-slate-700 mb-2">
-                Usuario
+              <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
+                Email
               </label>
               <input
-                id="usuario"
-                type="text"
-                value={usuario}
-                onChange={(e) => setUsuario(e.target.value)}
-                placeholder="Tu nombre de usuario"
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="tu@email.com"
                 required
-                autoComplete="username"
+                autoComplete="email"
                 className="w-full px-4 py-3 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
               />
             </div>

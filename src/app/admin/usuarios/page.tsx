@@ -15,8 +15,8 @@ interface Persona {
   nombre: string | null
   correo: string | null
   direccion: string | null
-  SituacionLaboral: string | null
-  Perfil: string | null
+  situacion_laboral: string | null
+  perfil_inversor: string | null
   cuit: string | null
   nacimiento: string | null
   usuario: string
@@ -105,8 +105,8 @@ export default function AdminUsuariosPage() {
         nombre: formNombre || null,
         correo: formCorreo || null,
         direccion: formDireccion || null,
-        SituacionLaboral: formSituacionLaboral || null,
-        Perfil: formPerfil || null,
+        situacion_laboral: formSituacionLaboral || null,
+        perfil_inversor: formPerfil || null,
         cuit: formCuit || null,
         nacimiento: formNacimiento || null,
       }
@@ -297,7 +297,7 @@ export default function AdminUsuariosPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">Perfil</label>
+                        <label className="block text-xs font-medium text-slate-600 mb-1">perfil_inversor</label>
                         <input
                           type="text"
                           value={formPerfil}

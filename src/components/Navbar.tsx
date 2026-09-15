@@ -24,8 +24,8 @@ export default function Navbar() {
 
   async function handleLogout() {
     await logout();
-    router.push('/');
     router.refresh();
+    router.push('/');
   }
 
   return (

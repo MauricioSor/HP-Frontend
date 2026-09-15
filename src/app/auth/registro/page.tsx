@@ -2,13 +2,16 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/components/AuthProvider'
+import { createClient } from '@/lib/client'
 import { UserPlus, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
 
+const supabase = createClient()
+
 export default function RegistroPage() {
-  // Datos de usuario
+  // Datos de credenciales
   const [usuario, setUsuario] = useState('')
+  const [email, setEmail] = useState('')
   const [contraseña, setContraseña] = useState('')
   const [confirmarContraseña, setConfirmarContraseña] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -16,23 +19,23 @@ export default function RegistroPage() {
   // Datos de persona
   const [dni, setDni] = useState('')
   const [nombre, setNombre] = useState('')
-  const [correo, setCorreo] = useState('')
   const [direccion, setDireccion] = useState('')
   const [situacionLaboral, setSituacionLaboral] = useState('')
-  const [perfil, setPerfil] = useState('')
+  const [perfil_inversor, setPerfil] = useState('')
   const [cuit, setCuit] = useState('')
   const [nacimiento, setNacimiento] = useState('')
 
   // Estado
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const { login } = useAuth()
   const router = useRouter()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
+    setSuccess('')
 
     // Validaciones
     if (contraseña !== confirmarContraseña) {
@@ -40,8 +43,8 @@ export default function RegistroPage() {
       return
     }
 
-    if (contraseña.length < 4) {
-      setError('La contraseña debe tener al menos 4 caracteres')
+    if (contraseña.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres')
       return
     }
 
@@ -50,47 +53,77 @@ export default function RegistroPage() {
       return
     }
 
+    if (!usuario.trim()) {
+      setError('El nombre de usuario es obligatorio')
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
-      const res = await fetch('/api/usuarios', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          usuario,
-          contraseña,
-          rol: 0, // Siempre rol usuario (no admin)
-          estado: 1, // Activo por defecto
-          persona: {
-            dni: parseInt(dni),
-            nombre: nombre || null,
-            correo: correo || null,
-            direccion: direccion || null,
-            SituacionLaboral: situacionLaboral || null,
-            Perfil: perfil || null,
-            cuit: cuit || null,
-            nacimiento: nacimiento || null,
+      // 1. Verificar que el nombre de usuario no esté en uso
+      const { data: existingUser } = await supabase
+        .from('usuario')
+        .select('usuario')
+        .eq('usuario', usuario)
+        .single()
+
+      if (existingUser) {
+        setError('Ese nombre de usuario ya está en uso')
+        setIsSubmitting(false)
+        return
+      }
+
+      // 2. Registrar con Supabase Auth
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password: contraseña,
+        options: {
+          data: {
+            usuario: usuario, // Se guarda en user_metadata
           },
-        }),
+        },
       })
 
-      const data = await res.json()
-
-      if (res.ok && (data.success || data.warning)) {
-        // Registro exitoso → login automático
-        const loginResult = await login(usuario, contraseña)
-        if (loginResult.success) {
-          router.push('/')
-          router.refresh()
+      if (signUpError) {
+        if (signUpError.message.includes('already registered')) {
+          setError('Este email ya está registrado. ¿Querés iniciar sesión?')
         } else {
-          // Se creó pero no pudo loguearse, mandarlo al login
-          router.push('/auth/login')
+          setError(signUpError.message)
         }
-      } else {
-        setError(data.error || 'Error al crear la cuenta')
+        setIsSubmitting(false)
+        return
       }
+
+      // 3. Si no hay sesión, es porque se requiere confirmar email
+      if (!data.session) {
+        setSuccess(
+          '¡Cuenta creada! Revisá tu email y confirmá tu cuenta para poder iniciar sesión.'
+        )
+        setIsSubmitting(false)
+        return
+      }
+
+      // 4. Insertar datos de persona (el trigger ya creó la fila en `usuario`)
+      if (dni) {
+        await supabase.from('persona').insert({
+          dni: parseInt(dni),
+          nombre: nombre || null,
+          correo: email,
+          direccion: direccion || null,
+          situacion_laboral: situacionLaboral || null,
+          perfil_inversor: perfil || null,
+          cuit: cuit || null,
+          nacimiento: nacimiento || null,
+          usuario: usuario,
+        })
+      }
+
+      // 5. Registro exitoso + login automático → redirigir
+      router.push('/')
+      router.refresh()
     } catch {
-      setError('Error de conexión')
+      setError('Error de conexión. Intentá de nuevo.')
     } finally {
       setIsSubmitting(false)
     }
@@ -119,6 +152,14 @@ export default function RegistroPage() {
               </div>
             )}
 
+            {/* Success */}
+            {success && (
+              <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm">
+                <CheckCircle2 className="w-5 h-5 shrink-0" />
+                <span>{success}</span>
+              </div>
+            )}
+
             {/* Sección: Credenciales */}
             <div className="space-y-4">
               <h2 className="text-sm font-semibold text-slate-900 uppercase tracking-wide flex items-center gap-2">
@@ -137,7 +178,22 @@ export default function RegistroPage() {
                   onChange={(e) => setUsuario(e.target.value)}
                   placeholder="ej: juan.perez"
                   required
-                  autoComplete="username"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
+                  Email *
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="tu@email.com"
+                  required
+                  autoComplete="email"
                   className="w-full px-4 py-3 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                 />
               </div>
@@ -153,7 +209,7 @@ export default function RegistroPage() {
                       type={showPassword ? 'text' : 'password'}
                       value={contraseña}
                       onChange={(e) => setContraseña(e.target.value)}
-                      placeholder="Mínimo 4 caracteres"
+                      placeholder="Mínimo 6 caracteres"
                       required
                       autoComplete="new-password"
                       className="w-full px-4 py-3 pr-10 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
@@ -221,17 +277,6 @@ export default function RegistroPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Correo electrónico</label>
-                <input
-                  type="email"
-                  value={correo}
-                  onChange={(e) => setCorreo(e.target.value)}
-                  placeholder="juan@email.com"
-                  className="w-full px-4 py-3 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
-                />
-              </div>
-
-              <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Dirección</label>
                 <input
                   type="text"
@@ -276,10 +321,10 @@ export default function RegistroPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Perfil inversor</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">perfil_inversor inversor</label>
                   <input
                     type="text"
-                    value={perfil}
+                    value={perfil_inversor}
                     onChange={(e) => setPerfil(e.target.value)}
                     placeholder="Conservador"
                     className="w-full px-4 py-3 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"

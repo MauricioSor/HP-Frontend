@@ -35,7 +35,7 @@ export const instruments: Instrument[] = [
 
 En el mercado argentino existen diversas modalidades: bonos en dólares con legislación local o extranjera (los famosos Bonares y Globales, como AL30 o GD30), bonos en pesos ajustados por inflación mediante el coeficiente CER (como TX26 o T2X5), y bonos vinculados a la evolución del tipo de cambio oficial (Dollar-Linked). Su cotización fluctúa en el mercado secundario según el riesgo país, las tasas de interés internacionales y las expectativas macroeconómicas, lo que permite comprarlos a descuento para obtener una Tasa Interna de Retorno (TIR) atractiva o venderlos anticipadamente antes de su vencimiento.
 
-Este instrumento es ideal para inversores de perfil moderado a agresivo que buscan dolarizar su cartera de forma implícita (vía MEP o Cable), cobrar flujos periódicos de cupones o apostar a la compresión de tasas soberanas. Ofrece excelente liquidez bursátil y permite operar directamente desde cualquier cuenta comitente (ALyC) con acreditación automática en Caja de Valores.`,
+Este instrumento es ideal para inversores de perfil_inversor moderado a agresivo que buscan dolarizar su cartera de forma implícita (vía MEP o Cable), cobrar flujos periódicos de cupones o apostar a la compresión de tasas soberanas. Ofrece excelente liquidez bursátil y permite operar directamente desde cualquier cuenta comitente (ALyC) con acreditación automática en Caja de Valores.`,
     risk: 'medio',
     horizon: 'Mediano a largo plazo (1 a 5 años)',
     minInvestment: 'Desde $1.000 o USD 10',
