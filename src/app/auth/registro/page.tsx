@@ -112,7 +112,7 @@ export default function RegistroPage() {
           correo: email,
           direccion: direccion || null,
           situacion_laboral: situacionLaboral || null,
-          perfil_inversor: perfil || null,
+          perfil_inversor: perfil_inversor || null,
           cuit: cuit || null,
           nacimiento: nacimiento || null,
           usuario: usuario,
