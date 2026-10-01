@@ -1,12 +1,26 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/client'
+import { GoogleAuthButton } from '@/components/GoogleAuthButton'
 import { UserPlus, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
+import type { User } from '@supabase/supabase-js'
 
 const supabase = createClient()
+
+function sugerirUsuario(email: string) {
+  return email.split('@')[0]?.replace(/[^a-zA-Z0-9._]/g, '') || ''
+}
+
+function esCuentaGoogle(user: User) {
+  return (
+    user.app_metadata?.provider === 'google' ||
+    user.identities?.some((identity) => identity.provider === 'google') ||
+    false
+  )
+}
 
 export default function RegistroPage() {
   // Datos de credenciales
@@ -29,24 +43,113 @@ export default function RegistroPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [cargandoSesion, setCargandoSesion] = useState(true)
+  const [cuentaGoogle, setCuentaGoogle] = useState(false)
+  const [usuarioActual, setUsuarioActual] = useState('')
 
   const router = useRouter()
+
+  useEffect(() => {
+    let activo = true
+
+    async function cargarCuentaGoogle() {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get('error') === 'google') {
+        setError('No se pudo vincular la cuenta de Google. Intentá de nuevo.')
+      }
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (!activo || !user || !esCuentaGoogle(user)) {
+        if (activo) setCargandoSesion(false)
+        return
+      }
+
+      const emailGoogle = user.email ?? ''
+      const nombreGoogle =
+        (typeof user.user_metadata?.full_name === 'string' && user.user_metadata.full_name) ||
+        (typeof user.user_metadata?.name === 'string' && user.user_metadata.name) ||
+        ''
+      const usuarioGoogle =
+        (typeof user.user_metadata?.usuario === 'string' && user.user_metadata.usuario) ||
+        sugerirUsuario(emailGoogle)
+
+      const { data: persona } = await supabase
+        .from('persona')
+        .select('dni')
+        .eq('correo', emailGoogle)
+        .maybeSingle()
+
+      if (!activo) return
+
+      if (persona) {
+        router.replace('/')
+        return
+      }
+
+      setEmail(emailGoogle)
+      setNombre(nombreGoogle)
+      setUsuario(usuarioGoogle)
+      setUsuarioActual(usuarioGoogle)
+      setCuentaGoogle(true)
+      setCargandoSesion(false)
+    }
+
+    cargarCuentaGoogle()
+    return () => {
+      activo = false
+    }
+  }, [router])
+
+  async function guardarUsuarioGoogle(nombreUsuario: string) {
+    const { data: existingUser } = await supabase
+      .from('usuario')
+      .select('usuario')
+      .eq('usuario', nombreUsuario)
+      .maybeSingle()
+
+    if (existingUser && nombreUsuario !== usuarioActual) {
+      return 'Ese nombre de usuario ya está en uso'
+    }
+
+    if (usuarioActual && nombreUsuario !== usuarioActual) {
+      const { error: renameError } = await supabase
+        .from('usuario')
+        .update({ usuario: nombreUsuario })
+        .eq('usuario', usuarioActual)
+
+      if (renameError) {
+        return 'No se pudo guardar el nombre de usuario. Probá con el que se generó desde Google.'
+      }
+    } else if (!existingUser) {
+      const { error: insertError } = await supabase.from('usuario').insert({
+        usuario: nombreUsuario,
+        rol: 0,
+        estado: 1,
+      })
+
+      if (insertError) {
+        return insertError.message
+      }
+    }
+
+    const { error: metadataError } = await supabase.auth.updateUser({
+      data: { usuario: nombreUsuario },
+    })
+
+    if (metadataError) {
+      return metadataError.message
+    }
+
+    return null
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
     setSuccess('')
-
-    // Validaciones
-    if (contraseña !== confirmarContraseña) {
-      setError('Las contraseñas no coinciden')
-      return
-    }
-
-    if (contraseña.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres')
-      return
-    }
 
     if (!dni) {
       setError('El DNI es obligatorio')
@@ -58,50 +161,71 @@ export default function RegistroPage() {
       return
     }
 
+    if (!cuentaGoogle) {
+      if (contraseña !== confirmarContraseña) {
+        setError('Las contraseñas no coinciden')
+        return
+      }
+
+      if (contraseña.length < 6) {
+        setError('La contraseña debe tener al menos 6 caracteres')
+        return
+      }
+    }
+
     setIsSubmitting(true)
 
     try {
-      // 1. Verificar que el nombre de usuario no esté en uso
-      const { data: existingUser } = await supabase
-        .from('usuario')
-        .select('usuario')
-        .eq('usuario', usuario)
-        .single()
-
-      if (existingUser) {
-        setError('Ese nombre de usuario ya está en uso')
-        setIsSubmitting(false)
-        return
-      }
-
-      // 2. Registrar con Supabase Auth
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password: contraseña,
-        options: {
-          data: {
-            usuario: usuario, // Se guarda en user_metadata
-          },
-        },
-      })
-
-      if (signUpError) {
-        if (signUpError.message.includes('already registered')) {
-          setError('Este email ya está registrado. ¿Querés iniciar sesión?')
-        } else {
-          setError(signUpError.message)
+      if (cuentaGoogle) {
+        const errorUsuario = await guardarUsuarioGoogle(usuario.trim())
+        if (errorUsuario) {
+          setError(errorUsuario)
+          setIsSubmitting(false)
+          return
         }
-        setIsSubmitting(false)
-        return
-      }
+      } else {
+        // 1. Verificar que el nombre de usuario no esté en uso
+        const { data: existingUser } = await supabase
+          .from('usuario')
+          .select('usuario')
+          .eq('usuario', usuario)
+          .maybeSingle()
 
-      // 3. Si no hay sesión, es porque se requiere confirmar email
-      if (!data.session) {
-        setSuccess(
-          '¡Cuenta creada! Revisá tu email y confirmá tu cuenta para poder iniciar sesión.'
-        )
-        setIsSubmitting(false)
-        return
+        if (existingUser) {
+          setError('Ese nombre de usuario ya está en uso')
+          setIsSubmitting(false)
+          return
+        }
+
+        // 2. Registrar con Supabase Auth
+        const { data, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password: contraseña,
+          options: {
+            data: {
+              usuario: usuario, // Se guarda en user_metadata
+            },
+          },
+        })
+
+        if (signUpError) {
+          if (signUpError.message.includes('already registered')) {
+            setError('Este email ya está registrado. ¿Querés iniciar sesión?')
+          } else {
+            setError(signUpError.message)
+          }
+          setIsSubmitting(false)
+          return
+        }
+
+        // 3. Si no hay sesión, es porque se requiere confirmar email
+        if (!data.session) {
+          setSuccess(
+            '¡Cuenta creada! Revisá tu email y confirmá tu cuenta para poder iniciar sesión.'
+          )
+          setIsSubmitting(false)
+          return
+        }
       }
 
       // 4. Insertar datos de persona (el trigger ya creó la fila en `usuario`)
@@ -115,7 +239,7 @@ export default function RegistroPage() {
           perfil_inversor: perfil_inversor || null,
           cuit: cuit || null,
           nacimiento: nacimiento || null,
-          usuario: usuario,
+          usuario: usuario.trim(),
         })
       }
 
@@ -143,6 +267,12 @@ export default function RegistroPage() {
 
         {/* Card del formulario */}
         <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
+          {cargandoSesion ? (
+            <div className="flex items-center justify-center gap-3 py-10 text-slate-500">
+              <div className="w-5 h-5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+              Cargando...
+            </div>
+          ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Error */}
             {error && (
@@ -157,6 +287,30 @@ export default function RegistroPage() {
               <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm">
                 <CheckCircle2 className="w-5 h-5 shrink-0" />
                 <span>{success}</span>
+              </div>
+            )}
+
+            {!cuentaGoogle && (
+              <>
+                <GoogleAuthButton next="/" label="Registrarse con Google" />
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-slate-200" />
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="bg-white px-3 text-slate-400">o completá el formulario</span>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {cuentaGoogle && (
+              <div className="flex items-start gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm">
+                <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" />
+                <span>
+                  Vinculamos tu cuenta de Google y completamos el email y el nombre. Terminá el
+                  registro con el resto de tus datos.
+                </span>
               </div>
             )}
 
@@ -193,11 +347,13 @@ export default function RegistroPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="tu@email.com"
                   required
+                  readOnly={cuentaGoogle}
                   autoComplete="email"
-                  className="w-full px-4 py-3 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors read-only:bg-slate-50 read-only:text-slate-600"
                 />
               </div>
 
+              {!cuentaGoogle && (
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label htmlFor="contraseña" className="block text-sm font-medium text-slate-700 mb-1">
@@ -240,6 +396,7 @@ export default function RegistroPage() {
                   />
                 </div>
               </div>
+              )}
             </div>
 
             {/* Separador */}
@@ -347,11 +504,12 @@ export default function RegistroPage() {
               ) : (
                 <>
                   <UserPlus className="w-5 h-5" />
-                  Crear Cuenta
+                  {cuentaGoogle ? 'Completar registro' : 'Crear Cuenta'}
                 </>
               )}
             </button>
           </form>
+          )}
         </div>
 
         {/* Link a login */}

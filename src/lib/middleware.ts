@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 // Rutas públicas que no requieren autenticación
-const publicPaths = ['/', '/auth/login', '/auth/registro']
+const publicPaths = ['/', '/auth/login', '/auth/registro', '/auth/callback']
 const publicPrefixes = ['/api/usuarios', '/_next/', '/favicon.ico']
 
 export async function updateSession(request: NextRequest) {
