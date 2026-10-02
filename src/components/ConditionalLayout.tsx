@@ -5,6 +5,7 @@ import Navbar from './Navbar'
 import Footer from './Footer'
 import Link from 'next/link'
 import { LogIn } from 'lucide-react'
+import { Logo } from '@/components/Logo'
 
 export default function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth()
@@ -26,12 +27,10 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
   return (
     <>
       {/* Header mínimo para usuarios no autenticados */}
-      <header className="sticky top-0 z-50 w-full bg-white shadow-sm">
+      <header className="sticky top-0 z-50 w-full border-b border-stone-200/80 bg-[#f7f4ee]/90 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <Link href="/" className="flex items-center gap-2">
-              <span className="text-2xl font-bold text-emerald-600">📊 FinBootcamp</span>
-            </Link>
+            <Logo />
             <div className="flex items-center gap-3">
               <Link
                 href="/auth/registro"

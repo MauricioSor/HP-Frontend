@@ -7,6 +7,7 @@ import { irA } from '@/lib/navegacion';
 import { Menu, X, TrendingUp, Bitcoin, Calculator, BarChart3, Home, LogOut, Users, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/components/AuthProvider';
+import { Logo } from '@/components/Logo';
 
 const navLinks = [
   { name: 'Inicio', href: '/', icon: Home },
@@ -28,17 +29,15 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-white shadow-sm">
+    <nav className="sticky top-0 z-50 w-full border-b border-stone-200/80 bg-[#f7f4ee]/90 shadow-none backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center gap-2">
-              <span className="text-2xl font-bold text-emerald-600">📊 FinBootcamp</span>
-            </Link>
+            <Logo />
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex md:items-center md:space-x-6">
+          <div className="hidden md:flex md:items-center md:gap-4 lg:gap-5">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               const Icon = link.icon;
@@ -47,7 +46,7 @@ export default function Navbar() {
                   key={link.name}
                   href={link.href}
                   className={cn(
-                    'flex items-center gap-1.5 px-1 pt-1 border-b-2 text-sm font-medium transition-colors',
+                    'flex items-center gap-1.5 whitespace-nowrap border-b-2 px-0.5 pt-1 text-[13px] font-medium transition-colors',
                     isActive
                       ? 'border-emerald-600 text-emerald-600'
                       : 'border-transparent text-slate-600 hover:text-emerald-600 hover:border-emerald-300'

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Logo } from '@/components/Logo';
 
 export default function Footer() {
   return (
@@ -6,6 +7,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
+            <Logo tone="light" className="mb-6" />
             <h3 className="text-lg font-bold text-emerald-400 mb-4">Plataforma</h3>
             <ul className="space-y-2">
               <li>

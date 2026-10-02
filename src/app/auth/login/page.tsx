@@ -7,6 +7,7 @@ import { irA } from '@/lib/navegacion'
 import { GoogleAuthButton } from '@/components/GoogleAuthButton'
 import { LogIn, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
+import { Logo } from '@/components/Logo'
 
 export default function LoginPage() {
   return (
@@ -49,13 +50,11 @@ function LoginForm() {
   }
 
   return (
-    <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-slate-50 to-emerald-50 px-4 py-12">
+    <div className="flex-1 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {/* Logo y título */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block">
-            <span className="text-3xl font-bold text-emerald-600">📊 FinBootcamp</span>
-          </Link>
+          <Logo size="lg" className="justify-center" />
           <h1 className="mt-4 text-2xl font-bold text-slate-900">Iniciar Sesión</h1>
           <p className="mt-2 text-slate-500">Ingresá tu email y contraseña para acceder</p>
         </div>
