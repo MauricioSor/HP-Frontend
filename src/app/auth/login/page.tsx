@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
+import { GoogleAuthButton } from '@/components/GoogleAuthButton'
 import { LogIn, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 
@@ -48,7 +49,19 @@ export default function LoginPage() {
 
         {/* Card del formulario */}
         <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-6">
+            <GoogleAuthButton next={redirect} label="Continuar con Google" />
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-white px-3 text-slate-400">o ingresá con email</span>
+              </div>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6 mt-6">
             {/* Error message */}
             {error && (
               <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">

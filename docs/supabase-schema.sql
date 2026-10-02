@@ -58,19 +58,60 @@ CREATE POLICY "Anyone can check if usuario exists" ON usuario
 --         automáticamente al registrarse
 -- ============================================
 
--- Función que se ejecuta cuando se crea un usuario en auth.users
+-- Función que se ejecuta cuando se crea un usuario en auth.users.
+-- Si el alta viene de Google, no hay metadata "usuario": se arma uno
+-- a partir del email y se guarda también en raw_user_meta_data.
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS trigger AS $$
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  base_username text;
+  username text;
+  suffix int := 0;
 BEGIN
+  base_username := NULLIF(btrim(new.raw_user_meta_data->>'usuario'), '');
+
+  IF base_username IS NULL THEN
+    base_username := NULLIF(
+      regexp_replace(split_part(COALESCE(new.email, ''), '@', 1), '[^a-zA-Z0-9._]', '', 'g'),
+      ''
+    );
+  END IF;
+
+  IF base_username IS NULL OR base_username = '' THEN
+    base_username := 'user';
+  END IF;
+
+  username := base_username;
+
+  WHILE EXISTS (SELECT 1 FROM public.usuario WHERE usuario = username) LOOP
+    suffix := suffix + 1;
+    username := base_username || suffix::text;
+  END LOOP;
+
   INSERT INTO public.usuario (usuario, rol, estado)
-  VALUES (
-    new.raw_user_meta_data->>'usuario',  -- Toma el nombre de usuario de la metadata
-    0,                                    -- Rol: usuario normal
-    1                                     -- Estado: activo
-  );
+  VALUES (username, 0, 1);
+
+  UPDATE auth.users
+  SET raw_user_meta_data = COALESCE(raw_user_meta_data, '{}'::jsonb)
+    || jsonb_build_object('usuario', username)
+  WHERE id = new.id;
+
   RETURN new;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
+
+DROP POLICY IF EXISTS "Authenticated users can insert usuario" ON usuario;
+CREATE POLICY "Authenticated users can insert usuario" ON usuario
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users can update usuario" ON usuario;
+CREATE POLICY "Authenticated users can update usuario" ON usuario
+  FOR UPDATE USING (auth.role() = 'authenticated')
+  WITH CHECK (auth.role() = 'authenticated');
 
 -- Trigger que escucha inserciones en auth.users
 CREATE TRIGGER on_auth_user_created
@@ -97,4 +138,12 @@ CREATE TRIGGER on_auth_user_created
 --
 -- 4. El login se hace con EMAIL + CONTRASEÑA (no con el campo usuario).
 --    El campo "usuario" es solo un nombre de display/identificador en la app.
+--
+-- 5. Para "Registrarse con Google":
+--    Authentication > Providers > Google: habilitar y cargar Client ID/Secret.
+--    Authentication > URL Configuration: agregar
+--    http://localhost:3000/auth/callback
+--    (y la URL de producción equivalente).
+--    En Google Cloud, el redirect autorizado es el callback de Supabase:
+--    https://<project-ref>.supabase.co/auth/v1/callback
 -- ============================================
