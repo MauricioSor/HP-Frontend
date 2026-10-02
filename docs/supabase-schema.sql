@@ -95,11 +95,6 @@ BEGIN
   INSERT INTO public.usuario (usuario, rol, estado)
   VALUES (username, 0, 1);
 
-  UPDATE auth.users
-  SET raw_user_meta_data = COALESCE(raw_user_meta_data, '{}'::jsonb)
-    || jsonb_build_object('usuario', username)
-  WHERE id = new.id;
-
   RETURN new;
 END;
 $$;

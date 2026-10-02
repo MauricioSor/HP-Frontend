@@ -6,6 +6,12 @@ const publicPaths = ['/', '/auth/login', '/auth/registro', '/auth/callback']
 const publicPrefixes = ['/api/usuarios', '/_next/', '/favicon.ico']
 
 export async function updateSession(request: NextRequest) {
+  // El callback de Google trae el verificador PKCE en una cookie.
+  // getUser() puede borrarla si no hay sesión todavía, y el canje del código falla.
+  if (request.nextUrl.pathname === '/auth/callback') {
+    return NextResponse.next({ request })
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -46,14 +52,40 @@ export async function updateSession(request: NextRequest) {
     publicPrefixes.some((prefix) => pathname.startsWith(prefix)) ||
     pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|webp|css|js|woff|woff2|ttf|eot)$/)
 
+  if (user && pathname === '/auth/login') {
+    const pedido = request.nextUrl.searchParams.get('redirect') || '/'
+    const destino = pedido.startsWith('/') && !pedido.startsWith('//') ? pedido : '/'
+    const url = request.nextUrl.clone()
+    url.pathname = destino === '/auth/login' ? '/' : destino
+    url.search = ''
+    return redirigirConCookies(supabaseResponse, url)
+  }
+
   if (!user && !isPublic) {
     // No hay usuario y la ruta no es pública → redirigir al login
     const url = request.nextUrl.clone()
     url.pathname = '/auth/login'
     url.searchParams.set('redirect', pathname)
-    return NextResponse.redirect(url)
+    return redirigirConCookies(supabaseResponse, url)
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
   return supabaseResponse
+}
+
+function redirigirConCookies(origen: NextResponse, url: URL) {
+  const destino = NextResponse.redirect(url)
+  const setCookies = origen.headers.getSetCookie?.() ?? []
+
+  if (setCookies.length > 0) {
+    for (const cookie of setCookies) {
+      destino.headers.append('set-cookie', cookie)
+    }
+    return destino
+  }
+
+  origen.cookies.getAll().forEach((cookie) => {
+    destino.cookies.set(cookie.name, cookie.value)
+  })
+  return destino
 }

@@ -51,30 +51,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Verificar sesión al montar y escuchar cambios
+  // Verificar sesión al montar y escuchar cambios.
+  // La consulta a `usuario` no puede correr dentro de onAuthStateChange:
+  // ese callback mantiene el lock del cliente y la consulta nunca termina,
+  // así que la app se queda en "Cargando..." y no renderiza las rutas.
   useEffect(() => {
-    // Verificar sesión existente
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        const userData = await buildUser(session.user)
-        setUser(userData)
-      }
-      setIsLoading(false)
-    })
+    let activo = true
 
-    // Escuchar cambios de autenticación
+    function aplicarSesion(sessionUser: SupabaseUser | null) {
+      if (!sessionUser) {
+        if (activo) {
+          setUser(null)
+          setIsLoading(false)
+        }
+        return
+      }
+
+      setTimeout(() => {
+        buildUser(sessionUser)
+          .then((userData) => {
+            if (!activo) return
+            setUser(userData)
+            setIsLoading(false)
+          })
+          .catch(() => {
+            if (!activo) return
+            setUser({
+              id: sessionUser.id,
+              email: sessionUser.email || '',
+              usuario: sessionUser.user_metadata?.usuario || sessionUser.email || '',
+              rol: 0,
+            })
+            setIsLoading(false)
+          })
+      }, 0)
+    }
+
+    supabase.auth.getSession().then(
+      ({ data: { session } }) => {
+        aplicarSesion(session?.user ?? null)
+      },
+      () => {
+        if (activo) setIsLoading(false)
+      }
+    )
+
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user) {
-        const userData = await buildUser(session.user)
-        setUser(userData)
-      } else {
-        setUser(null)
-      }
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      aplicarSesion(session?.user ?? null)
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      activo = false
+      subscription.unsubscribe()
+    }
   }, [])
 
   const login = useCallback(async (email: string, password: string) => {

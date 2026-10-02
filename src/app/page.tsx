@@ -126,7 +126,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">🧮 Simulador</h3>
               <p className="text-slate-600 mb-6">
-                Calculá rendimientos, entendé el poder del interés compuesto y proyectá tus inversiones a lo largo del tiempo.
+                Calculá rendimientos con interés compuesto y armá la cuota de un préstamo en pesos, UVA o dólares.
               </p>
               <Link href="/simulador" className="inline-flex items-center text-amber-600 font-semibold hover:text-amber-700">
                 Probar simulador <ArrowRight className="ml-2 w-4 h-4" />

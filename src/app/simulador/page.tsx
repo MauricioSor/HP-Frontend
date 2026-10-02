@@ -7,8 +7,52 @@ import { simulateInvestment, type CapitalizationFrequency, type SimulationResult
 import { formatCurrency, formatPercent } from '@/lib/utils';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Calculator, Info, TrendingUp } from 'lucide-react';
+import SimuladorPrestamo from '@/components/SimuladorPrestamo';
 
 function SimuladorContent() {
+  const params = useSearchParams();
+  const [pestana, setPestana] = useState<'inversion' | 'prestamo'>(
+    params?.get('vista') === 'prestamo' ? 'prestamo' : 'inversion'
+  );
+
+  function cambiarPestana(siguiente: 'inversion' | 'prestamo') {
+    setPestana(siguiente)
+    const url = siguiente === 'prestamo' ? '/simulador?vista=prestamo' : '/simulador'
+    window.history.replaceState(null, '', url)
+  }
+
+  return (
+    <>
+      <div className="max-w-7xl mx-auto px-4 pt-8">
+        <div className="flex justify-center">
+          <div className="inline-flex rounded-xl bg-slate-100 p-1">
+            <button
+              type="button"
+              onClick={() => cambiarPestana('inversion')}
+              className={`px-5 py-2 rounded-lg text-sm font-semibold cursor-pointer ${
+                pestana === 'inversion' ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-600'
+              }`}
+            >
+              Inversión
+            </button>
+            <button
+              type="button"
+              onClick={() => cambiarPestana('prestamo')}
+              className={`px-5 py-2 rounded-lg text-sm font-semibold cursor-pointer ${
+                pestana === 'prestamo' ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-600'
+              }`}
+            >
+              Préstamo
+            </button>
+          </div>
+        </div>
+      </div>
+      {pestana === 'prestamo' ? <SimuladorPrestamo /> : <SimuladorInversion />}
+    </>
+  );
+}
+
+function SimuladorInversion() {
   const searchParams = useSearchParams();
   const preselectedInstrument = searchParams?.get('instrument');
   const [capital, setCapital] = useState<number>(100000);
