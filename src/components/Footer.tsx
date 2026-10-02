@@ -20,7 +20,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/simulador" className="text-slate-300 hover:text-white transition-colors">
-                  Simulador de Inversiones
+                  Simulador
                 </Link>
               </li>
               <li>
