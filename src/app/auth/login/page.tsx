@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
+import { irA } from '@/lib/navegacion'
 import { GoogleAuthButton } from '@/components/GoogleAuthButton'
 import { LogIn, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
@@ -15,7 +16,6 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const { login } = useAuth()
-  const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect') || '/'
 
@@ -27,8 +27,7 @@ export default function LoginPage() {
     const result = await login(email, contraseña)
 
     if (result.success) {
-      router.push(redirect)
-      router.refresh()
+      irA(redirect)
     } else {
       setError(result.error || 'Error al iniciar sesión')
       setIsSubmitting(false)

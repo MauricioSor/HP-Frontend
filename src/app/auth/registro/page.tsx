@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { irA } from '@/lib/navegacion'
 import { createClient } from '@/lib/client'
 import { GoogleAuthButton } from '@/components/GoogleAuthButton'
 import { UserPlus, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react'
@@ -47,15 +47,13 @@ export default function RegistroPage() {
   const [cuentaGoogle, setCuentaGoogle] = useState(false)
   const [usuarioActual, setUsuarioActual] = useState('')
 
-  const router = useRouter()
-
   useEffect(() => {
     let activo = true
 
     async function cargarCuentaGoogle() {
       const params = new URLSearchParams(window.location.search)
       if (params.get('error') === 'google') {
-        setError('No se pudo vincular la cuenta de Google. Intentá de nuevo.')
+        setError(params.get('detalle') || 'No se pudo vincular la cuenta de Google. Intentá de nuevo.')
       }
 
       const {
@@ -85,7 +83,7 @@ export default function RegistroPage() {
       if (!activo) return
 
       if (persona) {
-        router.replace('/')
+        irA('/')
         return
       }
 
@@ -101,7 +99,7 @@ export default function RegistroPage() {
     return () => {
       activo = false
     }
-  }, [router])
+  }, [])
 
   async function guardarUsuarioGoogle(nombreUsuario: string) {
     const { data: existingUser } = await supabase
@@ -244,8 +242,8 @@ export default function RegistroPage() {
       }
 
       // 5. Registro exitoso + login automático → redirigir
-      router.push('/')
-      router.refresh()
+      irA('/')
+      return
     } catch {
       setError('Error de conexión. Intentá de nuevo.')
     } finally {
