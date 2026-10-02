@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
 import { irA } from '@/lib/navegacion'
@@ -9,6 +9,20 @@ import { LogIn, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 
 export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex-1 flex items-center justify-center px-4 py-12 text-slate-500">
+          Cargando...
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
+  )
+}
+
+function LoginForm() {
   const [email, setEmail] = useState('')
   const [contraseña, setContraseña] = useState('')
   const [showPassword, setShowPassword] = useState(false)
