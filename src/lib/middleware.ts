@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { esRolAdministrador } from '@/lib/roles'
 
 // Rutas públicas que no requieren autenticación
-const publicPaths = ['/', '/auth/login', '/auth/registro', '/auth/callback']
+const publicPaths = ['/', '/auth/login', '/auth/registro', '/auth/callback', '/suscripcion']
 const publicPrefixes = ['/api/usuarios', '/_next/', '/favicon.ico']
 
 export async function updateSession(request: NextRequest) {
@@ -56,7 +56,7 @@ export async function updateSession(request: NextRequest) {
   if (user && pathname === '/auth/login') {
     const pedido = request.nextUrl.searchParams.get('redirect') || '/'
     const destino = pedido.startsWith('/') && !pedido.startsWith('//') ? pedido : '/'
-    const url = request.nextUrl.clone()
+    const url = urlPublica(request)
     url.pathname = destino === '/auth/login' ? '/' : destino
     url.search = ''
     return redirigirConCookies(supabaseResponse, url)
@@ -71,7 +71,7 @@ export async function updateSession(request: NextRequest) {
       .maybeSingle()
     const admin = esRolAdministrador(fila?.rol)
     if (!admin) {
-      const url = request.nextUrl.clone()
+      const url = urlPublica(request)
       url.pathname = '/'
       url.search = ''
       return redirigirConCookies(supabaseResponse, url)
@@ -80,7 +80,7 @@ export async function updateSession(request: NextRequest) {
 
   if (!user && !isPublic) {
     // No hay usuario y la ruta no es pública → redirigir al login
-    const url = request.nextUrl.clone()
+    const url = urlPublica(request)
     url.pathname = '/auth/login'
     url.searchParams.set('redirect', pathname)
     return redirigirConCookies(supabaseResponse, url)
@@ -88,6 +88,27 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
   return supabaseResponse
+}
+
+function urlPublica(request: NextRequest) {
+  const url = request.nextUrl.clone()
+  const reenviado = request.headers.get('x-forwarded-host')?.split(',')[0]?.trim()
+  const host = reenviado || request.headers.get('host')
+  const proto = request.headers.get('x-forwarded-proto')?.split(',')[0]?.trim()
+
+  if (host) {
+    const local = host.startsWith('localhost') || host.startsWith('127.0.0.1')
+    url.host = host
+    url.protocol = proto
+      ? proto.endsWith(':')
+        ? proto
+        : `${proto}:`
+      : local
+        ? 'http:'
+        : 'https:'
+  }
+
+  return url
 }
 
 function redirigirConCookies(origen: NextResponse, url: URL) {

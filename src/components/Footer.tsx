@@ -30,6 +30,11 @@ export default function Footer() {
                   Cotizaciones
                 </Link>
               </li>
+              <li>
+                <Link href="/suscripcion" className="text-slate-300 hover:text-white transition-colors">
+                  Plan Premium
+                </Link>
+              </li>
             </ul>
           </div>
           

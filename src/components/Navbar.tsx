@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { irA } from '@/lib/navegacion';
-import { Menu, X, TrendingUp, Bitcoin, Calculator, BarChart3, Home, LogOut, Users, User } from 'lucide-react';
+import { Menu, X, TrendingUp, Bitcoin, Calculator, BarChart3, Home, LogOut, Users, User, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/components/AuthProvider';
 import { Logo } from '@/components/Logo';
@@ -16,6 +16,7 @@ const navLinks = [
   { name: 'Cripto', href: '/cripto', icon: Bitcoin, soloAdmin: false },
   { name: 'Simulador', href: '/simulador', icon: Calculator, soloAdmin: false },
   { name: 'Cotizaciones', href: '/cotizaciones', icon: BarChart3, soloAdmin: false },
+  { name: 'Premium', href: '/suscripcion', icon: Sparkles, soloAdmin: false },
   { name: 'Gestión de usuarios', href: '/admin/usuarios', icon: Users, soloAdmin: true },
 ];
 

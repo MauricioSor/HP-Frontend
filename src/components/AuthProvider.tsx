@@ -9,6 +9,7 @@ interface User {
   email: string
   usuario: string
   rol: number
+  premium: boolean
 }
 
 interface AuthContextType {
@@ -44,6 +45,7 @@ async function buildUser(supabaseUser: SupabaseUser): Promise<User> {
     email: supabaseUser.email || '',
     usuario,
     rol,
+    premium: supabaseUser.user_metadata?.plan === 'premium',
   }
 }
 
@@ -81,6 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               email: sessionUser.email || '',
               usuario: sessionUser.user_metadata?.usuario || sessionUser.email || '',
               rol: 0,
+              premium: sessionUser.user_metadata?.plan === 'premium',
             })
             setIsLoading(false)
           })
