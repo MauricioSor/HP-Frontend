@@ -25,9 +25,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <body
         className={`${fraunces.variable} ${sourceSans.variable} min-h-screen flex flex-col font-sans antialiased`}
+        suppressHydrationWarning
       >
         <AuthProvider>
           <ConditionalLayout>

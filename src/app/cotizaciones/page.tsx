@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { LineChart, DollarSign, Bitcoin, Clock, Landmark, Building2, Loader2 } from 'lucide-react';
+import AdBanner from '@/components/AdBanner';
 
 type Simbolo = { proName: string; title: string };
 
@@ -182,6 +183,8 @@ export default function CotizacionesPage() {
           Los datos pueden tener un retraso de hasta 15 minutos
         </div>
       </div>
+
+      <AdBanner slot="cotizaciones-horizontal" format="horizontal" className="mb-8" />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <section className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col h-[400px]">

@@ -33,6 +33,12 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
             <Logo />
             <div className="flex items-center gap-3">
               <Link
+                href="/suscripcion"
+                className="hidden sm:inline-flex items-center px-3 py-2 text-sm font-semibold text-[#12372c] hover:text-emerald-700 transition-colors"
+              >
+                Premium
+              </Link>
+              <Link
                 href="/auth/registro"
                 className="inline-flex items-center gap-2 px-5 py-2.5 text-emerald-600 font-semibold rounded-lg hover:bg-emerald-50 transition-colors"
               >

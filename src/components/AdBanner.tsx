@@ -14,6 +14,7 @@
  */
 
 import { useEffect, useRef } from 'react';
+import { useAuth } from '@/components/AuthProvider';
 
 interface AdBannerProps {
   slot: string;
@@ -22,10 +23,13 @@ interface AdBannerProps {
 }
 
 export default function AdBanner({ slot, format = 'auto', className = '' }: AdBannerProps) {
+  const { user } = useAuth();
   const adRef = useRef<HTMLDivElement>(null);
   const isAdLoaded = useRef(false);
+  const premium = user?.premium === true;
 
   useEffect(() => {
+    if (premium) return;
     // Solo cargar ads en producción
     if (process.env.NODE_ENV !== 'production') return;
     if (isAdLoaded.current) return;
@@ -37,7 +41,9 @@ export default function AdBanner({ slot, format = 'auto', className = '' }: AdBa
     } catch (err) {
       console.error('Error cargando anuncio:', err);
     }
-  }, []);
+  }, [premium]);
+
+  if (premium) return null;
 
   // En desarrollo, mostrar placeholder
   if (process.env.NODE_ENV !== 'production') {
@@ -46,7 +52,7 @@ export default function AdBanner({ slot, format = 'auto', className = '' }: AdBa
         style={{ minHeight: format === 'horizontal' ? '90px' : format === 'rectangle' ? '250px' : '100px' }}
       >
         <div className="text-center p-4">
-          <p className="font-medium">📢 Espacio publicitario</p>
+          <p className="font-medium">Espacio publicitario</p>
           <p className="text-xs mt-1">Google AdSense - Slot: {slot}</p>
           <p className="text-xs">(Solo visible en producción)</p>
         </div>
