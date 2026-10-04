@@ -1,7 +1,6 @@
 'use client'
 
-import { Suspense, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import { irA } from '@/lib/navegacion'
 import { GoogleAuthButton } from '@/components/GoogleAuthButton'
@@ -10,29 +9,19 @@ import Link from 'next/link'
 import { Logo } from '@/components/Logo'
 
 export default function LoginPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex-1 flex items-center justify-center px-4 py-12 text-slate-500">
-          Cargando...
-        </div>
-      }
-    >
-      <LoginForm />
-    </Suspense>
-  )
-}
-
-function LoginForm() {
   const [email, setEmail] = useState('')
   const [contraseña, setContraseña] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [redirect, setRedirect] = useState('/')
 
   const { login } = useAuth()
-  const searchParams = useSearchParams()
-  const redirect = searchParams.get('redirect') || '/'
+
+  useEffect(() => {
+    const pedido = new URLSearchParams(window.location.search).get('redirect') || '/'
+    setRedirect(pedido.startsWith('/') && !pedido.startsWith('//') ? pedido : '/')
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

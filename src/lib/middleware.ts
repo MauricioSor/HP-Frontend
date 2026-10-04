@@ -90,29 +90,36 @@ export async function updateSession(request: NextRequest) {
   return supabaseResponse
 }
 
+function esLoopback(host: string) {
+  const nombre = host.split(':')[0]?.toLowerCase() ?? ''
+  return nombre === 'localhost' || nombre === '127.0.0.1' || nombre === '0.0.0.0' || nombre === '[::1]'
+}
+
 function urlPublica(request: NextRequest) {
   const url = request.nextUrl.clone()
-  const reenviado = request.headers.get('x-forwarded-host')?.split(',')[0]?.trim()
-  const host = reenviado || request.headers.get('host')
-  const proto = request.headers.get('x-forwarded-proto')?.split(',')[0]?.trim()
+  const candidatos = [request.headers.get('host'), request.headers.get('x-forwarded-host')]
+    .flatMap((valor) => (valor ? valor.split(',') : []))
+    .map((valor) => valor.trim())
+    .filter(Boolean)
+  const publico = candidatos.find((host) => !esLoopback(host))
+  // En el servidor el host de la petición suele ser localhost. En Vercel el dominio real está en estas variables.
+  const vercel =
+    process.env.VERCEL_ENV === 'production'
+      ? process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL
+      : process.env.VERCEL_URL
+  const host = publico || (vercel && !esLoopback(vercel) ? vercel : candidatos[0] || url.host)
+  const local = esLoopback(host)
 
-  if (host) {
-    const local = host.startsWith('localhost') || host.startsWith('127.0.0.1')
-    url.host = host
-    url.protocol = proto
-      ? proto.endsWith(':')
-        ? proto
-        : `${proto}:`
-      : local
-        ? 'http:'
-        : 'https:'
-  }
-
+  url.host = host
+  url.protocol = local ? 'http:' : 'https:'
   return url
 }
 
 function redirigirConCookies(origen: NextResponse, url: URL) {
   const destino = NextResponse.redirect(url)
+  // Ruta relativa: el navegador la resuelve contra el dominio que está visitando,
+  // aunque el servidor crea que la petición llegó a localhost.
+  destino.headers.set('Location', `${url.pathname}${url.search}`)
   const setCookies = origen.headers.getSetCookie?.() ?? []
 
   if (setCookies.length > 0) {
