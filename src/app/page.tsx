@@ -10,26 +10,26 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-900 text-white py-24 sm:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
+      <section className="relative overflow-hidden bg-[#12372c] py-24 text-[#f4f1ea] sm:py-32">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(110,231,183,0.16),transparent_55%)]"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6">
+          <h1 className="mb-6 text-4xl font-medium tracking-tight sm:text-6xl">
             Aprendé a invertir con confianza
           </h1>
-          <p className="mt-4 max-w-2xl text-xl sm:text-2xl mx-auto text-emerald-100 mb-10">
+          <p className="mx-auto mb-10 mt-4 max-w-2xl font-sans text-xl text-emerald-100/90 sm:text-2xl">
             La plataforma definitiva de educación financiera para el mercado argentino.
             Dominá la bolsa local, internacional y el ecosistema cripto.
           </p>
           <div className="mt-8 flex justify-center gap-4 flex-col sm:flex-row">
             <Link
               href="/mercado-bursatil"
-              className="px-8 py-4 bg-white text-emerald-800 font-bold rounded-lg shadow-lg hover:bg-emerald-50 hover:scale-105 transition-all duration-200"
+              className="px-8 py-4 bg-[#f4f1ea] text-[#12372c] font-semibold rounded-lg shadow-lg hover:bg-white transition-colors duration-200"
             >
               Explorar Instrumentos
             </Link>
             <Link
               href="/simulador"
-              className="px-8 py-4 bg-emerald-800 bg-opacity-40 border border-emerald-400 text-white font-bold rounded-lg hover:bg-opacity-60 hover:scale-105 transition-all duration-200"
+              className="px-8 py-4 border border-emerald-300/40 bg-white/10 text-[#f4f1ea] font-semibold rounded-lg hover:bg-white/15 transition-colors duration-200"
             >
               Simular Inversión
             </Link>
@@ -38,14 +38,14 @@ export default function Home() {
               <>
                 <Link
                   href="/auth/registro"
-                  className="px-8 py-4 bg-amber-500 text-white font-bold rounded-lg shadow-lg hover:bg-amber-400 hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2"
+                  className="px-8 py-4 bg-amber-500 text-white font-semibold rounded-lg shadow-lg hover:bg-amber-400 transition-colors duration-200 flex items-center justify-center gap-2"
                 >
                   <UserPlus className="w-5 h-5" />
                   Registrarse
                 </Link>
                 <Link
                   href="/auth/login"
-                  className="px-8 py-4 bg-white/20 border border-white/40 text-white font-bold rounded-lg hover:bg-white/30 hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2"
+                  className="px-8 py-4 bg-white/10 border border-white/30 text-white font-semibold rounded-lg hover:bg-white/20 transition-colors duration-200 flex items-center justify-center gap-2"
                 >
                   <LogIn className="w-5 h-5" />
                   Iniciar Sesión
@@ -81,10 +81,10 @@ export default function Home() {
       </section>
 
       {/* Features Grid */}
-      <section className="py-20 bg-slate-50">
+      <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl">Todo lo que necesitás saber</h2>
+            <h2 className="text-3xl font-medium text-slate-900 sm:text-4xl">Todo lo que necesitás saber</h2>
             <p className="mt-4 text-lg text-slate-600">
               Desarrollá tus conocimientos desde los fundamentos hasta estrategias avanzadas.
             </p>
@@ -96,7 +96,7 @@ export default function Home() {
               <div className="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center mb-6">
                 <TrendingUp className="w-8 h-8 text-emerald-600" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">📈 Mercado Bursátil</h3>
+              <h3 className="text-xl font-medium text-slate-900 mb-3">Mercado Bursátil</h3>
               <p className="text-slate-600 mb-6">
                 Aprendé a operar con Bonos, Acciones, CEDEARs, Obligaciones Negociables, Cauciones y más en el mercado local e internacional.
               </p>
@@ -110,7 +110,7 @@ export default function Home() {
               <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
                 <Bitcoin className="w-8 h-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">₿ Mercado Cripto</h3>
+              <h3 className="text-xl font-medium text-slate-900 mb-3">Mercado Cripto</h3>
               <p className="text-slate-600 mb-6">
                 Desde los fundamentos de Bitcoin y Ethereum hasta DeFi, minado, staking y los riesgos de las memecoins.
               </p>
@@ -124,7 +124,7 @@ export default function Home() {
               <div className="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center mb-6">
                 <Calculator className="w-8 h-8 text-amber-600" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">🧮 Simulador</h3>
+              <h3 className="text-xl font-medium text-slate-900 mb-3">Simulador</h3>
               <p className="text-slate-600 mb-6">
                 Calculá rendimientos con interés compuesto y armá la cuota de un préstamo en pesos, UVA o dólares.
               </p>
@@ -141,7 +141,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="lg:flex lg:items-center lg:justify-between gap-12">
             <div className="lg:w-1/2 mb-10 lg:mb-0">
-              <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl mb-6">
+              <h2 className="text-3xl font-medium text-slate-900 sm:text-4xl mb-6">
                 Información impositiva clara
               </h2>
               <p className="text-lg text-slate-600 mb-6">

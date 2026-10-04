@@ -6,6 +6,7 @@ import { createClient } from '@/lib/client'
 import { GoogleAuthButton } from '@/components/GoogleAuthButton'
 import { UserPlus, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
+import { Logo } from '@/components/Logo'
 import type { User } from '@supabase/supabase-js'
 
 const supabase = createClient()
@@ -252,13 +253,11 @@ export default function RegistroPage() {
   }
 
   return (
-    <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-slate-50 to-emerald-50 px-4 py-12">
+    <div className="flex-1 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-lg">
         {/* Logo y título */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block">
-            <span className="text-3xl font-bold text-emerald-600">📊 FinBootcamp</span>
-          </Link>
+          <Logo size="lg" className="justify-center" />
           <h1 className="mt-4 text-2xl font-bold text-slate-900">Crear Cuenta</h1>
           <p className="mt-2 text-slate-500">Registrate para acceder a toda la plataforma</p>
         </div>
