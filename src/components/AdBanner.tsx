@@ -1,20 +1,9 @@
 'use client';
 
-/**
- * Componente de banner publicitario para Google AdSense.
- * 
- * INSTRUCCIONES DE CONFIGURACIÓN:
- * 1. Crear cuenta en Google AdSense (https://adsense.google.com)
- * 2. Verificar tu dominio
- * 3. Reemplazar 'ca-pub-XXXXXXXXXX' con tu Publisher ID real
- * 4. Reemplazar los data-ad-slot con los IDs de tus bloques de anuncios
- * 
- * NOTA: En desarrollo, los anuncios no se muestran. Solo funcionan en producción
- * con un dominio verificado y cuenta aprobada.
- */
-
 import { useEffect, useRef } from 'react';
 import { useAuth } from '@/components/AuthProvider';
+import { ADSENSE_CLIENT, esSlotAdsense } from '@/lib/adsense';
+import { esRolAdministrador } from '@/lib/roles';
 
 interface AdBannerProps {
   slot: string;
@@ -23,15 +12,14 @@ interface AdBannerProps {
 }
 
 export default function AdBanner({ slot, format = 'auto', className = '' }: AdBannerProps) {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const adRef = useRef<HTMLDivElement>(null);
   const isAdLoaded = useRef(false);
-  const premium = user?.premium === true;
+  const ocultar = isLoading || esRolAdministrador(user?.rol);
+  const slotValido = esSlotAdsense(slot);
 
   useEffect(() => {
-    if (premium) return;
-    // Solo cargar ads en producción
-    if (process.env.NODE_ENV !== 'production') return;
+    if (ocultar || !slotValido) return;
     if (isAdLoaded.current) return;
 
     try {
@@ -41,12 +29,11 @@ export default function AdBanner({ slot, format = 'auto', className = '' }: AdBa
     } catch (err) {
       console.error('Error cargando anuncio:', err);
     }
-  }, [premium]);
+  }, [ocultar, slotValido]);
 
-  if (premium) return null;
+  if (ocultar) return null;
 
-  // En desarrollo, mostrar placeholder
-  if (process.env.NODE_ENV !== 'production') {
+  if (!slotValido) {
     return (
       <div className={`bg-slate-100 border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center text-slate-400 text-sm ${className}`}
         style={{ minHeight: format === 'horizontal' ? '90px' : format === 'rectangle' ? '250px' : '100px' }}
@@ -54,7 +41,7 @@ export default function AdBanner({ slot, format = 'auto', className = '' }: AdBa
         <div className="text-center p-4">
           <p className="font-medium">Espacio publicitario</p>
           <p className="text-xs mt-1">Google AdSense - Slot: {slot}</p>
-          <p className="text-xs">(Solo visible en producción)</p>
+          <p className="text-xs">Modo de prueba, visible para todos menos administradores</p>
         </div>
       </div>
     );
@@ -65,7 +52,7 @@ export default function AdBanner({ slot, format = 'auto', className = '' }: AdBa
       <ins
         className="adsbygoogle"
         style={{ display: 'block' }}
-        data-ad-client="ca-pub-XXXXXXXXXX" // TODO: Reemplazar con tu Publisher ID
+        data-ad-client={ADSENSE_CLIENT}
         data-ad-slot={slot}
         data-ad-format={format}
         data-full-width-responsive="true"

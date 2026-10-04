@@ -119,7 +119,7 @@ export default function SuscripcionPage() {
       </div>
 
       <p className="mx-auto mt-8 max-w-2xl text-center text-sm text-slate-500">
-        El botón activa el plan en tu cuenta y oculta los anuncios. Todavía no cobra la tarjeta: el medio de pago no está conectado.
+        El botón guarda el plan en tu cuenta. Todavía no cobra la tarjeta ni saca los anuncios: por ahora solo los administradores dejan de verlos.
       </p>
     </div>
   )
