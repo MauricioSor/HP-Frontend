@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { esRolAdministrador } from '@/lib/roles'
 
 // Rutas públicas que no requieren autenticación
 const publicPaths = ['/', '/auth/login', '/auth/registro', '/auth/callback']
@@ -59,6 +60,22 @@ export async function updateSession(request: NextRequest) {
     url.pathname = destino === '/auth/login' ? '/' : destino
     url.search = ''
     return redirigirConCookies(supabaseResponse, url)
+  }
+
+  if (user && pathname.startsWith('/admin')) {
+    const nombre = user.user_metadata?.usuario || user.email || ''
+    const { data: fila } = await supabase
+      .from('usuario')
+      .select('rol')
+      .eq('usuario', nombre)
+      .maybeSingle()
+    const admin = esRolAdministrador(fila?.rol)
+    if (!admin) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/'
+      url.search = ''
+      return redirigirConCookies(supabaseResponse, url)
+    }
   }
 
   if (!user && !isPublic) {

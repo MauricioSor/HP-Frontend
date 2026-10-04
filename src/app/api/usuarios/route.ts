@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/server'
+import { esRolAdministrador } from '@/lib/roles'
 
 // GET - Listar usuarios (sin contraseñas, ya no están en esta tabla)
 export async function GET() {
@@ -12,6 +13,19 @@ export async function GET() {
       return NextResponse.json(
         { success: false, error: 'No autenticado' },
         { status: 401 }
+      )
+    }
+
+    const nombre = user.user_metadata?.usuario || user.email || ''
+    const { data: fila } = await supabase
+      .from('usuario')
+      .select('rol')
+      .eq('usuario', nombre)
+      .maybeSingle()
+    if (!esRolAdministrador(fila?.rol)) {
+      return NextResponse.json(
+        { success: false, error: 'No autorizado' },
+        { status: 403 }
       )
     }
 

@@ -8,20 +8,24 @@ import { Menu, X, TrendingUp, Bitcoin, Calculator, BarChart3, Home, LogOut, User
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/components/AuthProvider';
 import { Logo } from '@/components/Logo';
+import { esRolAdministrador } from '@/lib/roles';
 
 const navLinks = [
-  { name: 'Inicio', href: '/', icon: Home },
-  { name: 'Mercado Bursátil', href: '/mercado-bursatil', icon: TrendingUp },
-  { name: 'Cripto', href: '/cripto', icon: Bitcoin },
-  { name: 'Simulador', href: '/simulador', icon: Calculator },
-  { name: 'Cotizaciones', href: '/cotizaciones', icon: BarChart3 },
-  { name: 'Usuarios', href: '/admin/usuarios', icon: Users },
+  { name: 'Inicio', href: '/', icon: Home, soloAdmin: false },
+  { name: 'Mercado Bursátil', href: '/mercado-bursatil', icon: TrendingUp, soloAdmin: false },
+  { name: 'Cripto', href: '/cripto', icon: Bitcoin, soloAdmin: false },
+  { name: 'Simulador', href: '/simulador', icon: Calculator, soloAdmin: false },
+  { name: 'Cotizaciones', href: '/cotizaciones', icon: BarChart3, soloAdmin: false },
+  { name: 'Gestión de usuarios', href: '/admin/usuarios', icon: Users, soloAdmin: true },
 ];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const linksVisibles = navLinks.filter(
+    (link) => !link.soloAdmin || esRolAdministrador(user?.rol)
+  );
 
   async function handleLogout() {
     await logout();
@@ -38,7 +42,7 @@ export default function Navbar() {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex md:items-center md:gap-4 lg:gap-5">
-            {navLinks.map((link) => {
+            {linksVisibles.map((link) => {
               const isActive = pathname === link.href;
               const Icon = link.icon;
               return (
@@ -96,7 +100,7 @@ export default function Navbar() {
       {isOpen && (
         <div className="md:hidden">
           <div className="pt-2 pb-3 space-y-1">
-            {navLinks.map((link) => {
+            {linksVisibles.map((link) => {
               const isActive = pathname === link.href;
               const Icon = link.icon;
               return (

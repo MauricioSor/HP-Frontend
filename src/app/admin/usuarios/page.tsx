@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { UserPlus, Users, AlertCircle, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react'
+import { useAuth } from '@/components/AuthProvider'
+import { irA } from '@/lib/navegacion'
+import { esRolAdministrador } from '@/lib/roles'
 
 interface Usuario {
   usuario: string
@@ -29,6 +32,7 @@ const rolLabels: Record<number, string> = {
 }
 
 export default function AdminUsuariosPage() {
+  const { user, isLoading } = useAuth()
   // Estado del formulario de usuario
   const [formUsuario, setFormUsuario] = useState('')
   const [formContraseña, setFormContraseña] = useState('')
@@ -67,8 +71,13 @@ export default function AdminUsuariosPage() {
   }, [])
 
   useEffect(() => {
+    if (isLoading) return
+    if (!esRolAdministrador(user?.rol)) {
+      irA('/')
+      return
+    }
     fetchUsuarios()
-  }, [fetchUsuarios])
+  }, [isLoading, user, fetchUsuarios])
 
   function resetForm() {
     setFormUsuario('')
@@ -137,6 +146,14 @@ export default function AdminUsuariosPage() {
 
   function getPersonaForUsuario(usuarioName: string) {
     return personas.find((p) => p.usuario === usuarioName)
+  }
+
+  if (isLoading || !esRolAdministrador(user?.rol)) {
+    return (
+      <div className="flex-1 flex items-center justify-center py-16 text-slate-500">
+        {isLoading ? 'Cargando...' : null}
+      </div>
+    )
   }
 
   return (
