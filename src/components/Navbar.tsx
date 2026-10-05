@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { irA } from '@/lib/navegacion';
-import { Menu, X, TrendingUp, Bitcoin, Calculator, BarChart3, Home, LogOut, Users, User, Sparkles } from 'lucide-react';
+import { Menu, X, TrendingUp, Bitcoin, Calculator, BarChart3, Home, LogOut, Users, User, Sparkles, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/components/AuthProvider';
 import { Logo } from '@/components/Logo';
@@ -16,6 +16,7 @@ const navLinks = [
   { name: 'Cripto', href: '/cripto', icon: Bitcoin, soloAdmin: false },
   { name: 'Simulador', href: '/simulador', icon: Calculator, soloAdmin: false },
   { name: 'Cotizaciones', href: '/cotizaciones', icon: BarChart3, soloAdmin: false },
+  { name: 'Guías', href: '/guias', icon: BookOpen, soloAdmin: false },
   { name: 'Premium', href: '/suscripcion', icon: Sparkles, soloAdmin: false },
   { name: 'Gestión de usuarios', href: '/admin/usuarios', icon: Users, soloAdmin: true },
 ];
@@ -44,7 +45,7 @@ export default function Navbar() {
           {/* Desktop Menu */}
           <div className="hidden md:flex md:items-center md:gap-4 lg:gap-5">
             {linksVisibles.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive = link.href === '/' ? pathname === '/' : pathname.startsWith(link.href);
               const Icon = link.icon;
               return (
                 <Link
@@ -102,7 +103,7 @@ export default function Navbar() {
         <div className="md:hidden">
           <div className="pt-2 pb-3 space-y-1">
             {linksVisibles.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive = link.href === '/' ? pathname === '/' : pathname.startsWith(link.href);
               const Icon = link.icon;
               return (
                 <Link

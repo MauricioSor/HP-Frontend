@@ -3,8 +3,8 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { esRolAdministrador } from '@/lib/roles'
 
 // Rutas públicas que no requieren autenticación
-const publicPaths = ['/', '/auth/login', '/auth/registro', '/auth/callback', '/suscripcion']
-const publicPrefixes = ['/api/usuarios', '/_next/', '/favicon.ico']
+const publicPaths = ['/', '/auth/login', '/auth/registro', '/auth/callback', '/suscripcion', '/ads.txt']
+const publicPrefixes = ['/api/usuarios', '/_next/', '/favicon.ico', '/guias']
 
 export async function updateSession(request: NextRequest) {
   // El callback de Google trae el verificador PKCE en una cookie.

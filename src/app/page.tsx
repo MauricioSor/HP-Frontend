@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { TrendingUp, Bitcoin, Calculator, CheckCircle2, ArrowRight, LogIn, UserPlus } from 'lucide-react';
+import { TrendingUp, Bitcoin, Calculator, CheckCircle2, ArrowRight, LogIn, UserPlus, BookOpen } from 'lucide-react';
 import { useAuth } from '@/components/AuthProvider';
 
 export default function Home() {
@@ -90,7 +90,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-8">
             {/* Card 1 */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 hover:shadow-md transition-shadow">
               <div className="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center mb-6">
@@ -130,6 +130,19 @@ export default function Home() {
               </p>
               <Link href="/simulador" className="inline-flex items-center text-amber-600 font-semibold hover:text-amber-700">
                 Probar simulador <ArrowRight className="ml-2 w-4 h-4" />
+              </Link>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 hover:shadow-md transition-shadow">
+              <div className="w-14 h-14 bg-stone-100 rounded-xl flex items-center justify-center mb-6">
+                <BookOpen className="w-8 h-8 text-[#12372c]" />
+              </div>
+              <h3 className="text-xl font-medium text-slate-900 mb-3">Guías de ayuda</h3>
+              <p className="text-slate-600 mb-6">
+                Cómo funcionan AL30, GD30, AL35, GD35 y AE38, y si se pagan impuestos por cupones y amortizaciones.
+              </p>
+              <Link href="/guias" className="inline-flex items-center text-[#12372c] font-semibold hover:text-emerald-800">
+                Leer las guías <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </div>
           </div>
@@ -185,7 +198,10 @@ export default function Home() {
                   </tbody>
                 </table>
                 <div className="px-6 py-3 bg-slate-50 text-xs text-slate-500 border-t border-slate-200">
-                  * Fines ilustrativos. Siempre consultá con un contador.
+                  * Fines ilustrativos. Siempre consultá con un contador.{' '}
+                  <Link href="/guias/bonos-soberanos#impuestos" className="font-semibold text-emerald-700 hover:text-emerald-800">
+                    Ver la guía de bonos soberanos
+                  </Link>
                 </div>
               </div>
             </div>

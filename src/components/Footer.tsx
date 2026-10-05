@@ -52,7 +52,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/impuestos" className="text-slate-300 hover:text-white transition-colors">
+                <Link href="/guias/bonos-soberanos#impuestos" className="text-slate-300 hover:text-white transition-colors">
                   Información Impositiva
                 </Link>
               </li>

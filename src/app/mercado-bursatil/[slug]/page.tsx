@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { instruments } from '@/data/instruments';
-import { ChevronRight, Calculator, AlertCircle, Info, ShieldAlert, BarChart3, Clock, DollarSign } from 'lucide-react';
+import { ChevronRight, Calculator, AlertCircle, Info, ShieldAlert, BarChart3, Clock, DollarSign, BookOpen } from 'lucide-react';
 
 export function generateStaticParams() {
   return instruments.map((instrument) => ({
@@ -9,8 +9,9 @@ export function generateStaticParams() {
   }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const instrument = instruments.find((i) => i.slug === params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const instrument = instruments.find((i) => i.slug === slug);
   
   if (!instrument) {
     return { title: 'Instrumento no encontrado' };
@@ -37,8 +38,9 @@ const getTaxColor = (status: string) => {
     : 'text-red-600 dark:text-red-400 font-medium';
 };
 
-export default function InstrumentDetailPage({ params }: { params: { slug: string } }) {
-  const instrument = instruments.find((i) => i.slug === params.slug);
+export default async function InstrumentDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const instrument = instruments.find((i) => i.slug === slug);
   
   if (!instrument) {
     notFound();
@@ -79,6 +81,22 @@ export default function InstrumentDetailPage({ params }: { params: { slug: strin
               </span>
             </div>
           </div>
+
+          {instrument.slug === 'bonos-soberanos' && (
+            <Link
+              href="/guias/bonos-soberanos"
+              className="flex items-start gap-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-5 hover:bg-emerald-100/70"
+            >
+              <BookOpen className="mt-0.5 h-6 w-6 shrink-0 text-emerald-700" />
+              <div>
+                <p className="font-semibold text-emerald-950">Guía de los 5 principales</p>
+                <p className="mt-1 text-sm text-emerald-900/80">
+                  AL30, GD30, AL35, GD35 y AE38: cómo pagan cupón y amortización, y si hay que
+                  tributar Ganancias o Bienes Personales.
+                </p>
+              </div>
+            </Link>
+          )}
 
           {/* Section 1: ¿Qué es? */}
           <section className="bg-white dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-700">
