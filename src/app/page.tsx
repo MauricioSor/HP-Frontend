@@ -3,226 +3,226 @@
 import Link from 'next/link';
 import { TrendingUp, Bitcoin, Calculator, CheckCircle2, ArrowRight, LogIn, UserPlus, BookOpen } from 'lucide-react';
 import { useAuth } from '@/components/AuthProvider';
+import CarruselInstrumentos from '@/components/CarruselInstrumentos';
+import CintaTickers from '@/components/CintaTickers';
+
+const bloques = [
+  {
+    href: '/mercado-bursatil',
+    titulo: 'Mercado Bursátil',
+    texto: 'Bonos, acciones, CEDEARs, ETFs, cauciones y más. Cada ficha con riesgo, horizonte e impuestos.',
+    cta: 'Ver instrumentos',
+    icon: TrendingUp,
+    tono: 'text-emerald-800 bg-emerald-100',
+    link: 'text-emerald-800',
+  },
+  {
+    href: '/cripto',
+    titulo: 'Mercado Cripto',
+    texto: 'Desde Bitcoin y Ethereum hasta DeFi, staking y los riesgos de las memecoins.',
+    cta: 'Explorar cripto',
+    icon: Bitcoin,
+    tono: 'text-sky-800 bg-sky-100',
+    link: 'text-sky-800',
+  },
+  {
+    href: '/simulador',
+    titulo: 'Simulador',
+    texto: 'Interés compuesto y la cuota de un préstamo en pesos, UVA o dólares.',
+    cta: 'Probar simulador',
+    icon: Calculator,
+    tono: 'text-amber-800 bg-amber-100',
+    link: 'text-amber-800',
+  },
+  {
+    href: '/guias',
+    titulo: 'Guías de ayuda',
+    texto: 'AL30, GD30, AL35, GD35 y AE38: cupones, amortizaciones e impuestos.',
+    cta: 'Leer las guías',
+    icon: BookOpen,
+    tono: 'text-[#12372c] bg-[#e8e0d0]',
+    link: 'text-[#12372c]',
+  },
+]
 
 export default function Home() {
   const { isAuthenticated, isLoading } = useAuth();
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-[#12372c] py-24 text-[#f4f1ea] sm:py-32">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(110,231,183,0.16),transparent_55%)]"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="mb-6 text-4xl font-medium tracking-tight sm:text-6xl">
-            Aprendé a invertir con confianza
-          </h1>
-          <p className="mx-auto mb-10 mt-4 max-w-2xl font-sans text-xl text-emerald-100/90 sm:text-2xl">
-            La plataforma definitiva de educación financiera para el mercado argentino.
-            Dominá la bolsa local, internacional y el ecosistema cripto.
+    <div className="flex flex-col">
+      <section className="relative overflow-hidden bg-[#12372c] text-[#f4f1ea]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_-10%,rgba(212,175,106,0.22),transparent_42%),radial-gradient(ellipse_at_90%_0%,rgba(110,231,183,0.16),transparent_40%)]" />
+        <div className="grain-overlay" />
+        <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+          <p className="mb-5 text-xs font-semibold uppercase tracking-[0.32em] text-[#d4af6a]">
+            Educación financiera argentina
           </p>
-          <div className="mt-8 flex justify-center gap-4 flex-col sm:flex-row">
+          <h1 className="max-w-4xl text-4xl font-medium tracking-tight sm:text-6xl lg:text-7xl">
+            Aprendé a invertir con criterio, no con ruido.
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-emerald-50/80 sm:text-2xl">
+            Bonos, LECAPs, acciones, ETFs y cripto explicados para el mercado local. Impuestos claros.
+            Simuladores que se entienden.
+          </p>
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Link
               href="/mercado-bursatil"
-              className="px-8 py-4 bg-[#f4f1ea] text-[#12372c] font-semibold rounded-lg shadow-lg hover:bg-white transition-colors duration-200"
+              className="inline-flex items-center justify-center rounded-full bg-[#f4f1ea] px-7 py-3.5 font-semibold text-[#12372c] shadow-[0_12px_30px_-18px_rgba(0,0,0,0.6)] transition hover:bg-white"
             >
-              Explorar Instrumentos
+              Explorar instrumentos
             </Link>
             <Link
               href="/simulador"
-              className="px-8 py-4 border border-emerald-300/40 bg-white/10 text-[#f4f1ea] font-semibold rounded-lg hover:bg-white/15 transition-colors duration-200"
+              className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 px-7 py-3.5 font-semibold text-[#f4f1ea] transition hover:bg-white/10"
             >
-              Simular Inversión
+              Simular inversión
             </Link>
-            {/* Botones de auth visibles solo cuando no está autenticado */}
             {!isLoading && !isAuthenticated && (
               <>
                 <Link
                   href="/auth/registro"
-                  className="px-8 py-4 bg-amber-500 text-white font-semibold rounded-lg shadow-lg hover:bg-amber-400 transition-colors duration-200 flex items-center justify-center gap-2"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[#d4af6a] px-7 py-3.5 font-semibold text-[#12372c] transition hover:bg-[#e2c588]"
                 >
-                  <UserPlus className="w-5 h-5" />
+                  <UserPlus className="h-5 w-5" />
                   Registrarse
                 </Link>
                 <Link
                   href="/auth/login"
-                  className="px-8 py-4 bg-white/10 border border-white/30 text-white font-semibold rounded-lg hover:bg-white/20 transition-colors duration-200 flex items-center justify-center gap-2"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 px-7 py-3.5 font-semibold text-white transition hover:bg-white/10"
                 >
-                  <LogIn className="w-5 h-5" />
-                  Iniciar Sesión
+                  <LogIn className="h-5 w-5" />
+                  Iniciar sesión
                 </Link>
               </>
             )}
           </div>
         </div>
+        <CintaTickers tono="oscuro" />
       </section>
 
-      {/* Stats Bar */}
-      <section className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div className="p-4">
-              <div className="text-3xl font-bold text-slate-800">8</div>
-              <div className="text-sm text-slate-500 uppercase tracking-wide font-medium mt-1">Instrumentos</div>
+      <CarruselInstrumentos />
+
+      <section className="border-y border-stone-200/70 bg-white/70 backdrop-blur-sm">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-px bg-stone-200/60 md:grid-cols-4">
+          {[
+            ['8', 'Instrumentos'],
+            ['6', 'Temas cripto'],
+            ['100%', 'Acceso libre'],
+            ['Guías', 'Impuestos claros'],
+          ].map(([valor, label]) => (
+            <div key={label} className="bg-[#f7f4ee] px-6 py-8 text-center">
+              <div className="font-heading text-3xl text-[#12372c] sm:text-4xl">{valor}</div>
+              <div className="mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">{label}</div>
             </div>
-            <div className="p-4">
-              <div className="text-3xl font-bold text-slate-800">6</div>
-              <div className="text-sm text-slate-500 uppercase tracking-wide font-medium mt-1">Temas Cripto</div>
-            </div>
-            <div className="p-4">
-              <div className="text-3xl font-bold text-slate-800">100%</div>
-              <div className="text-sm text-slate-500 uppercase tracking-wide font-medium mt-1">Gratuito</div>
-            </div>
-            <div className="p-4">
-              <div className="text-3xl font-bold text-slate-800">Info</div>
-              <div className="text-sm text-slate-500 uppercase tracking-wide font-medium mt-1">Impositiva</div>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* Features Grid */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-medium text-slate-900 sm:text-4xl">Todo lo que necesitás saber</h2>
-            <p className="mt-4 text-lg text-slate-600">
-              Desarrollá tus conocimientos desde los fundamentos hasta estrategias avanzadas.
+      <section className="py-20 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto mb-14 max-w-2xl text-center">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-emerald-800">La plataforma</p>
+            <h2 className="text-3xl font-medium text-[#12372c] sm:text-5xl">Todo lo que necesitás saber</h2>
+            <p className="mt-4 text-lg text-stone-600">
+              Del primer bono al simulador de un préstamo. Sin jerga innecesaria.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-8">
-            {/* Card 1 */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 hover:shadow-md transition-shadow">
-              <div className="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center mb-6">
-                <TrendingUp className="w-8 h-8 text-emerald-600" />
-              </div>
-              <h3 className="text-xl font-medium text-slate-900 mb-3">Mercado Bursátil</h3>
-              <p className="text-slate-600 mb-6">
-                Aprendé a operar con Bonos, Acciones, CEDEARs, Obligaciones Negociables, Cauciones y más en el mercado local e internacional.
-              </p>
-              <Link href="/mercado-bursatil" className="inline-flex items-center text-emerald-600 font-semibold hover:text-emerald-700">
-                Ver instrumentos <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
-            </div>
-
-            {/* Card 2 */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 hover:shadow-md transition-shadow">
-              <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
-                <Bitcoin className="w-8 h-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-medium text-slate-900 mb-3">Mercado Cripto</h3>
-              <p className="text-slate-600 mb-6">
-                Desde los fundamentos de Bitcoin y Ethereum hasta DeFi, minado, staking y los riesgos de las memecoins.
-              </p>
-              <Link href="/cripto" className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-700">
-                Explorar cripto <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
-            </div>
-
-            {/* Card 3 */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 hover:shadow-md transition-shadow">
-              <div className="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center mb-6">
-                <Calculator className="w-8 h-8 text-amber-600" />
-              </div>
-              <h3 className="text-xl font-medium text-slate-900 mb-3">Simulador</h3>
-              <p className="text-slate-600 mb-6">
-                Calculá rendimientos con interés compuesto y armá la cuota de un préstamo en pesos, UVA o dólares.
-              </p>
-              <Link href="/simulador" className="inline-flex items-center text-amber-600 font-semibold hover:text-amber-700">
-                Probar simulador <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 hover:shadow-md transition-shadow">
-              <div className="w-14 h-14 bg-stone-100 rounded-xl flex items-center justify-center mb-6">
-                <BookOpen className="w-8 h-8 text-[#12372c]" />
-              </div>
-              <h3 className="text-xl font-medium text-slate-900 mb-3">Guías de ayuda</h3>
-              <p className="text-slate-600 mb-6">
-                Cómo funcionan AL30, GD30, AL35, GD35 y AE38, y si se pagan impuestos por cupones y amortizaciones.
-              </p>
-              <Link href="/guias" className="inline-flex items-center text-[#12372c] font-semibold hover:text-emerald-800">
-                Leer las guías <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
-            </div>
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            {bloques.map((bloque) => {
+              const Icon = bloque.icon
+              return (
+                <div
+                  key={bloque.href}
+                  className="group rounded-[1.6rem] border border-stone-200/80 bg-white/80 p-7 shadow-[0_20px_50px_-36px_rgba(18,55,44,0.45)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_-32px_rgba(18,55,44,0.5)]"
+                >
+                  <div className={`mb-6 grid h-12 w-12 place-items-center rounded-2xl ${bloque.tono}`}>
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-xl font-medium text-[#12372c]">{bloque.titulo}</h3>
+                  <p className="mt-3 mb-6 text-sm leading-relaxed text-stone-600">{bloque.texto}</p>
+                  <Link href={bloque.href} className={`inline-flex items-center text-sm font-semibold ${bloque.link}`}>
+                    {bloque.cta} <ArrowRight className="ml-2 h-4 w-4 transition group-hover:translate-x-0.5" />
+                  </Link>
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      {/* Tax Info Teaser */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="lg:flex lg:items-center lg:justify-between gap-12">
-            <div className="lg:w-1/2 mb-10 lg:mb-0">
-              <h2 className="text-3xl font-medium text-slate-900 sm:text-4xl mb-6">
-                Información impositiva clara
+      <section className="relative overflow-hidden py-20 sm:py-24">
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-stone-300 to-transparent" />
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            <div>
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-emerald-800">Impuestos</p>
+              <h2 className="text-3xl font-medium text-[#12372c] sm:text-5xl">
+                Qué se paga. Qué no. Sin letra chica escondida.
               </h2>
-              <p className="text-lg text-slate-600 mb-6">
-                Sabemos que los impuestos en Argentina pueden ser complejos. FinBootcamp te proporciona resúmenes claros sobre qué paga Bienes Personales y qué está gravado por el Impuesto Cedular.
+              <p className="mt-5 text-lg leading-relaxed text-stone-600">
+                Ganancias, Bienes Personales y las exenciones de los títulos públicos, explicadas para persona humana.
               </p>
-              <ul className="space-y-4">
-                {['Tratamiento de Bienes Personales', 'Impuesto a las Ganancias / Cedular', 'Exenciones actuales'].map((item, i) => (
-                  <li key={i} className="flex items-start">
-                    <CheckCircle2 className="w-6 h-6 text-emerald-500 mr-3 shrink-0" />
-                    <span className="text-slate-700">{item}</span>
+              <ul className="mt-8 space-y-3">
+                {['Tratamiento de Bienes Personales', 'Impuesto a las Ganancias / Cedular', 'Exenciones actuales'].map((item) => (
+                  <li key={item} className="flex items-center text-stone-700">
+                    <CheckCircle2 className="mr-3 h-5 w-5 shrink-0 text-emerald-700" />
+                    {item}
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="lg:w-1/2">
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden shadow-lg">
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-slate-100 border-b border-slate-200">
-                    <tr>
-                      <th className="px-6 py-4 font-semibold text-slate-700">Instrumento</th>
-                      <th className="px-6 py-4 font-semibold text-slate-700">Bienes Personales</th>
-                      <th className="px-6 py-4 font-semibold text-slate-700">Ganancias</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200">
-                    <tr className="bg-white">
-                      <td className="px-6 py-4 font-medium text-slate-900">Bonos Soberanos</td>
-                      <td className="px-6 py-4 text-emerald-600 font-medium bg-emerald-50/50">Exento</td>
-                      <td className="px-6 py-4 text-emerald-600 font-medium bg-emerald-50/50">Exento</td>
-                    </tr>
-                    <tr className="bg-white">
-                      <td className="px-6 py-4 font-medium text-slate-900">CEDEARs</td>
-                      <td className="px-6 py-4 text-rose-600 font-medium bg-rose-50/50">Gravado</td>
-                      <td className="px-6 py-4 text-amber-600 font-medium bg-amber-50/50">Diferenciado*</td>
-                    </tr>
-                    <tr className="bg-white">
-                      <td className="px-6 py-4 font-medium text-slate-900">Plazo Fijo</td>
-                      <td className="px-6 py-4 text-emerald-600 font-medium bg-emerald-50/50">Exento</td>
-                      <td className="px-6 py-4 text-emerald-600 font-medium bg-emerald-50/50">Exento</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div className="px-6 py-3 bg-slate-50 text-xs text-slate-500 border-t border-slate-200">
-                  * Fines ilustrativos. Siempre consultá con un contador.{' '}
-                  <Link href="/guias/bonos-soberanos#impuestos" className="font-semibold text-emerald-700 hover:text-emerald-800">
-                    Ver la guía de bonos soberanos
-                  </Link>
-                </div>
+            <div className="overflow-hidden rounded-[1.8rem] border border-stone-200 bg-white shadow-[0_30px_70px_-40px_rgba(18,55,44,0.45)]">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-[#12372c] text-[#f4f1ea]">
+                  <tr>
+                    <th className="px-6 py-4 font-medium">Instrumento</th>
+                    <th className="px-6 py-4 font-medium">Bienes Personales</th>
+                    <th className="px-6 py-4 font-medium">Ganancias</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-100">
+                  <tr>
+                    <td className="px-6 py-4 font-medium text-[#12372c]">Bonos soberanos</td>
+                    <td className="px-6 py-4 font-semibold text-emerald-700">Exento</td>
+                    <td className="px-6 py-4 font-semibold text-emerald-700">Exento</td>
+                  </tr>
+                  <tr className="bg-[#faf7f1]">
+                    <td className="px-6 py-4 font-medium text-[#12372c]">CEDEARs</td>
+                    <td className="px-6 py-4 font-semibold text-rose-700">Gravado</td>
+                    <td className="px-6 py-4 font-semibold text-amber-700">Diferenciado*</td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-4 font-medium text-[#12372c]">Plazo fijo</td>
+                    <td className="px-6 py-4 font-semibold text-emerald-700">Exento</td>
+                    <td className="px-6 py-4 font-semibold text-emerald-700">Exento</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="border-t border-stone-100 bg-[#f7f4ee] px-6 py-3 text-xs text-stone-500">
+                * Ilustrativo. Consultá un contador.{' '}
+                <Link href="/guias/bonos-soberanos#impuestos" className="font-semibold text-emerald-800">
+                  Ver la guía de bonos
+                </Link>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="bg-emerald-900 py-20 text-center">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-white mb-6">
-            Empezá tu educación financiera hoy
-          </h2>
-          <p className="text-emerald-100 text-lg mb-10">
-            No necesitás conocimientos previos, solo ganas de aprender y tomar el control de tu futuro financiero.
+      <section className="relative overflow-hidden bg-[#0f2a22] py-20 text-center text-[#f4f1ea]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(212,175,106,0.16),transparent_50%)]" />
+        <div className="grain-overlay" />
+        <div className="relative mx-auto max-w-3xl px-4 sm:px-6">
+          <h2 className="text-3xl font-medium sm:text-5xl">Empezá por un instrumento, no por un curso eterno</h2>
+          <p className="mx-auto mt-5 max-w-xl text-lg text-emerald-50/75">
+            Elegí un bono, una LECAP o un ETF y entendé cómo paga antes de poner un peso.
           </p>
           <Link
             href="/mercado-bursatil"
-            className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-bold rounded-lg text-emerald-900 bg-white hover:bg-emerald-50 hover:scale-105 transition-all duration-200 shadow-xl"
+            className="mt-10 inline-flex items-center rounded-full bg-[#f4f1ea] px-8 py-4 text-lg font-semibold text-[#12372c] transition hover:bg-white"
           >
-            Comenzar Curso
+            Entrar al mercado
           </Link>
         </div>
       </section>

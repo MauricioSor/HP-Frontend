@@ -3,91 +3,44 @@ import { Logo } from '@/components/Logo';
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <footer className="relative overflow-hidden bg-[#0f2a22] text-[#f4f1ea]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_0%,rgba(212,175,106,0.08),transparent_36%)]" />
+      <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
           <div>
             <Logo tone="light" className="mb-6" />
-            <h3 className="text-lg font-bold text-emerald-400 mb-4">Plataforma</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/mercado-bursatil" className="text-slate-300 hover:text-white transition-colors">
-                  Mercado Bursátil
-                </Link>
-              </li>
-              <li>
-                <Link href="/cripto" className="text-slate-300 hover:text-white transition-colors">
-                  Cripto
-                </Link>
-              </li>
-              <li>
-                <Link href="/simulador" className="text-slate-300 hover:text-white transition-colors">
-                  Simulador
-                </Link>
-              </li>
-              <li>
-                <Link href="/cotizaciones" className="text-slate-300 hover:text-white transition-colors">
-                  Cotizaciones
-                </Link>
-              </li>
-              <li>
-                <Link href="/suscripcion" className="text-slate-300 hover:text-white transition-colors">
-                  Plan Premium
-                </Link>
-              </li>
-            </ul>
-          </div>
-          
-          <div>
-            <h3 className="text-lg font-bold text-emerald-400 mb-4">Recursos</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/glosario" className="text-slate-300 hover:text-white transition-colors">
-                  Glosario Financiero
-                </Link>
-              </li>
-              <li>
-                <Link href="/guias" className="text-slate-300 hover:text-white transition-colors">
-                  Guías Paso a Paso
-                </Link>
-              </li>
-              <li>
-                <Link href="/guias/bonos-soberanos#impuestos" className="text-slate-300 hover:text-white transition-colors">
-                  Información Impositiva
-                </Link>
-              </li>
-              <li>
-                <Link href="/calculadoras" className="text-slate-300 hover:text-white transition-colors">
-                  Calculadoras
-                </Link>
-              </li>
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-[#d4af6a]">Plataforma</h3>
+            <ul className="space-y-2.5 text-emerald-50/75">
+              <li><Link href="/mercado-bursatil" className="transition hover:text-white">Mercado Bursátil</Link></li>
+              <li><Link href="/cripto" className="transition hover:text-white">Cripto</Link></li>
+              <li><Link href="/simulador" className="transition hover:text-white">Simulador</Link></li>
+              <li><Link href="/cotizaciones" className="transition hover:text-white">Cotizaciones</Link></li>
+              <li><Link href="/suscripcion" className="transition hover:text-white">Plan Premium</Link></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-lg font-bold text-emerald-400 mb-4">Legal</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/privacidad" className="text-slate-300 hover:text-white transition-colors">
-                  Política de Privacidad
-                </Link>
-              </li>
-              <li>
-                <Link href="/terminos" className="text-slate-300 hover:text-white transition-colors">
-                  Términos y Condiciones
-                </Link>
-              </li>
-              <li>
-                <Link href="/contacto" className="text-slate-300 hover:text-white transition-colors">
-                  Contacto
-                </Link>
-              </li>
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-[#d4af6a]">Recursos</h3>
+            <ul className="space-y-2.5 text-emerald-50/75">
+              <li><Link href="/glosario" className="transition hover:text-white">Glosario Financiero</Link></li>
+              <li><Link href="/guias" className="transition hover:text-white">Guías Paso a Paso</Link></li>
+              <li><Link href="/guias/bonos-soberanos#impuestos" className="transition hover:text-white">Información Impositiva</Link></li>
+              <li><Link href="/calculadoras" className="transition hover:text-white">Calculadoras</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-[#d4af6a]">Legal</h3>
+            <ul className="space-y-2.5 text-emerald-50/75">
+              <li><Link href="/privacidad" className="transition hover:text-white">Política de Privacidad</Link></li>
+              <li><Link href="/terminos" className="transition hover:text-white">Términos y Condiciones</Link></li>
+              <li><Link href="/contacto" className="transition hover:text-white">Contacto</Link></li>
             </ul>
           </div>
         </div>
-        
-        <div className="mt-12 pt-8 border-t border-slate-800 text-center text-slate-400 text-sm">
-          <p>© {new Date().getFullYear()} FinBootcamp. Proyecto educativo - No constituye asesoramiento financiero.</p>
+
+        <div className="mt-12 border-t border-white/10 pt-8 text-center text-sm text-emerald-100/45">
+          <p>© {new Date().getFullYear()} FinBootcamp. Proyecto educativo · No constituye asesoramiento financiero.</p>
         </div>
       </div>
     </footer>

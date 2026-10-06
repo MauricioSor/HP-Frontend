@@ -38,7 +38,7 @@ export default function GuiasPage() {
         {guias.map((guia) => (
           <article
             key={guia.slug}
-            className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8"
+            className="rounded-[1.6rem] border border-stone-200/80 bg-white/85 p-6 shadow-[0_20px_50px_-38px_rgba(18,55,44,0.45)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_26px_60px_-34px_rgba(18,55,44,0.5)] sm:p-8"
           >
             <div className="mb-4 flex flex-wrap items-center gap-2">
               {guia.etiquetas.map((etiqueta) => (

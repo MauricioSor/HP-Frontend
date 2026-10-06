@@ -35,9 +35,9 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-stone-200/80 bg-[#f7f4ee]/90 shadow-none backdrop-blur-md">
+    <nav className="sticky top-0 z-50 w-full border-b border-stone-200/70 bg-[#f7f4ee]/85 shadow-[0_10px_30px_-24px_rgba(18,55,44,0.45)] backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+        <div className="flex justify-between h-[4.25rem]">
           <div className="flex items-center">
             <Logo />
           </div>
@@ -54,8 +54,8 @@ export default function Navbar() {
                   className={cn(
                     'flex items-center gap-1.5 whitespace-nowrap border-b-2 px-0.5 pt-1 text-[13px] font-medium transition-colors',
                     isActive
-                      ? 'border-emerald-600 text-emerald-600'
-                      : 'border-transparent text-slate-600 hover:text-emerald-600 hover:border-emerald-300'
+                      ? 'border-[#12372c] text-[#12372c]'
+                      : 'border-transparent text-stone-600 hover:text-[#12372c] hover:border-[#d4af6a]'
                   )}
                 >
                   <Icon className="w-4 h-4" />
@@ -65,10 +65,10 @@ export default function Navbar() {
             })}
 
             {/* User info + Logout */}
-            <div className="flex items-center gap-3 ml-4 pl-4 border-l border-slate-200">
-              <div className="flex items-center gap-1.5 text-sm text-slate-500">
+            <div className="flex items-center gap-3 ml-4 pl-4 border-l border-stone-200">
+              <div className="flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 text-sm text-stone-500">
                 <User className="w-4 h-4" />
-                <span className="font-medium text-slate-700">{user?.usuario}</span>
+                <span className="font-medium text-[#12372c]">{user?.usuario}</span>
               </div>
               <button
                 onClick={handleLogout}

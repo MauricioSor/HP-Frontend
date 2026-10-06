@@ -27,9 +27,9 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
   return (
     <>
       {/* Header mínimo para usuarios no autenticados */}
-      <header className="sticky top-0 z-50 w-full border-b border-stone-200/80 bg-[#f7f4ee]/90 backdrop-blur-md">
+      <header className="sticky top-0 z-50 w-full border-b border-stone-200/70 bg-[#f7f4ee]/85 shadow-[0_10px_30px_-24px_rgba(18,55,44,0.45)] backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
+          <div className="flex justify-between h-[4.25rem] items-center">
             <Logo />
             <div className="flex items-center gap-3">
               <Link
@@ -46,13 +46,13 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
               </Link>
               <Link
                 href="/auth/registro"
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-emerald-600 font-semibold rounded-lg hover:bg-emerald-50 transition-colors"
+                className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-[#12372c] transition-colors hover:bg-white"
               >
                 Registrarse
               </Link>
               <Link
                 href="/auth/login"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
+                className="inline-flex items-center gap-2 rounded-full bg-[#12372c] px-5 py-2.5 text-sm font-semibold text-[#f4f1ea] shadow-sm transition-colors hover:bg-[#164536]"
               >
                 <LogIn className="w-4 h-4" />
                 Iniciar Sesión
@@ -65,8 +65,8 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
         {children}
       </main>
       {/* Footer mínimo */}
-      <footer className="bg-slate-900 text-center text-slate-400 text-sm py-6">
-        <p>© {new Date().getFullYear()} FinBootcamp. Proyecto educativo - No constituye asesoramiento financiero.</p>
+      <footer className="bg-[#0f2a22] py-6 text-center text-sm text-emerald-100/50">
+        <p>© {new Date().getFullYear()} FinBootcamp. Proyecto educativo · No constituye asesoramiento financiero.</p>
       </footer>
     </>
   )
