@@ -26,13 +26,31 @@ export default function TestInversor() {
   const lista = !mostrarGuardado && paso < preguntasTest.length
   const perfilVisible = mostrarGuardado ? perfilCuenta : perfil
 
+  async function persistir(resultado: PerfilInversor) {
+    if (!isAuthenticated || !user?.usuario) return
+    setError('')
+    setGuardando(true)
+    try {
+      const supabase = createClient()
+      await guardarPerfilInversor(supabase, user.usuario, resultado)
+      await refrescarUsuario()
+      setGuardado(true)
+      setRehacer(false)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo guardar el perfil. Probá de nuevo.')
+    } finally {
+      setGuardando(false)
+    }
+  }
+
   function elegir(puntos: number) {
     const nuevas = [...respuestas.slice(0, paso), puntos]
     setRespuestas(nuevas)
     if (paso + 1 >= preguntasTest.length) {
-      const total = nuevas.reduce((suma, valor) => suma + valor, 0)
-      setPerfil(perfilDesdePuntaje(total))
+      const resultado = perfilDesdePuntaje(nuevas.reduce((suma, valor) => suma + valor, 0))
+      setPerfil(resultado)
       setPaso(preguntasTest.length)
+      void persistir(resultado)
       return
     }
     setPaso(paso + 1)
@@ -45,23 +63,6 @@ export default function TestInversor() {
     setGuardado(false)
     setError('')
     setRehacer(true)
-  }
-
-  async function guardar() {
-    if (!perfil || !user?.usuario) return
-    setError('')
-    setGuardando(true)
-    try {
-      const supabase = createClient()
-      await guardarPerfilInversor(supabase, user.usuario, perfil)
-      await refrescarUsuario()
-      setGuardado(true)
-      setRehacer(false)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudo guardar el perfil. Probá de nuevo.')
-    } finally {
-      setGuardando(false)
-    }
   }
 
   const progreso = mostrarGuardado ? 1 : Math.min(paso, preguntasTest.length) / preguntasTest.length
@@ -152,7 +153,7 @@ export default function TestInversor() {
             {isAuthenticated && !mostrarGuardado && (
               <button
                 type="button"
-                onClick={guardar}
+                onClick={() => perfil && void persistir(perfil)}
                 disabled={guardando || guardado}
                 className="inline-flex items-center gap-2 rounded-full bg-[#12372c] px-5 py-2.5 font-semibold text-[#f4f1ea] disabled:opacity-60"
               >

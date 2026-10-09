@@ -1,6 +1,6 @@
 /** Navegación completa después de crear o cerrar la sesión. */
 export function irA(destino: string) {
-  window.location.assign(rutaSegura(destino))
+  window.location.replace(`${window.location.origin}${rutaSegura(destino)}`)
 }
 
 export function rutaSegura(destino: string) {

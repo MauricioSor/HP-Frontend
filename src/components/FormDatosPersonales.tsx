@@ -116,6 +116,20 @@ export default function FormDatosPersonales() {
         usuario: user.usuario,
       }
 
+      const perfilUsuario = normalizarPerfil(perfil)
+      if (perfilUsuario) {
+        const { data: usuarioActualizado, error: errorPerfil } = await supabase
+          .from('usuario')
+          .update({ perfil_inversor: perfilUsuario })
+          .eq('usuario', user.usuario)
+          .select('usuario')
+          .maybeSingle()
+        if (errorPerfil || !usuarioActualizado) {
+          setError(errorPerfil?.message || 'No se pudo guardar el perfil en usuario.')
+          return
+        }
+      }
+
       if (dniFijo) {
         const { error: actualizacion } = await supabase.from('persona').update(datos).eq('usuario', user.usuario)
         if (actualizacion) {

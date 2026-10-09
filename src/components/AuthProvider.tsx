@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 import { createClient } from '@/lib/client'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { normalizarPerfil, type PerfilInversor } from '@/lib/perfil'
+import { resolverNombreUsuario } from '@/lib/usuario'
 
 interface User {
   id: string
@@ -29,7 +30,7 @@ const supabase = createClient()
 
 /** Extrae los datos de usuario de Supabase Auth + tabla usuario */
 async function buildUser(supabaseUser: SupabaseUser): Promise<User> {
-  const usuario = supabaseUser.user_metadata?.usuario || supabaseUser.email || ''
+  const usuario = await resolverNombreUsuario(supabase, supabaseUser)
 
   let rol = 0
   let perfilInversor: PerfilInversor | null = null
@@ -37,7 +38,7 @@ async function buildUser(supabaseUser: SupabaseUser): Promise<User> {
     .from('usuario')
     .select('rol, perfil_inversor')
     .eq('usuario', usuario)
-    .single()
+    .maybeSingle()
 
   if (data) {
     rol = data.rol

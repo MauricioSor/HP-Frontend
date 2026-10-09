@@ -1,13 +1,18 @@
 'use client';
-import {supabase} from '@/lib/supabase';
-import { useState, useEffect, Suspense } from 'react';
+
+import { useMemo, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { instruments } from '@/data/instruments';
-import { simulateInvestment, type CapitalizationFrequency, type SimulationResult } from '@/lib/simulator';
-import { formatCurrency, formatPercent } from '@/lib/utils';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Calculator, Info, TrendingUp } from 'lucide-react';
+import { simulateInvestment, type CapitalizationFrequency } from '@/lib/simulator';
+import { formatCurrency, formatPercent, cn } from '@/lib/utils';
+import { Area, ComposedChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Banknote, Calculator, CheckCircle2, AlertTriangle, TrendingUp, Receipt } from 'lucide-react';
 import SimuladorPrestamo from '@/components/SimuladorPrestamo';
+import { LogoInstrumento } from '@/components/LogoInstrumento';
+import { Atajos, Campo, Dato, Segmentado, inputClass, tarjetaClass, tooltipStyle } from '@/components/SimuladorUI';
+
+const TASA_PLAZO_FIJO = 0.35;
+const TASA_INFLACION = 0.5;
 
 function SimuladorContent() {
   const params = useSearchParams();
@@ -16,356 +21,454 @@ function SimuladorContent() {
   );
 
   function cambiarPestana(siguiente: 'inversion' | 'prestamo') {
-    setPestana(siguiente)
-    const url = siguiente === 'prestamo' ? '/simulador?vista=prestamo' : '/simulador'
-    window.history.replaceState(null, '', url)
+    setPestana(siguiente);
+    const url = siguiente === 'prestamo' ? '/simulador?vista=prestamo' : '/simulador';
+    window.history.replaceState(null, '', url);
   }
 
+  const pestanas = [
+    { id: 'inversion' as const, etiqueta: 'Inversión', icono: TrendingUp },
+    { id: 'prestamo' as const, etiqueta: 'Préstamo', icono: Banknote },
+  ];
+
   return (
-    <>
-      <div className="max-w-7xl mx-auto px-4 pt-8">
-        <div className="flex justify-center">
-          <div className="inline-flex rounded-xl bg-slate-100 p-1">
-            <button
-              type="button"
-              onClick={() => cambiarPestana('inversion')}
-              className={`px-5 py-2 rounded-lg text-sm font-semibold cursor-pointer ${
-                pestana === 'inversion' ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-600'
-              }`}
-            >
-              Inversión
-            </button>
-            <button
-              type="button"
-              onClick={() => cambiarPestana('prestamo')}
-              className={`px-5 py-2 rounded-lg text-sm font-semibold cursor-pointer ${
-                pestana === 'prestamo' ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-600'
-              }`}
-            >
-              Préstamo
-            </button>
+    <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
+      <header className="relative mb-8 overflow-hidden rounded-[2rem] bg-[#12372c] text-[#f4f1ea] shadow-[0_40px_80px_-45px_rgba(18,55,44,0.8)]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_10%_-30%,rgba(212,175,106,0.28),transparent_45%),radial-gradient(ellipse_at_100%_0%,rgba(110,231,183,0.2),transparent_42%)]" />
+        <div className="grain-overlay" />
+        <div className="relative flex flex-col gap-6 px-6 py-8 sm:px-10 sm:py-10 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="mb-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-[#d4af6a]">
+              <Calculator className="h-4 w-4" />
+              Calculadoras
+            </p>
+            <h1 className="text-4xl font-medium sm:text-5xl">
+              {pestana === 'inversion' ? 'Simulador de inversión' : 'Simulador de préstamo'}
+            </h1>
+            <p className="mt-3 max-w-xl text-emerald-50/80">
+              {pestana === 'inversion'
+                ? 'Proyectá cuánto crece tu plata con interés compuesto y comparala contra el plazo fijo y la inflación.'
+                : 'Armá la cuota con los datos de la oferta y mirá cuánto es interés, ajuste de la moneda y costo total.'}
+            </p>
+          </div>
+
+          <div className="inline-flex shrink-0 rounded-full bg-white/10 p-1 ring-1 ring-white/15 backdrop-blur-sm">
+            {pestanas.map(({ id, etiqueta, icono: Icono }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => cambiarPestana(id)}
+                className={cn(
+                  'inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition',
+                  pestana === id ? 'bg-[#f4f1ea] text-[#12372c] shadow' : 'text-emerald-50/80 hover:text-white'
+                )}
+              >
+                <Icono className="h-4 w-4" />
+                {etiqueta}
+              </button>
+            ))}
           </div>
         </div>
-      </div>
+      </header>
+
       {pestana === 'prestamo' ? <SimuladorPrestamo /> : <SimuladorInversion />}
-    </>
+    </div>
   );
 }
 
 function SimuladorInversion() {
   const searchParams = useSearchParams();
-  const preselectedInstrument = searchParams?.get('instrument');
+  const preseleccionado = instruments.find((i) => i.slug === searchParams?.get('instrument')) ?? instruments[0];
+
   const [capital, setCapital] = useState<number>(100000);
-  const [instrumentSlug, setInstrumentSlug] = useState<string>(preselectedInstrument || instruments[0]?.slug || '');
-  const [rate, setRate] = useState<number>(0.45);
+  const [instrumentSlug, setInstrumentSlug] = useState<string>(preseleccionado?.slug ?? '');
+  const [tasaPct, setTasaPct] = useState<number>(Math.round((preseleccionado?.defaultRate ?? 0.45) * 100));
   const [months, setMonths] = useState<number>(12);
-  const [frequency, setFrequency] = useState<CapitalizationFrequency>('mensual');
-  const [result, setResult] = useState<SimulationResult | null>(null);
-  const [supabaseData, setSupabaseData] = useState<any>(null);
-  const [supabaseError, setSupabaseError] = useState<any>(null);
-  const selectedInstrument = instruments.find(i => i.slug === instrumentSlug);
+  const [frequency, setFrequency] = useState<CapitalizationFrequency>(preseleccionado?.capitalization ?? 'mensual');
+  const selectedInstrument = instruments.find((i) => i.slug === instrumentSlug);
 
-  useEffect(() => {
-    const client = supabase;
-
-    if (!client) {
-      setSupabaseData(null);
-      setSupabaseError(null);
-      return;
+  function elegirInstrumento(slug: string) {
+    setInstrumentSlug(slug);
+    const instrumento = instruments.find((i) => i.slug === slug);
+    if (instrumento) {
+      setTasaPct(Math.round(instrumento.defaultRate * 100));
+      setFrequency(instrumento.capitalization);
     }
+  }
 
-    const loadData = async () => {
-      console.log('Loading data from Supabase...');
-      const { data, error } = await client.from('persona').select('*');
-      console.log('Supabase response:', { data, error });
-      setSupabaseData(data);
-      setSupabaseError(error);
-    };
+  const valido = capital > 0 && months >= 1 && tasaPct >= 0;
+  const rate = tasaPct / 100;
 
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    if (supabaseError) {
-      console.log('data from supabase:', supabaseError);
-    }
-
-    if (selectedInstrument && selectedInstrument.defaultRate) {
-      setRate(selectedInstrument.defaultRate);
-    }
-  }, [supabaseError, instrumentSlug, selectedInstrument]);
-
-  const handleSimulate = () => {
+  const calculo = useMemo(() => {
+    if (!valido) return null;
     const sim = simulateInvestment(capital, rate, months, frequency);
-    setResult(sim);
-  };
-
-  useEffect(() => {
-    handleSimulate();
-  }, []);
+    const plazoFijo = simulateInvestment(capital, TASA_PLAZO_FIJO, months, 'mensual');
+    const inflacion = simulateInvestment(capital, TASA_INFLACION, months, 'mensual');
+    const serie = sim.dataPoints.map((punto, i) => ({
+      month: punto.month,
+      capital: punto.capital,
+      inflacion: inflacion.dataPoints[i]?.capital ?? 0,
+    }));
+    return { sim, plazoFijo, inflacion, serie };
+  }, [valido, capital, rate, months, frequency]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12">
-      <div className="mb-10 text-center">
-        <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4 flex items-center justify-center">
-          <Calculator className="w-8 h-8 mr-3 text-emerald-600" />
-          Simulador de Inversión
-        </h1>
-        <p className="text-lg text-slate-600">
-          Proyectá tus ganancias usando interés compuesto y compará diferentes escenarios.
-        </p>
-      </div>
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[22rem_minmax(0,1fr)] lg:gap-8">
+      {/* Parámetros */}
+      <aside className={cn(tarjetaClass, 'h-fit space-y-6 p-6 lg:sticky lg:top-28')}>
+        <h2 className="text-lg font-medium text-[#12372c]">Tus datos</h2>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Controls Panel */}
-        <div className="lg:col-span-4 bg-white rounded-2xl p-6 shadow-sm border border-slate-200 h-fit sticky top-24">
-          <h2 className="text-xl font-bold text-slate-900 mb-6">Parámetros</h2>
-
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Capital Inicial (ARS)
-              </label>
-              <input
-                type="number"
-                min="1000"
-                step="10000"
-                value={capital}
-                onChange={(e) => setCapital(Number(e.target.value))}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 focus:ring-2 focus:ring-emerald-500 outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Instrumento de Referencia
-              </label>
-              <select
-                value={instrumentSlug}
-                onChange={(e) => setInstrumentSlug(e.target.value)}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 focus:ring-2 focus:ring-emerald-500 outline-none"
-              >
-                {instruments.map(inst => (
-                  <option key={inst.slug} value={inst.slug}>{inst.name}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Tasa Anual Estimada (decimal, ej: 0.45 = 45%)
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                max="5"
-                value={rate}
-                onChange={(e) => setRate(Number(e.target.value))}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 focus:ring-2 focus:ring-emerald-500 outline-none"
-              />
-              <p className="text-xs text-slate-500 mt-1">
-                Tasa actual: {(rate * 100).toFixed(1)}% anual
-              </p>
-            </div>
-
-            <div>
-              <div className="flex justify-between mb-2">
-                <label className="block text-sm font-medium text-slate-700">
-                  Plazo
-                </label>
-                <span className="text-sm font-bold text-emerald-600">{months} meses</span>
-              </div>
-              <input
-                type="range"
-                min="1"
-                max="120"
-                value={months}
-                onChange={(e) => setMonths(Number(e.target.value))}
-                className="w-full accent-emerald-600"
-              />
-              <div className="flex justify-between text-xs text-slate-400 mt-1">
-                <span>1 mes</span>
-                <span>10 años</span>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Frecuencia de Capitalización
-              </label>
-              <select
-                value={frequency}
-                onChange={(e) => setFrequency(e.target.value as CapitalizationFrequency)}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 focus:ring-2 focus:ring-emerald-500 outline-none"
-              >
-                <option value="mensual">Mensual</option>
-                <option value="trimestral">Trimestral</option>
-                <option value="anual">Anual</option>
-                <option value="al_vencimiento">Al Vencimiento</option>
-              </select>
-            </div>
-
-            <button
-              onClick={handleSimulate}
-              className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors shadow-sm cursor-pointer"
-            >
-              Simular Inversión
-            </button>
+        <Campo etiqueta="Capital inicial" ayuda="El monto que invertís hoy, en pesos.">
+          <div className="relative">
+            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 font-semibold text-stone-400">$</span>
+            <input
+              type="number"
+              min="1000"
+              step="10000"
+              value={capital || ''}
+              onChange={(e) => setCapital(Number(e.target.value))}
+              className={cn(inputClass, 'pl-8 text-lg')}
+            />
           </div>
-        </div>
+          <Atajos
+            valor={capital}
+            onChange={setCapital}
+            opciones={[
+              { valor: 100000, etiqueta: '$100k' },
+              { valor: 500000, etiqueta: '$500k' },
+              { valor: 1000000, etiqueta: '$1M' },
+              { valor: 5000000, etiqueta: '$5M' },
+            ]}
+          />
+        </Campo>
 
-        {/* Results */}
-        <div className="lg:col-span-8 space-y-6">
-          {result && (
-            <>
-              {/* Summary Cards */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                  <p className="text-sm text-slate-500 mb-1">Valor Final</p>
-                  <p className="text-xl font-bold text-slate-900">{formatCurrency(result.summary.finalValue)}</p>
-                </div>
-                <div className="bg-white p-5 rounded-xl border border-emerald-200 shadow-sm">
-                  <p className="text-sm text-slate-500 mb-1">Ganancia Total</p>
-                  <p className="text-xl font-bold text-emerald-600">{formatCurrency(result.summary.totalEarnings)}</p>
-                </div>
-                <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                  <p className="text-sm text-slate-500 mb-1">Rendimiento</p>
-                  <p className="text-xl font-bold text-blue-600">+{formatPercent(result.summary.netReturn)}</p>
-                </div>
-                <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                  <p className="text-sm text-slate-500 mb-1">Ganancia Mensual Prom.</p>
-                  <p className="text-xl font-bold text-slate-900">{formatCurrency(result.summary.totalEarnings / months)}</p>
-                </div>
-              </div>
+        <Campo etiqueta="Instrumento" ayuda="Carga la tasa y la capitalización de referencia del instrumento. Después podés ajustarlas.">
+          <div className="flex items-center gap-3">
+            {selectedInstrument && <LogoInstrumento slug={selectedInstrument.slug} size="sm" />}
+            <select
+              value={instrumentSlug}
+              onChange={(e) => elegirInstrumento(e.target.value)}
+              className={cn(inputClass, 'min-w-0 flex-1 text-sm')}
+            >
+              {instruments.map((inst) => (
+                <option key={inst.slug} value={inst.slug}>
+                  {inst.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </Campo>
 
-              {/* Chart */}
-              <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center">
-                  <TrendingUp className="w-5 h-5 mr-2 text-emerald-600" />
-                  Proyección de Crecimiento
-                </h3>
-                <div className="h-[300px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={result.dataPoints} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#059669" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#059669" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                      <XAxis
-                        dataKey="month"
-                        stroke="#64748b"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                        tickFormatter={(value) => `M${value}`}
-                      />
-                      <YAxis
-                        stroke="#64748b"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                        tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-                      />
-                      <Tooltip
-                        formatter={(value) => [formatCurrency(Number(value)), 'Capital']}
-                        labelFormatter={(label) => `Mes ${label}`}
-                        contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
-                      />
-                      <Area type="monotone" dataKey="capital" stroke="#059669" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
+        <Campo
+          etiqueta="Tasa nominal anual"
+          valor={`${tasaPct}%`}
+          ayuda="Es una estimación. Un 45% anual equivale a 3,75% por mes antes de capitalizar."
+        >
+          <div className="flex items-center gap-3">
+            <input
+              type="range"
+              min="0"
+              max="150"
+              value={tasaPct}
+              onChange={(e) => setTasaPct(Number(e.target.value))}
+              className="w-full accent-[#12372c]"
+            />
+            <div className="relative w-24 shrink-0">
+              <input
+                type="number"
+                min="0"
+                step="0.5"
+                value={tasaPct}
+                onChange={(e) => setTasaPct(Number(e.target.value))}
+                className={cn(inputClass, 'pr-7 text-sm')}
+              />
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-stone-400">%</span>
+            </div>
+          </div>
+        </Campo>
 
-              {/* Comparison Table */}
-              <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                <h3 className="text-lg font-bold text-slate-900 mb-4">Comparativa</h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm">
-                    <thead className="bg-slate-50 border-b border-slate-200">
-                      <tr>
-                        <th className="px-4 py-3 font-semibold text-slate-700">Escenario</th>
-                        <th className="px-4 py-3 font-semibold text-slate-700">Tasa Anual</th>
-                        <th className="px-4 py-3 font-semibold text-slate-700">Valor Final</th>
-                        <th className="px-4 py-3 font-semibold text-slate-700">Ganancia</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      <tr className="bg-emerald-50">
-                        <td className="px-4 py-3 font-medium text-emerald-800">
-                          Tu simulación ({selectedInstrument?.name || 'Personalizado'})
-                        </td>
-                        <td className="px-4 py-3 text-emerald-700">{(rate * 100).toFixed(1)}%</td>
-                        <td className="px-4 py-3 font-bold text-emerald-800">{formatCurrency(result.summary.finalValue)}</td>
-                        <td className="px-4 py-3 text-emerald-700">{formatCurrency(result.summary.totalEarnings)}</td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-3 font-medium text-slate-700">Plazo Fijo (referencia)</td>
-                        <td className="px-4 py-3 text-slate-600">35.0%</td>
-                        <td className="px-4 py-3 font-bold text-slate-700">
-                          {formatCurrency(simulateInvestment(capital, 0.35, months, 'mensual').summary.finalValue)}
-                        </td>
-                        <td className="px-4 py-3 text-slate-600">
-                          {formatCurrency(simulateInvestment(capital, 0.35, months, 'mensual').summary.totalEarnings)}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-3 font-medium text-rose-700">Inflación estimada</td>
-                        <td className="px-4 py-3 text-rose-600">50.0%</td>
-                        <td className="px-4 py-3 font-bold text-rose-700">
-                          {formatCurrency(simulateInvestment(capital, 0.50, months, 'mensual').summary.finalValue)}
-                        </td>
-                        <td className="px-4 py-3 text-rose-600">
-                          {formatCurrency(simulateInvestment(capital, 0.50, months, 'mensual').summary.totalEarnings)}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <p className="text-xs text-slate-400 mt-3">
-                  * Los valores son estimaciones con fines educativos. Rendimientos pasados no garantizan resultados futuros.
-                </p>
-              </div>
+        <Campo etiqueta="Plazo" valor={months >= 12 && months % 12 === 0 ? `${months / 12} ${months === 12 ? 'año' : 'años'}` : `${months} meses`}>
+          <input
+            type="range"
+            min="1"
+            max="120"
+            value={months}
+            onChange={(e) => setMonths(Number(e.target.value))}
+            className="w-full accent-[#12372c]"
+          />
+          <Atajos
+            valor={months}
+            onChange={setMonths}
+            opciones={[
+              { valor: 3, etiqueta: '3m' },
+              { valor: 6, etiqueta: '6m' },
+              { valor: 12, etiqueta: '1 año' },
+              { valor: 24, etiqueta: '2 años' },
+              { valor: 60, etiqueta: '5 años' },
+            ]}
+          />
+        </Campo>
 
-              {/* Tax Info Note */}
-              {selectedInstrument?.taxInfo && (
-                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-start">
-                  <Info className="w-6 h-6 text-blue-600 mr-3 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-blue-900">Información Impositiva</h4>
-                    <p className="text-sm text-blue-800 mt-1">
-                      Según el instrumento seleccionado (<strong>{selectedInstrument.name}</strong>), tu ganancia por compraventa está{' '}
-                      <span className={`font-bold ${selectedInstrument.taxInfo.ganancias === 'exento' ? 'text-emerald-700' : 'text-rose-700'}`}>
-                        {selectedInstrument.taxInfo.ganancias}
-                      </span>{' '}
-                      del Impuesto a las Ganancias, y{' '}
-                      <span className={`font-bold ${selectedInstrument.taxInfo.bienesPersonales === 'exento' ? 'text-emerald-700' : 'text-rose-700'}`}>
-                        {selectedInstrument.taxInfo.bienesPersonales === 'exento' ? 'exenta' : 'gravada'}
-                      </span>{' '}
-                      en Bienes Personales.
-                    </p>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </div>
+        <Campo
+          etiqueta="Capitalización"
+          ayuda="Cada cuánto los intereses se suman al capital y empiezan a generar intereses propios."
+        >
+          <Segmentado
+            valor={frequency}
+            onChange={setFrequency}
+            opciones={[
+              { valor: 'mensual', etiqueta: 'Mensual' },
+              { valor: 'trimestral', etiqueta: 'Trim.' },
+              { valor: 'anual', etiqueta: 'Anual' },
+              { valor: 'al_vencimiento', etiqueta: 'Al final' },
+            ]}
+          />
+        </Campo>
+      </aside>
+
+      {/* Resultados */}
+      <div className="min-w-0 space-y-6">
+        {calculo ? (
+          <ResultadosInversion
+            capital={capital}
+            months={months}
+            rate={rate}
+            nombreInstrumento={selectedInstrument?.name.replace(/\s*\(.*\)/, '') ?? 'Personalizado'}
+            calculo={calculo}
+            taxInfo={selectedInstrument?.taxInfo}
+          />
+        ) : (
+          <div className={cn(tarjetaClass, 'p-6 text-stone-600')}>
+            Cargá un capital mayor a cero y un plazo de al menos un mes.
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
+type Calculo = {
+  sim: ReturnType<typeof simulateInvestment>;
+  plazoFijo: ReturnType<typeof simulateInvestment>;
+  inflacion: ReturnType<typeof simulateInvestment>;
+  serie: { month: number; capital: number; inflacion: number }[];
+};
+
+function ResultadosInversion({
+  capital,
+  months,
+  rate,
+  nombreInstrumento,
+  calculo,
+  taxInfo,
+}: {
+  capital: number;
+  months: number;
+  rate: number;
+  nombreInstrumento: string;
+  calculo: Calculo;
+  taxInfo?: (typeof instruments)[number]['taxInfo'];
+}) {
+  const { sim, plazoFijo, inflacion, serie } = calculo;
+  const diferenciaInflacion = sim.summary.finalValue - inflacion.summary.finalValue;
+  const leGana = diferenciaInflacion >= 0;
+
+  const escenarios = [
+    { nombre: `Tu simulación · ${nombreInstrumento}`, tasa: rate, final: sim.summary.finalValue, color: 'bg-[#12372c]', destacado: true },
+    { nombre: 'Plazo fijo (referencia)', tasa: TASA_PLAZO_FIJO, final: plazoFijo.summary.finalValue, color: 'bg-[#d4af6a]', destacado: false },
+    { nombre: 'Inflación estimada', tasa: TASA_INFLACION, final: inflacion.summary.finalValue, color: 'bg-rose-400', destacado: false },
+  ];
+  const maximo = Math.max(...escenarios.map((e) => e.final));
+
+  return (
+    <>
+      {/* Resultado principal */}
+      <section className="relative overflow-hidden rounded-[1.8rem] bg-gradient-to-br from-[#12372c] via-[#17503f] to-[#1f6b52] p-6 text-[#f4f1ea] shadow-[0_30px_60px_-36px_rgba(18,55,44,0.8)] sm:p-8">
+        <div className="pointer-events-none absolute -right-10 -top-10 h-56 w-56 rounded-full bg-[#d4af6a]/20 blur-3xl" />
+        <div className="grain-overlay" />
+        <div className="relative">
+          <p className="text-sm text-emerald-50/75">
+            Valor final en {months} {months === 1 ? 'mes' : 'meses'}
+          </p>
+          <p className="mt-1 font-heading text-5xl tabular-nums sm:text-6xl">{formatCurrency(sim.summary.finalValue)}</p>
+          <div className="mt-5 flex flex-wrap gap-2.5">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-300/15 px-3 py-1 text-sm font-semibold text-emerald-200 ring-1 ring-emerald-300/30">
+              <TrendingUp className="h-4 w-4" />+{formatCurrency(sim.summary.totalEarnings)} de ganancia
+            </span>
+            <span className="inline-flex items-center rounded-full bg-[#d4af6a]/20 px-3 py-1 text-sm font-semibold text-[#f0d08a] ring-1 ring-[#d4af6a]/40">
+              +{formatPercent(sim.summary.netReturn)} de rendimiento
+            </span>
+          </div>
+          <p className="mt-5 text-sm text-emerald-50/60">
+            Invertís {formatCurrency(capital)} en {nombreInstrumento} a una TNA de {formatPercent(rate)}.
+          </p>
+        </div>
+      </section>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Dato
+          titulo="Ganancia por mes"
+          valor={formatCurrency(sim.summary.totalEarnings / months)}
+          detalle="Promedio de todo el plazo"
+          tono="positivo"
+        />
+        <Dato
+          titulo="Tasa efectiva anual"
+          valor={formatPercent(sim.summary.effectiveRate)}
+          detalle="Con la capitalización elegida"
+          tono="dorado"
+        />
+        <Dato
+          titulo="Contra la inflación"
+          valor={`${leGana ? '+' : '−'}${formatCurrency(Math.abs(diferenciaInflacion))}`}
+          detalle={leGana ? 'Le ganás al escenario de inflación' : 'Perdés poder de compra'}
+          tono={leGana ? 'positivo' : 'negativo'}
+        />
+      </div>
+
+      {/* Gráfico */}
+      <section className={cn(tarjetaClass, 'p-5 sm:p-6')}>
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <h3 className="text-lg font-medium text-[#12372c]">Cómo crece tu capital</h3>
+          <div className="flex items-center gap-4 text-xs font-semibold text-stone-500">
+            <span className="flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#12372c]" /> Tu inversión
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-0.5 w-4 rounded-full bg-rose-400" /> Inflación estimada
+            </span>
+          </div>
+        </div>
+        <div className="h-[280px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={serie} margin={{ top: 10, right: 12, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="relleno-capital" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#12372c" stopOpacity={0.28} />
+                  <stop offset="100%" stopColor="#12372c" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e7e5e4" />
+              <XAxis
+                dataKey="month"
+                stroke="#a8a29e"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) => `M${value}`}
+              />
+              <YAxis
+                stroke="#a8a29e"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                width={56}
+                domain={[(min: number) => Math.floor(min * 0.95), (max: number) => Math.ceil(max * 1.02)]}
+                tickFormatter={(value) =>
+                  value >= 1_000_000 ? `$${(value / 1_000_000).toFixed(1)}M` : `$${(value / 1000).toFixed(0)}k`
+                }
+              />
+              <Tooltip
+                formatter={(value, name) => [
+                  formatCurrency(Number(value)),
+                  name === 'capital' ? 'Tu inversión' : 'Inflación estimada',
+                ]}
+                labelFormatter={(label) => `Mes ${label}`}
+                contentStyle={tooltipStyle}
+                itemStyle={{ color: '#f4f1ea' }}
+                labelStyle={{ color: '#d4af6a', fontWeight: 600 }}
+              />
+              <Area type="monotone" dataKey="capital" stroke="#12372c" strokeWidth={3} fill="url(#relleno-capital)" />
+              <Line type="monotone" dataKey="inflacion" stroke="#fb7185" strokeWidth={2} strokeDasharray="6 5" dot={false} />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      </section>
+
+      {/* Comparativa */}
+      <section className={cn(tarjetaClass, 'p-5 sm:p-6')}>
+        <h3 className="text-lg font-medium text-[#12372c]">Comparativa</h3>
+        <div
+          className={cn(
+            'mt-4 flex items-start gap-3 rounded-2xl px-4 py-3 text-sm',
+            leGana ? 'bg-emerald-50 text-emerald-900' : 'bg-rose-50 text-rose-900'
+          )}
+        >
+          {leGana ? (
+            <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
+          ) : (
+            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-rose-600" />
+          )}
+          <p>
+            {leGana
+              ? `Con esta tasa terminás ${formatCurrency(diferenciaInflacion)} por encima del escenario de inflación.`
+              : `Con esta tasa terminás ${formatCurrency(Math.abs(diferenciaInflacion))} por debajo del escenario de inflación: en términos reales, perdés.`}
+          </p>
+        </div>
+
+        <div className="mt-5 space-y-4">
+          {escenarios.map((escenario) => (
+            <div key={escenario.nombre}>
+              <div className="mb-1.5 flex items-baseline justify-between gap-3 text-sm">
+                <span className={cn('truncate', escenario.destacado ? 'font-semibold text-[#12372c]' : 'text-stone-600')}>
+                  {escenario.nombre}
+                  <span className="ml-2 text-xs font-medium text-stone-400">{formatPercent(escenario.tasa)} TNA</span>
+                </span>
+                <span className={cn('shrink-0 tabular-nums', escenario.destacado ? 'font-bold text-[#12372c]' : 'font-semibold text-stone-700')}>
+                  {formatCurrency(escenario.final)}
+                </span>
+              </div>
+              <div className="h-2.5 overflow-hidden rounded-full bg-stone-100">
+                <div
+                  className={cn('h-full rounded-full transition-all duration-500', escenario.color)}
+                  style={{ width: `${maximo > 0 ? (escenario.final / maximo) * 100 : 0}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="mt-5 text-xs text-stone-400">
+          Valores estimados con fines educativos. Rendimientos pasados no garantizan resultados futuros.
+        </p>
+      </section>
+
+      {/* Impuestos */}
+      {taxInfo && (
+        <section className={cn(tarjetaClass, 'flex flex-wrap items-center gap-3 p-5')}>
+          <span className="flex items-center gap-2 text-sm font-semibold text-[#12372c]">
+            <Receipt className="h-4 w-4 text-[#c99a45]" />
+            Impuestos de {nombreInstrumento}
+          </span>
+          <ChipImpuesto nombre="Ganancias" exento={taxInfo.ganancias === 'exento'} />
+          <ChipImpuesto nombre="Bienes Personales" exento={taxInfo.bienesPersonales === 'exento'} />
+        </section>
+      )}
+    </>
+  );
+}
+
+function ChipImpuesto({ nombre, exento }: { nombre: string; exento: boolean }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold',
+        exento ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+      )}
+    >
+      {nombre}: {exento ? 'exento' : 'gravado'}
+    </span>
+  );
+}
+
 export default function SimuladorPage() {
   return (
-    <Suspense fallback={
-      <div className="max-w-7xl mx-auto px-4 py-12 text-center">
-        <p className="text-slate-500">Cargando simulador...</p>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-7xl px-4 py-12 text-center">
+          <p className="text-stone-500">Cargando simulador...</p>
+        </div>
+      }
+    >
       <SimuladorContent />
     </Suspense>
   );

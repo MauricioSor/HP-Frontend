@@ -40,6 +40,18 @@ export async function guardarPerfilInversor(
   usuario: string,
   perfil: PerfilInversor
 ) {
+  const { data: rpc, error: errorRpc } = await supabase.rpc('guardar_perfil_inversor', {
+    p_perfil: perfil,
+  })
+
+  if (!errorRpc && rpc) {
+    const fila = rpc as { usuario?: string; perfil_inversor?: string }
+    return {
+      usuario: fila.usuario || usuario,
+      perfil_inversor: fila.perfil_inversor || perfil,
+    }
+  }
+
   const { data, error } = await supabase
     .from('usuario')
     .update({ perfil_inversor: perfil })
@@ -49,7 +61,7 @@ export async function guardarPerfilInversor(
 
   if (error) throw error
   if (!data) {
-    throw new Error(`No hay una fila en usuario para "${usuario}".`)
+    throw new Error(errorRpc?.message || `No hay una fila en usuario para "${usuario}".`)
   }
 
   await supabase.from('persona').update({ perfil_inversor: perfil }).eq('usuario', usuario)

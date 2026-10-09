@@ -101,6 +101,7 @@ export function metaInstrumento(slug: string): MetaInstrumento {
 }
 
 const TAMANOS = {
+  sm: { caja: 'h-11 w-11 rounded-xl', icono: 'h-7 w-7' },
   md: { caja: 'h-16 w-16 rounded-[1.3rem]', icono: 'h-9 w-9' },
   lg: { caja: 'h-24 w-24 rounded-[1.9rem]', icono: 'h-14 w-14' },
 } as const

@@ -16,12 +16,17 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [redirect, setRedirect] = useState('/')
 
-  const { login } = useAuth()
+  const { login, isAuthenticated, isLoading } = useAuth()
 
   useEffect(() => {
     const pedido = new URLSearchParams(window.location.search).get('redirect') || '/'
     setRedirect(pedido.startsWith('/') && !pedido.startsWith('//') ? pedido : '/')
   }, [])
+
+  useEffect(() => {
+    if (isLoading || !isAuthenticated || isSubmitting) return
+    irA(redirect)
+  }, [isLoading, isAuthenticated, redirect, isSubmitting])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

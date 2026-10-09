@@ -25,7 +25,7 @@ function explicarErrorGoogle(mensaje: string) {
 }
 
 function salirA(destino: string) {
-  window.location.replace(destino)
+  window.location.replace(`${window.location.origin}${rutaSegura(destino)}`)
 }
 
 export default function AuthCallbackPage() {
