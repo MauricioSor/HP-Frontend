@@ -5,22 +5,20 @@ import { UserPlus, Users, AlertCircle, CheckCircle2, ChevronDown, ChevronUp } fr
 import { useAuth } from '@/components/AuthProvider'
 import { irA } from '@/lib/navegacion'
 import { esRolAdministrador } from '@/lib/roles'
+import { ESTADO_ACTIVO, ESTADO_INACTIVO, etiquetaEstado, esUsuarioActivo } from '@/lib/estados-usuario'
 
 interface Usuario {
   usuario: string
   rol: number
   alta: string
-  estado: number
+  estado: string
 }
 
 interface Persona {
   dni: number
   nombre: string | null
   correo: string | null
-  direccion: string | null
-  situacion_laboral: string | null
   perfil_inversor: string | null
-  cuit: string | null
   nacimiento: string | null
   usuario: string
 }
@@ -37,17 +35,14 @@ export default function AdminUsuariosPage() {
   const [formUsuario, setFormUsuario] = useState('')
   const [formContraseña, setFormContraseña] = useState('')
   const [formRol, setFormRol] = useState(0)
-  const [formEstado, setFormEstado] = useState(1)
+  const [formEstado, setFormEstado] = useState(ESTADO_ACTIVO)
 
   // Estado del formulario de persona
   const [showPersona, setShowPersona] = useState(false)
   const [formDni, setFormDni] = useState('')
   const [formNombre, setFormNombre] = useState('')
   const [formCorreo, setFormCorreo] = useState('')
-  const [formDireccion, setFormDireccion] = useState('')
-  const [formSituacionLaboral, setFormSituacionLaboral] = useState('')
   const [formPerfil, setFormPerfil] = useState('')
-  const [formCuit, setFormCuit] = useState('')
   const [formNacimiento, setFormNacimiento] = useState('')
 
   // Estado general
@@ -83,15 +78,12 @@ export default function AdminUsuariosPage() {
     setFormUsuario('')
     setFormContraseña('')
     setFormRol(0)
-    setFormEstado(1)
+    setFormEstado(ESTADO_ACTIVO)
     setShowPersona(false)
     setFormDni('')
     setFormNombre('')
     setFormCorreo('')
-    setFormDireccion('')
-    setFormSituacionLaboral('')
     setFormPerfil('')
-    setFormCuit('')
     setFormNacimiento('')
   }
 
@@ -113,10 +105,7 @@ export default function AdminUsuariosPage() {
         dni: parseInt(formDni),
         nombre: formNombre || null,
         correo: formCorreo || null,
-        direccion: formDireccion || null,
-        situacion_laboral: formSituacionLaboral || null,
         perfil_inversor: formPerfil || null,
-        cuit: formCuit || null,
         nacimiento: formNacimiento || null,
       }
     }
@@ -237,11 +226,11 @@ export default function AdminUsuariosPage() {
                     <label className="block text-sm font-medium text-slate-700 mb-1">Estado</label>
                     <select
                       value={formEstado}
-                      onChange={(e) => setFormEstado(Number(e.target.value))}
+                      onChange={(e) => setFormEstado(e.target.value)}
                       className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                     >
-                      <option value={1}>Activo</option>
-                      <option value={0}>Inactivo</option>
+                      <option value={ESTADO_ACTIVO}>Activo</option>
+                      <option value={ESTADO_INACTIVO}>Inactivo</option>
                     </select>
                   </div>
                 </div>
@@ -293,57 +282,23 @@ export default function AdminUsuariosPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">Dirección</label>
+                      <label className="block text-xs font-medium text-slate-600 mb-1">perfil_inversor</label>
                       <input
                         type="text"
-                        value={formDireccion}
-                        onChange={(e) => setFormDireccion(e.target.value)}
-                        placeholder="Av. Siempre Viva 742"
+                        value={formPerfil}
+                        onChange={(e) => setFormPerfil(e.target.value)}
+                        placeholder="Conservador"
                         className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">Situación Laboral</label>
-                        <input
-                          type="text"
-                          value={formSituacionLaboral}
-                          onChange={(e) => setFormSituacionLaboral(e.target.value)}
-                          placeholder="Empleado"
-                          className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">perfil_inversor</label>
-                        <input
-                          type="text"
-                          value={formPerfil}
-                          onChange={(e) => setFormPerfil(e.target.value)}
-                          placeholder="Conservador"
-                          className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">CUIT</label>
-                        <input
-                          type="text"
-                          value={formCuit}
-                          onChange={(e) => setFormCuit(e.target.value)}
-                          placeholder="20-12345678-9"
-                          className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">Nacimiento</label>
-                        <input
-                          type="date"
-                          value={formNacimiento}
-                          onChange={(e) => setFormNacimiento(e.target.value)}
-                          className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                        />
-                      </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-600 mb-1">Nacimiento</label>
+                      <input
+                        type="date"
+                        value={formNacimiento}
+                        onChange={(e) => setFormNacimiento(e.target.value)}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
                     </div>
                   </div>
                 )}
@@ -421,12 +376,12 @@ export default function AdminUsuariosPage() {
                             <td className="px-6 py-4">
                               <span
                                 className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                                  u.estado === 1
+                                  esUsuarioActivo(u.estado)
                                     ? 'bg-emerald-50 text-emerald-700'
                                     : 'bg-red-50 text-red-700'
                                 }`}
                               >
-                                {u.estado === 1 ? 'Activo' : 'Inactivo'}
+                                {etiquetaEstado(u.estado)}
                               </span>
                             </td>
                             <td className="px-6 py-4 text-slate-500 text-xs">

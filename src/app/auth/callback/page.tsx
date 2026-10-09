@@ -96,8 +96,11 @@ export default function AuthCallbackPage() {
       }
 
       const next = url.searchParams.get('next') || '/'
-      const destino = tienePersona ? rutaSegura(next) : '/auth/registro'
-      setMensaje(tienePersona ? 'Entrando...' : 'Completá tu registro...')
+      const destinoSeguro = rutaSegura(next)
+      const destino = tienePersona
+        ? destinoSeguro
+        : `/auth/datos-personales?next=${encodeURIComponent(destinoSeguro)}`
+      setMensaje(tienePersona ? 'Entrando...' : 'Completá tus datos...')
       salirA(destino)
     }
 

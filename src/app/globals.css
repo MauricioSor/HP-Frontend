@@ -12,7 +12,7 @@
   --gold: #d4af6a;
   --secondary: oklch(0.97 0 0);
   --accent: oklch(0.97 0 0);
-  --background: #f4f1ea;
+  --background: #e8f0ea;
   --foreground: #1c1917;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -88,12 +88,18 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Fondo "bruma de salvia": base verde grisáceo suave con un aurora de esmeralda,
+   dorado y celeste, más una grilla de puntos casi imperceptible. */
 body {
   font-family: var(--font-source-sans), ui-sans-serif, system-ui, sans-serif;
-  background-color: #f4f1ea;
+  background-color: #e8f0ea;
   background-image:
-    radial-gradient(ellipse at top, rgba(18, 55, 44, 0.045), transparent 46%),
-    radial-gradient(ellipse at bottom right, rgba(212, 175, 106, 0.07), transparent 38%);
+    radial-gradient(62rem 38rem at 6% -6%, rgba(52, 211, 153, 0.22), transparent 62%),
+    radial-gradient(48rem 34rem at 100% 2%, rgba(228, 190, 118, 0.26), transparent 58%),
+    radial-gradient(60rem 40rem at 55% 112%, rgba(120, 190, 214, 0.2), transparent 62%),
+    radial-gradient(rgba(18, 55, 44, 0.07) 1px, transparent 1px);
+  background-size: auto, auto, auto, 24px 24px;
+  background-attachment: fixed;
   color: #1c1917;
 }
 
@@ -142,7 +148,7 @@ h1, h2, h3, h4,
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #efe8d8;
+  background: #dce8e0;
 }
 ::-webkit-scrollbar-thumb {
   background: #8a9a8e;

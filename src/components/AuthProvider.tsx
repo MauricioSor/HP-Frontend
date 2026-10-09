@@ -18,7 +18,7 @@ interface AuthContextType {
   user: User | null
   isAuthenticated: boolean
   isLoading: boolean
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string; faltaPersona?: boolean }>
   logout: () => Promise<void>
   refrescarUsuario: () => Promise<void>
 }
@@ -138,7 +138,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (data.user) {
         const userData = await buildUser(data.user)
         setUser(userData)
-        return { success: true }
+        const { data: persona } = await supabase
+          .from('persona')
+          .select('dni')
+          .eq('usuario', userData.usuario)
+          .maybeSingle()
+        return { success: true, faltaPersona: !persona }
       }
 
       return { success: false, error: 'Error al iniciar sesión' }

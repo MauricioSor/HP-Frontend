@@ -31,7 +31,11 @@ export default function LoginPage() {
     const result = await login(email, contraseña)
 
     if (result.success) {
-      irA(redirect)
+      irA(
+        result.faltaPersona
+          ? `/auth/datos-personales?next=${encodeURIComponent(redirect)}`
+          : redirect
+      )
     } else {
       setError(result.error || 'Error al iniciar sesión')
       setIsSubmitting(false)

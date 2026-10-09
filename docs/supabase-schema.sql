@@ -12,8 +12,9 @@ CREATE TABLE IF NOT EXISTS usuario (
   usuario VARCHAR PRIMARY KEY,
   rol INT NOT NULL DEFAULT 0,
   alta TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  estado SMALLINT NOT NULL DEFAULT 1,
-  perfil_inversor VARCHAR
+  estado VARCHAR(1) NOT NULL DEFAULT '', -- '' activo, 'I' inactivo
+  perfil_inversor VARCHAR,
+  CONSTRAINT usuario_estado_check CHECK (estado IN ('', 'I'))
 );
 
 -- Tabla de datos personales asociados a un usuario
@@ -21,12 +22,9 @@ CREATE TABLE IF NOT EXISTS persona (
   dni INT PRIMARY KEY,
   nombre VARCHAR,
   correo VARCHAR,
-  direccion VARCHAR,
-  "situacion_laboral" VARCHAR,
   "perfil_inversor" VARCHAR,
-  cuit VARCHAR,
   nacimiento TIMESTAMP WITH TIME ZONE,
-  usuario VARCHAR REFERENCES usuario(usuario)
+  usuario VARCHAR UNIQUE REFERENCES usuario(usuario) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 -- ============================================
@@ -94,11 +92,27 @@ BEGIN
   END LOOP;
 
   INSERT INTO public.usuario (usuario, rol, estado)
-  VALUES (username, 0, 1);
+  VALUES (username, 0, '');
 
   RETURN new;
 END;
 $$;
+
+CREATE OR REPLACE FUNCTION public.set_usuario_alta()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
+BEGIN
+  NEW.alta := now();
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_usuario_alta ON public.usuario;
+CREATE TRIGGER trg_usuario_alta
+  BEFORE INSERT ON public.usuario
+  FOR EACH ROW EXECUTE FUNCTION public.set_usuario_alta();
 
 DROP POLICY IF EXISTS "Authenticated users can insert usuario" ON usuario;
 CREATE POLICY "Authenticated users can insert usuario" ON usuario
