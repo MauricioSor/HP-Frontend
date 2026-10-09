@@ -10,6 +10,7 @@ import { Banknote, Calculator, CheckCircle2, AlertTriangle, TrendingUp, Receipt 
 import SimuladorPrestamo from '@/components/SimuladorPrestamo';
 import { LogoInstrumento } from '@/components/LogoInstrumento';
 import { Atajos, Campo, Dato, Segmentado, inputClass, tarjetaClass, tooltipStyle } from '@/components/SimuladorUI';
+import AdBanner from '@/components/AdBanner';
 
 const TASA_PLAZO_FIJO = 0.35;
 const TASA_INFLACION = 0.5;
@@ -70,6 +71,8 @@ function SimuladorContent() {
           </div>
         </div>
       </header>
+
+      <AdBanner slot="simulador-horizontal" format="horizontal" className="mb-8" />
 
       {pestana === 'prestamo' ? <SimuladorPrestamo /> : <SimuladorInversion />}
     </div>

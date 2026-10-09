@@ -267,6 +267,8 @@ export default function CotizacionesPage() {
           <CintaCotizaciones simbolos={cedears} />
         </section>
       </div>
+
+      <AdBanner slot="cotizaciones-cierre" format="horizontal" className="mt-8" />
     </div>
   );
 }

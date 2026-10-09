@@ -5,6 +5,7 @@ import { asegurarFilaUsuario, guardarPerfilInversor } from '@/lib/usuario'
 export type FilaPersona = {
   dni: number
   nombre: string | null
+  apellido: string | null
   correo: string | null
   nacimiento: string | null
   perfil_inversor: string | null
@@ -22,6 +23,7 @@ export type FilaUsuario = {
 export type DatosPersonaInput = {
   dni: number
   nombre: string
+  apellido: string
   correo: string | null
   nacimiento: string | null
   perfil_inversor: PerfilInversor | null
@@ -31,7 +33,7 @@ export async function personaDeUsuario(supabase: SupabaseClient, usuario: string
   if (!usuario) return null
   const { data } = await supabase
     .from('persona')
-    .select('dni, nombre, correo, nacimiento, perfil_inversor, usuario')
+    .select('dni, nombre, apellido, correo, nacimiento, perfil_inversor, usuario')
     .eq('usuario', usuario)
     .maybeSingle()
   return data as FilaPersona | null
@@ -80,6 +82,7 @@ export async function guardarDatosPersona(
   const fila = {
     dni: datos.dni,
     nombre: datos.nombre,
+    apellido: datos.apellido,
     correo: datos.correo,
     nacimiento: datos.nacimiento,
     perfil_inversor: datos.perfil_inversor,

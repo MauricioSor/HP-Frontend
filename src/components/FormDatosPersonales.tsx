@@ -8,6 +8,7 @@ import { irA, rutaSegura } from '@/lib/navegacion'
 import { Logo } from '@/components/Logo'
 import { etiquetaPerfil, normalizarPerfil, perfilesInversor } from '@/lib/perfil'
 import { guardarDatosPersona, personaDeUsuario } from '@/lib/persona'
+import { nombreApellidoDesdeAuth, vieneDeGoogle } from '@/lib/identidad-google'
 
 const supabase = createClient()
 
@@ -15,7 +16,9 @@ export default function FormDatosPersonales() {
   const { user, isAuthenticated, isLoading } = useAuth()
   const [dni, setDni] = useState('')
   const [nombre, setNombre] = useState('')
+  const [apellido, setApellido] = useState('')
   const [correo, setCorreo] = useState('')
+  const [desdeGoogle, setDesdeGoogle] = useState(false)
   const [nacimiento, setNacimiento] = useState('')
   const [perfil, setPerfil] = useState('')
   const [dniFijo, setDniFijo] = useState(false)
@@ -43,20 +46,26 @@ export default function FormDatosPersonales() {
 
     async function precargar() {
       const fila = await personaDeUsuario(supabase, cuenta.usuario)
+      const { data: sesion } = await supabase.auth.getUser()
       if (!activo) return
+
+      const authUser = sesion.user
+      const google = nombreApellidoDesdeAuth(authUser)
+      const conGoogle = vieneDeGoogle(authUser)
+      setDesdeGoogle(conGoogle)
 
       if (fila) {
         setDni(String(fila.dni))
         setDniFijo(true)
-        setNombre(fila.nombre ?? '')
-        setCorreo(fila.correo || cuenta.email || '')
+        setNombre(fila.nombre || google.nombre)
+        setApellido(fila.apellido || google.apellido)
+        setCorreo(fila.correo || authUser?.email || cuenta.email || '')
         setNacimiento(fila.nacimiento ? fila.nacimiento.slice(0, 10) : '')
         setPerfil(normalizarPerfil(fila.perfil_inversor) ?? cuenta.perfilInversor ?? '')
       } else {
-        const nombreMeta =
-          (typeof cuenta.email === 'string' && cuenta.email) || ''
-        setCorreo(nombreMeta)
-        setNombre('')
+        setNombre(google.nombre)
+        setApellido(google.apellido)
+        setCorreo(authUser?.email || cuenta.email || '')
         setPerfil(cuenta.perfilInversor ?? '')
       }
       setPrecargado(cuenta.usuario)
@@ -84,8 +93,8 @@ export default function FormDatosPersonales() {
       return
     }
 
-    if (!nombre.trim()) {
-      setError('El nombre es obligatorio.')
+    if (!nombre.trim() || !apellido.trim()) {
+      setError('El nombre y el apellido son obligatorios.')
       return
     }
 
@@ -98,6 +107,7 @@ export default function FormDatosPersonales() {
         {
           dni: dniNumero,
           nombre: nombre.trim(),
+          apellido: apellido.trim(),
           correo: correo.trim() || user.email || null,
           nacimiento: nacimiento || null,
           perfil_inversor: perfilUsuario,
@@ -126,9 +136,16 @@ export default function FormDatosPersonales() {
       <div className="w-full max-w-lg">
         <div className="mb-8 text-center">
           <Logo size="lg" className="justify-center" />
-          <h1 className="mt-4 text-2xl font-bold text-slate-900">Completá tus datos</h1>
+          <h1 className="mt-4 text-2xl font-bold text-slate-900">
+            {dniFijo ? 'Tus datos' : 'Finalizá el registro'}
+          </h1>
           <p className="mt-2 text-slate-500">
-            Quedan los datos de persona. Van ligados a tu usuario <span className="font-semibold text-[#12372c]">{user?.usuario}</span>.
+            {dniFijo
+              ? 'Estos datos ya están en persona. Podés corregirlos.'
+              : desdeGoogle
+                ? 'Tomamos tu nombre y apellido de Google. Para cerrar el alta faltan los datos que esa cuenta no trae.'
+                : 'Faltan los datos de persona para cerrar el alta.'}{' '}
+            Van ligados a tu usuario <span className="font-semibold text-[#12372c]">{user?.usuario}</span>.
           </p>
         </div>
 
@@ -165,17 +182,33 @@ export default function FormDatosPersonales() {
               </div>
             </div>
 
-            <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Nombre completo *</label>
-              <input
-                type="text"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                required
-                placeholder="Juan Pérez"
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 placeholder-slate-400 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Nombre *</label>
+                <input
+                  type="text"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                  required
+                  placeholder="Juan"
+                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 placeholder-slate-400 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Apellido *</label>
+                <input
+                  type="text"
+                  value={apellido}
+                  onChange={(e) => setApellido(e.target.value)}
+                  required
+                  placeholder="Pérez"
+                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 placeholder-slate-400 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
             </div>
+            {desdeGoogle && !dniFijo && (nombre || apellido) && (
+              <p className="-mt-2 text-sm text-slate-500">Vinieron con tu cuenta de Google. Podés corregirlos antes de guardar.</p>
+            )}
 
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Correo</label>
@@ -217,7 +250,7 @@ export default function FormDatosPersonales() {
               ) : (
                 <>
                   <IdCard className="h-5 w-5" />
-                  Guardar datos
+                  {dniFijo ? 'Guardar datos' : 'Finalizar registro'}
                 </>
               )}
             </button>

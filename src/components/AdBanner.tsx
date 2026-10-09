@@ -15,7 +15,7 @@ export default function AdBanner({ slot, format = 'auto', className = '' }: AdBa
   const { user, isLoading } = useAuth();
   const adRef = useRef<HTMLDivElement>(null);
   const isAdLoaded = useRef(false);
-  const ocultar = isLoading || esRolAdministrador(user?.rol);
+  const ocultar = isLoading || user?.premium === true || esRolAdministrador(user?.rol);
   const slotValido = esSlotAdsense(slot);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function AdBanner({ slot, format = 'auto', className = '' }: AdBa
         <div className="text-center p-4">
           <p className="font-medium">Espacio publicitario</p>
           <p className="text-xs mt-1">Google AdSense - Slot: {slot}</p>
-          <p className="text-xs">Modo de prueba, visible para todos menos administradores</p>
+          <p className="text-xs">Visible en el plan libre. Premium no ve este espacio.</p>
         </div>
       </div>
     );

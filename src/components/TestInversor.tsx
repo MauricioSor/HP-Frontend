@@ -9,6 +9,7 @@ import { useAuth } from '@/components/AuthProvider'
 import { createClient } from '@/lib/client'
 import { guardarPerfilInversor } from '@/lib/usuario'
 import { BannerPerfil, GaleriaPerfiles } from '@/components/PerfilImagen'
+import AdBanner from '@/components/AdBanner'
 
 export default function TestInversor() {
   const { user, isAuthenticated, isLoading, refrescarUsuario } = useAuth()
@@ -87,6 +88,8 @@ export default function TestInversor() {
           ? 'Este es el perfil que quedó guardado en tu cuenta. Podés repetir el test si cambió tu situación.'
           : 'Seis preguntas. Sin trampa: el resultado se guarda en tu cuenta y arma las recomendaciones.'}
       </p>
+
+      <AdBanner slot="test-inversor-horizontal" format="horizontal" className="mt-8" />
 
       {!mostrarGuardado && (
         <div className="mt-8 h-1.5 overflow-hidden rounded-full bg-stone-200">

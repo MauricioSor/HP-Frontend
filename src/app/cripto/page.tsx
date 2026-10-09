@@ -4,6 +4,7 @@ import { ArrowUpRight } from 'lucide-react';
 import BotonFavorito from '@/components/BotonFavorito';
 import { LogoTema, metaTema } from '@/components/LogoCripto';
 import { cn } from '@/lib/utils';
+import AdBanner from '@/components/AdBanner';
 
 export const metadata = {
   title: 'Mercado Cripto | FinBootcamp',
@@ -52,6 +53,8 @@ export default function CryptoPage() {
           </div>
         </div>
       </section>
+
+      <AdBanner slot="cripto-horizontal" format="horizontal" className="mb-10" />
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {cryptoTopics.map((topic) => {

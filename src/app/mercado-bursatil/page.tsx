@@ -4,6 +4,7 @@ import { ArrowUpRight, Clock } from 'lucide-react';
 import BotonFavorito from '@/components/BotonFavorito';
 import { LogoInstrumento, metaInstrumento } from '@/components/LogoInstrumento';
 import { cn } from '@/lib/utils';
+import AdBanner from '@/components/AdBanner';
 
 export const metadata = {
   title: 'Mercado Bursátil | FinBootcamp',
@@ -100,6 +101,8 @@ export default function MercadoBursatilPage() {
           </div>
         </div>
       </section>
+
+      <AdBanner slot="mercado-horizontal" format="horizontal" className="mb-10" />
 
       {/* Grilla */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

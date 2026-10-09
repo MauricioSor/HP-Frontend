@@ -49,6 +49,7 @@ export function GoogleAuthButton({
       provider: 'google',
       options: {
         redirectTo,
+        scopes: 'openid email profile',
         queryParams: {
           access_type: 'offline',
           prompt: 'select_account',

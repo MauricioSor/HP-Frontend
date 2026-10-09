@@ -74,6 +74,8 @@ export default function GuiasPage() {
         ))}
       </div>
 
+      <AdBanner slot="guias-cierre" format="horizontal" className="mt-10" />
+
       <aside className="mt-12 flex gap-4 rounded-2xl border border-stone-200 bg-[#12372c] p-6 text-[#f4f1ea] sm:p-8">
         <BookOpen className="mt-1 h-7 w-7 shrink-0 text-emerald-300" />
         <div>

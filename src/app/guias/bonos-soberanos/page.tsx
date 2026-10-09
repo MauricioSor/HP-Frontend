@@ -287,6 +287,8 @@ export default function GuiaBonosSoberanosPage() {
             </div>
           </section>
 
+          <AdBanner slot="guia-bonos-medio" format="horizontal" />
+
           <section id="antes-de-comprar" className="scroll-mt-24 space-y-5">
             <h2 className="text-3xl font-medium text-[#12372c]">Qué mirar antes de comprar</h2>
             <ol className="space-y-3">
@@ -377,6 +379,7 @@ export default function GuiaBonosSoberanosPage() {
               <ArrowRight className="h-3.5 w-3.5" />
             </a>
           </div>
+          <AdBanner slot="guia-bonos-lateral" format="rectangle" />
           <Link
             href="/simulador"
             className="flex items-center gap-2 rounded-2xl border border-stone-200 bg-white p-5 text-sm font-semibold text-[#12372c] hover:border-emerald-300"

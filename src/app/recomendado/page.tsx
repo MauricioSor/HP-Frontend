@@ -8,6 +8,7 @@ import { itemCatalogo } from '@/lib/catalogo'
 import BotonFavorito from '@/components/BotonFavorito'
 import { LogoItem } from '@/components/LogoItem'
 import { BannerPerfil } from '@/components/PerfilImagen'
+import AdBanner from '@/components/AdBanner'
 
 export default function RecomendadoPage() {
   const { user, isAuthenticated, isLoading } = useAuth()
@@ -63,6 +64,8 @@ export default function RecomendadoPage() {
         </Link>
       </div>
       <p className="mt-4 text-sm text-stone-500">Educativo. No es una orden de compra ni asesoramiento.</p>
+
+      <AdBanner slot="recomendado-horizontal" format="horizontal" className="mt-8" />
 
       <section className="mt-12">
         <h2 className="text-2xl font-medium text-[#12372c]">Mercado bursátil</h2>

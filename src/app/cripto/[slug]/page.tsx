@@ -5,6 +5,7 @@ import { ChevronRight, ShieldAlert, ArrowRight, ArrowLeft, Clock, ClipboardList,
 import BotonFavorito from '@/components/BotonFavorito';
 import { LogoTema, metaTema } from '@/components/LogoCripto';
 import { cn } from '@/lib/utils';
+import AdBanner from '@/components/AdBanner';
 
 export function generateStaticParams() {
   return cryptoTopics.map((topic) => ({
@@ -147,6 +148,8 @@ export default async function CryptoDetailPage({ params }: { params: Promise<{ s
           </div>
         </div>
       </header>
+
+      <AdBanner slot="cripto-tema-horizontal" format="horizontal" className="mb-8" />
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="min-w-0 space-y-8">
@@ -293,6 +296,8 @@ export default async function CryptoDetailPage({ params }: { params: Promise<{ s
               Hacer el test
             </Link>
           </div>
+
+          <AdBanner slot="cripto-tema-lateral" format="rectangle" />
 
           <p className="px-2 text-xs leading-relaxed text-stone-500">
             Contenido educativo. No constituye asesoramiento financiero ni una recomendación de compra.

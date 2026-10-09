@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/client'
 import { rutaSegura } from '@/lib/navegacion'
+import { personaDeUsuario } from '@/lib/persona'
+import { resolverNombreUsuario } from '@/lib/usuario'
 
 const supabase = createClient()
 
@@ -80,27 +82,16 @@ export default function AuthCallbackPage() {
         session = data.session
       }
 
-      const user = session.user
-      const email = user.email ?? ''
-      const usuario = typeof user.user_metadata?.usuario === 'string' ? user.user_metadata.usuario : ''
-      let tienePersona = false
-
-      if (usuario) {
-        const { data } = await supabase.from('persona').select('dni').eq('usuario', usuario).maybeSingle()
-        tienePersona = !!data
-      }
-
-      if (!tienePersona && email) {
-        const { data } = await supabase.from('persona').select('dni').eq('correo', email).maybeSingle()
-        tienePersona = !!data
-      }
+      const usuario = await resolverNombreUsuario(supabase, session.user)
+      const persona = usuario ? await personaDeUsuario(supabase, usuario) : null
+      const tienePersona = Boolean(persona?.dni)
 
       const next = url.searchParams.get('next') || '/'
       const destinoSeguro = rutaSegura(next)
       const destino = tienePersona
         ? destinoSeguro
-        : `/auth/datos-personales?next=${encodeURIComponent(destinoSeguro)}`
-      setMensaje(tienePersona ? 'Entrando...' : 'Completá tus datos...')
+        : `/auth/datos-personales?origen=google&next=${encodeURIComponent(destinoSeguro)}`
+      setMensaje(tienePersona ? 'Entrando...' : 'Finalizá el registro...')
       salirA(destino)
     }
 

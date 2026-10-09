@@ -17,6 +17,7 @@ interface Usuario {
 interface Persona {
   dni: number
   nombre: string | null
+  apellido: string | null
   correo: string | null
   perfil_inversor: string | null
   nacimiento: string | null
@@ -361,7 +362,7 @@ export default function AdminUsuariosPage() {
                             <td className="px-6 py-4 text-slate-600">
                               {persona ? (
                                 <div>
-                                  <div className="font-medium">{persona.nombre || '—'}</div>
+                                  <div className="font-medium">{[persona.nombre, persona.apellido].filter(Boolean).join(' ') || '—'}</div>
                                   <div className="text-xs text-slate-400">DNI: {persona.dni}</div>
                                 </div>
                               ) : (

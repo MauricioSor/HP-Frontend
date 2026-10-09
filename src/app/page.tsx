@@ -5,6 +5,7 @@ import { TrendingUp, Bitcoin, Calculator, CheckCircle2, ArrowRight, LogIn, UserP
 import { useAuth } from '@/components/AuthProvider';
 import CarruselInstrumentos from '@/components/CarruselInstrumentos';
 import CintaTickers from '@/components/CintaTickers';
+import AdBanner from '@/components/AdBanner';
 
 const bloques = [
   {
@@ -118,6 +119,10 @@ export default function Home() {
         </div>
       </section>
 
+      <div className="mx-auto w-full max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
+        <AdBanner slot="inicio-horizontal" format="horizontal" />
+      </div>
+
       <section className="py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-14 max-w-2xl text-center">
@@ -209,6 +214,10 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <div className="mx-auto w-full max-w-7xl px-4 pb-4 sm:px-6 lg:px-8">
+        <AdBanner slot="inicio-cierre" format="horizontal" />
+      </div>
 
       <section className="relative overflow-hidden bg-[#0f2a22] py-20 text-center text-[#f4f1ea]">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(212,175,106,0.16),transparent_50%)]" />

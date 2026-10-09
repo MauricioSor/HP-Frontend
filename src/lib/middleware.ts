@@ -1,6 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { esRolAdministrador } from '@/lib/roles'
+import { personaDeUsuario } from '@/lib/persona'
+import { resolverNombreUsuario } from '@/lib/usuario'
 
 // Rutas públicas que no requieren autenticación
 const publicPaths = ['/', '/auth/login', '/auth/registro', '/auth/callback', '/suscripcion', '/ads.txt', '/icon.svg', '/test-inversor']
@@ -72,6 +74,18 @@ export async function updateSession(request: NextRequest) {
       request,
       `/auth/login?redirect=${encodeURIComponent(pathname)}`
     )
+  }
+
+  if (user && !isPublic && pathname !== '/auth/datos-personales') {
+    const usuario = await resolverNombreUsuario(supabase, user)
+    const persona = usuario ? await personaDeUsuario(supabase, usuario) : null
+    if (!persona?.dni) {
+      return redirigirConCookies(
+        supabaseResponse,
+        request,
+        `/auth/datos-personales?next=${encodeURIComponent(pathname)}`
+      )
+    }
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.

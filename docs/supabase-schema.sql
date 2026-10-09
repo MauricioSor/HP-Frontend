@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS usuario (
 CREATE TABLE IF NOT EXISTS persona (
   dni INT PRIMARY KEY,
   nombre VARCHAR,
+  apellido VARCHAR,
   correo VARCHAR,
   "perfil_inversor" VARCHAR,
   nacimiento TIMESTAMP WITH TIME ZONE,

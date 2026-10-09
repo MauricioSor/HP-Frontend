@@ -9,6 +9,7 @@ import { listarFavoritos, toggleFavorito, type FavoritoGuardado } from '@/lib/ca
 import { itemCatalogo, tickersPorSlug } from '@/lib/catalogo'
 import BotonFavorito from '@/components/BotonFavorito'
 import { LogoItem } from '@/components/LogoItem'
+import AdBanner from '@/components/AdBanner'
 
 export default function CarteraPage() {
   const { user, isAuthenticated, isLoading } = useAuth()
@@ -101,6 +102,8 @@ export default function CarteraPage() {
       <p className="mt-4 max-w-2xl text-lg text-stone-600">
         Instrumentos que marcaste con estrella. No es una cuenta comitente: es tu tablero de estudio.
       </p>
+
+      <AdBanner slot="cartera-horizontal" format="horizontal" className="mt-8" />
 
       {error && <p className="mt-4 text-sm text-rose-700">{error}</p>}
 

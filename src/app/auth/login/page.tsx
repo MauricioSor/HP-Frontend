@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/components/AuthProvider'
+import { createClient } from '@/lib/client'
 import { irA } from '@/lib/navegacion'
+import { personaDeUsuario } from '@/lib/persona'
+import { resolverNombreUsuario } from '@/lib/usuario'
 import { GoogleAuthButton } from '@/components/GoogleAuthButton'
 import { LogIn, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
@@ -25,7 +28,26 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isLoading || !isAuthenticated || isSubmitting) return
-    irA(redirect)
+    let activo = true
+
+    async function seguir() {
+      const supabase = createClient()
+      const { data } = await supabase.auth.getUser()
+      if (!activo || !data.user) return
+      const usuario = await resolverNombreUsuario(supabase, data.user)
+      const persona = usuario ? await personaDeUsuario(supabase, usuario) : null
+      if (!activo) return
+      irA(
+        persona?.dni
+          ? redirect
+          : `/auth/datos-personales?next=${encodeURIComponent(redirect)}`
+      )
+    }
+
+    seguir()
+    return () => {
+      activo = false
+    }
   }, [isLoading, isAuthenticated, redirect, isSubmitting])
 
   async function handleSubmit(e: React.FormEvent) {

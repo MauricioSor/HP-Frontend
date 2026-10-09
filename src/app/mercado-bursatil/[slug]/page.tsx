@@ -16,6 +16,7 @@ import {
 import BotonFavorito from '@/components/BotonFavorito';
 import { LogoInstrumento, metaInstrumento } from '@/components/LogoInstrumento';
 import { cn } from '@/lib/utils';
+import AdBanner from '@/components/AdBanner';
 
 export function generateStaticParams() {
   return instruments.map((instrument) => ({
@@ -115,6 +116,8 @@ export default async function InstrumentDetailPage({ params }: { params: Promise
           </div>
         </div>
       </header>
+
+      <AdBanner slot="instrumento-horizontal" format="horizontal" className="mb-8" />
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="space-y-8 lg:col-span-2">
@@ -283,6 +286,7 @@ export default async function InstrumentDetailPage({ params }: { params: Promise
               Volver a todos los instrumentos
             </Link>
           </div>
+          <AdBanner slot="instrumento-lateral" format="rectangle" />
         </aside>
       </div>
     </div>

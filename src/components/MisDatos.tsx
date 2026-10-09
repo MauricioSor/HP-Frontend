@@ -53,6 +53,7 @@ export default function MisDatos() {
   const [editando, setEditando] = useState(false)
   const [dni, setDni] = useState('')
   const [nombre, setNombre] = useState('')
+  const [apellido, setApellido] = useState('')
   const [correo, setCorreo] = useState('')
   const [nacimiento, setNacimiento] = useState('')
   const [perfil, setPerfil] = useState('')
@@ -74,6 +75,7 @@ export default function MisDatos() {
     (filaUsuario: FilaUsuario | null, filaPersona: FilaPersona | null) => {
       setDni(filaPersona ? String(filaPersona.dni) : '')
       setNombre(filaPersona?.nombre ?? '')
+      setApellido(filaPersona?.apellido ?? '')
       setCorreo(filaPersona?.correo || user?.email || '')
       setNacimiento(filaPersona?.nacimiento ? filaPersona.nacimiento.slice(0, 10) : '')
       setPerfil(perfilDeFilas(filaUsuario, filaPersona) ?? '')
@@ -138,8 +140,8 @@ export default function MisDatos() {
       return
     }
 
-    if (!nombre.trim()) {
-      setError('El nombre es obligatorio.')
+    if (!nombre.trim() || !apellido.trim()) {
+      setError('El nombre y el apellido son obligatorios.')
       return
     }
 
@@ -148,6 +150,7 @@ export default function MisDatos() {
       await guardarDatosPersona(supabase, user.usuario, {
         dni: dniNumero,
         nombre: nombre.trim(),
+        apellido: apellido.trim(),
         correo: correo.trim() || user.email || null,
         nacimiento: nacimiento || null,
         perfil_inversor: normalizarPerfil(perfil),
@@ -270,14 +273,25 @@ export default function MisDatos() {
                   className={campo}
                 />
               </div>
-              <div className="sm:col-span-2">
-                <label className="mb-1 block text-sm font-medium text-stone-700">Nombre completo *</label>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-stone-700">Nombre *</label>
                 <input
                   type="text"
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
                   required
-                  placeholder="Juan Pérez"
+                  placeholder="Juan"
+                  className={campo}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-stone-700">Apellido *</label>
+                <input
+                  type="text"
+                  value={apellido}
+                  onChange={(e) => setApellido(e.target.value)}
+                  required
+                  placeholder="Pérez"
                   className={campo}
                 />
               </div>
@@ -358,6 +372,7 @@ export default function MisDatos() {
                 <Dato etiqueta="DNI" valor={vacio(persona.dni)} />
                 <Dato etiqueta="Nacimiento" valor={formatearFecha(persona.nacimiento, true)} />
                 <Dato etiqueta="Nombre" valor={vacio(persona.nombre)} />
+                <Dato etiqueta="Apellido" valor={vacio(persona.apellido)} />
                 <Dato etiqueta="Correo" valor={vacio(persona.correo)} />
                 <Dato etiqueta="Perfil inversor" valor={perfilPersona ? etiquetaPerfil(perfilPersona) : 'Sin cargar'} />
               </div>
