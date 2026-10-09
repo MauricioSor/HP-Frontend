@@ -1,4 +1,6 @@
+import type { ComponentType } from 'react'
 import type { LucideIcon } from 'lucide-react'
+import { ICONOS_INSTRUMENTO } from '@/components/IconosInstrumento'
 import {
   ChartCandlestick,
   ChartPie,
@@ -99,8 +101,8 @@ export function metaInstrumento(slug: string): MetaInstrumento {
 }
 
 const TAMANOS = {
-  md: { caja: 'h-14 w-14 rounded-2xl', icono: 'h-7 w-7' },
-  lg: { caja: 'h-20 w-20 rounded-[1.6rem]', icono: 'h-10 w-10' },
+  md: { caja: 'h-16 w-16 rounded-[1.3rem]', icono: 'h-9 w-9' },
+  lg: { caja: 'h-24 w-24 rounded-[1.9rem]', icono: 'h-14 w-14' },
 } as const
 
 /**
@@ -114,7 +116,7 @@ export function LogoTile({
   size = 'md',
   className,
 }: {
-  icon: LucideIcon
+  icon: ComponentType<{ className?: string }>
   gradiente: string
   sombra: string
   size?: keyof typeof TAMANOS
@@ -125,7 +127,7 @@ export function LogoTile({
   return (
     <div
       className={cn(
-        'relative grid shrink-0 place-items-center overflow-hidden bg-gradient-to-br text-white ring-1 ring-white/40',
+        'relative grid shrink-0 place-items-center overflow-hidden bg-gradient-to-br text-white ring-1 ring-inset ring-white/45',
         t.caja,
         gradiente,
         sombra,
@@ -133,10 +135,11 @@ export function LogoTile({
       )}
       aria-hidden="true"
     >
-      <span className="absolute -right-3 -top-3 h-9 w-9 rounded-full bg-white/25 blur-[2px]" />
-      <span className="absolute -bottom-4 -left-3 h-10 w-10 rounded-full bg-black/15" />
+      <span className="absolute -right-4 -top-4 h-12 w-12 rounded-full bg-white/25 blur-[3px]" />
+      <span className="absolute -bottom-5 -left-4 h-12 w-12 rounded-full bg-black/15" />
       <span className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent" />
-      <Icon className={cn('relative drop-shadow-[0_2px_3px_rgba(0,0,0,0.3)]', t.icono)} strokeWidth={1.9} />
+      <span className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/20 to-transparent" />
+      <Icon className={cn('relative drop-shadow-[0_3px_4px_rgba(0,0,0,0.35)]', t.icono)} />
     </div>
   )
 }
@@ -154,7 +157,7 @@ export function LogoInstrumento({
   const meta = metaInstrumento(slug)
   return (
     <LogoTile
-      icon={meta.icon}
+      icon={ICONOS_INSTRUMENTO[slug] ?? meta.icon}
       gradiente={meta.gradiente}
       sombra={meta.sombra}
       size={size}

@@ -1,9 +1,8 @@
 import Link from 'next/link';
 import { cryptoTopics } from '@/data/crypto-topics';
-import { ArrowUpRight, Bitcoin, Brain, Coins, Cpu, Flame, Rocket } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import BotonFavorito from '@/components/BotonFavorito';
-import { LogoTile } from '@/components/LogoInstrumento';
+import { LogoTema, metaTema } from '@/components/LogoCripto';
 import { cn } from '@/lib/utils';
 
 export const metadata = {
@@ -20,54 +19,6 @@ const getRiskColor = (risk: string) => {
     default: return 'bg-stone-100 text-stone-700';
   }
 };
-
-interface MetaTema {
-  icon: LucideIcon;
-  gradiente: string;
-  sombra: string;
-  halo: string;
-}
-
-const META_TEMAS: Record<string, MetaTema> = {
-  'principales-criptos': {
-    icon: Coins,
-    gradiente: 'from-amber-600 via-amber-500 to-yellow-300',
-    sombra: 'shadow-[0_14px_28px_-12px_rgba(217,119,6,0.75)]',
-    halo: 'bg-amber-300/30',
-  },
-  'fundamentos-bitcoin': {
-    icon: Bitcoin,
-    gradiente: 'from-orange-600 via-orange-500 to-amber-300',
-    sombra: 'shadow-[0_14px_28px_-12px_rgba(234,88,12,0.75)]',
-    halo: 'bg-orange-300/30',
-  },
-  minado: {
-    icon: Cpu,
-    gradiente: 'from-slate-800 via-slate-600 to-sky-400',
-    sombra: 'shadow-[0_14px_28px_-12px_rgba(51,65,85,0.75)]',
-    halo: 'bg-sky-300/30',
-  },
-  fomo: {
-    icon: Brain,
-    gradiente: 'from-violet-700 via-violet-500 to-fuchsia-300',
-    sombra: 'shadow-[0_14px_28px_-12px_rgba(109,40,217,0.7)]',
-    halo: 'bg-violet-300/30',
-  },
-  'quemado-monedas': {
-    icon: Flame,
-    gradiente: 'from-rose-700 via-red-500 to-orange-300',
-    sombra: 'shadow-[0_14px_28px_-12px_rgba(225,29,72,0.7)]',
-    halo: 'bg-rose-300/30',
-  },
-  memecoins: {
-    icon: Rocket,
-    gradiente: 'from-fuchsia-700 via-pink-500 to-amber-300',
-    sombra: 'shadow-[0_14px_28px_-12px_rgba(192,38,211,0.7)]',
-    halo: 'bg-fuchsia-300/30',
-  },
-};
-
-const META_DEFAULT = META_TEMAS['principales-criptos'];
 
 export default function CryptoPage() {
   return (
@@ -90,18 +41,13 @@ export default function CryptoPage() {
           </div>
           <div className="hidden justify-end lg:flex" aria-hidden="true">
             <div className="grid grid-cols-3 gap-4 [transform:rotate(-4deg)]">
-              {cryptoTopics.map((topic, i) => {
-                const meta = META_TEMAS[topic.slug] ?? META_DEFAULT;
-                return (
-                  <LogoTile
-                    key={topic.id}
-                    icon={meta.icon}
-                    gradiente={meta.gradiente}
-                    sombra={meta.sombra}
-                    className={cn('h-16 w-16', i % 2 === 0 ? 'translate-y-2' : '-translate-y-2')}
-                  />
-                );
-              })}
+              {cryptoTopics.map((topic, i) => (
+                <LogoTema
+                  key={topic.id}
+                  slug={topic.slug}
+                  className={cn(i % 2 === 0 ? 'translate-y-2' : '-translate-y-2')}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -109,7 +55,7 @@ export default function CryptoPage() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {cryptoTopics.map((topic) => {
-          const meta = META_TEMAS[topic.slug] ?? META_DEFAULT;
+          const meta = metaTema(topic.slug);
           return (
             <Link href={`/cripto/${topic.slug}`} key={topic.id} className="group">
               <article className="relative flex h-full flex-col overflow-hidden rounded-[1.8rem] border border-white/80 bg-white/80 p-6 shadow-[0_22px_50px_-36px_rgba(18,55,44,0.55)] ring-1 ring-stone-200/70 backdrop-blur-sm transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_30px_65px_-34px_rgba(18,55,44,0.6)]">
@@ -120,10 +66,8 @@ export default function CryptoPage() {
                   )}
                 />
                 <div className="relative mb-5 flex items-start justify-between">
-                  <LogoTile
-                    icon={meta.icon}
-                    gradiente={meta.gradiente}
-                    sombra={meta.sombra}
+                  <LogoTema
+                    slug={topic.slug}
                     className="transition duration-300 group-hover:-rotate-3 group-hover:scale-105"
                   />
                   <div className="flex items-center gap-2">

@@ -8,6 +8,7 @@ import { createClient } from '@/lib/client'
 import { listarFavoritos, toggleFavorito, type FavoritoGuardado } from '@/lib/cartera'
 import { itemCatalogo, tickersPorSlug } from '@/lib/catalogo'
 import BotonFavorito from '@/components/BotonFavorito'
+import { LogoItem } from '@/components/LogoItem'
 
 export default function CarteraPage() {
   const { user, isAuthenticated, isLoading } = useAuth()
@@ -156,9 +157,12 @@ export default function CarteraPage() {
           {items.map(({ item }) => (
             <article key={`${item.tipo}-${item.slug}`} className="flex flex-col rounded-[1.6rem] border border-stone-200 bg-white p-6">
               <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-stone-500">{item.tipo}</p>
-                  <h2 className="mt-1 text-2xl font-medium text-[#12372c]">{item.name}</h2>
+                <div className="flex items-center gap-4">
+                  <LogoItem slug={item.slug} tipo={item.tipo} className="h-14 w-14" />
+                  <div>
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-stone-500">{item.tipo}</p>
+                    <h2 className="mt-1 text-2xl font-medium leading-tight text-[#12372c]">{item.name}</h2>
+                  </div>
                 </div>
                 <BotonFavorito slug={item.slug} tipo={item.tipo} riesgo={item.risk} compacto />
               </div>

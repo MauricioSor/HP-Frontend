@@ -6,6 +6,8 @@ import { useAuth } from '@/components/AuthProvider'
 import { descripcionPerfil, etiquetaPerfil, recomendadosPorPerfil } from '@/lib/perfil'
 import { itemCatalogo } from '@/lib/catalogo'
 import BotonFavorito from '@/components/BotonFavorito'
+import { LogoItem } from '@/components/LogoItem'
+import { BannerPerfil } from '@/components/PerfilImagen'
 
 export default function RecomendadoPage() {
   const { user, isAuthenticated, isLoading } = useAuth()
@@ -52,7 +54,8 @@ export default function RecomendadoPage() {
     <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:py-16">
       <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-emerald-800">Para tu perfil</p>
       <h1 className="text-4xl font-medium text-[#12372c] sm:text-5xl">Recomendado</h1>
-      <div className="mt-6 max-w-2xl rounded-[1.4rem] border border-[#12372c]/10 bg-[#12372c] p-6 text-[#f4f1ea]">
+      <BannerPerfil perfil={perfil} className="mt-6 max-w-2xl" />
+      <div className="mt-4 max-w-2xl rounded-[1.4rem] border border-[#12372c]/10 bg-[#12372c] p-6 text-[#f4f1ea]">
         <p className="text-xs uppercase tracking-[0.2em] text-[#d4af6a]">Perfil {etiquetaPerfil(perfil)}</p>
         <p className="mt-2 text-lg text-emerald-50/85">{descripcionPerfil(perfil)}</p>
         <Link href="/test-inversor" className="mt-4 inline-flex text-sm font-semibold text-[#d4af6a]">
@@ -68,7 +71,10 @@ export default function RecomendadoPage() {
             item ? (
               <article key={item.slug} className="rounded-[1.6rem] border border-stone-200 bg-white p-6">
                 <div className="flex items-start justify-between gap-3">
-                  <h3 className="text-xl font-medium text-[#12372c]">{item.name}</h3>
+                  <div className="flex items-center gap-4">
+                    <LogoItem slug={item.slug} tipo="bursatil" className="h-14 w-14" />
+                    <h3 className="text-xl font-medium leading-tight text-[#12372c]">{item.name}</h3>
+                  </div>
                   <BotonFavorito slug={item.slug} tipo="bursatil" riesgo={item.risk} compacto />
                 </div>
                 <p className="mt-2 text-sm text-stone-600">{item.shortDescription}</p>
@@ -92,7 +98,10 @@ export default function RecomendadoPage() {
               item ? (
                 <article key={item.slug} className="rounded-[1.6rem] border border-stone-200 bg-white p-6">
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-xl font-medium text-[#12372c]">{item.name}</h3>
+                    <div className="flex items-center gap-4">
+                      <LogoItem slug={item.slug} tipo="cripto" className="h-14 w-14" />
+                      <h3 className="text-xl font-medium leading-tight text-[#12372c]">{item.name}</h3>
+                    </div>
                     <BotonFavorito slug={item.slug} tipo="cripto" riesgo={item.risk} compacto />
                   </div>
                   <p className="mt-2 text-sm text-stone-600">{item.shortDescription}</p>

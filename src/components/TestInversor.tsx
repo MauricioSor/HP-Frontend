@@ -7,18 +7,24 @@ import { preguntasTest, perfilDesdePuntaje } from '@/data/test-inversor'
 import { descripcionPerfil, etiquetaPerfil, type PerfilInversor } from '@/lib/perfil'
 import { useAuth } from '@/components/AuthProvider'
 import { createClient } from '@/lib/client'
+import { guardarPerfilInversor } from '@/lib/usuario'
+import { BannerPerfil, GaleriaPerfiles } from '@/components/PerfilImagen'
 
 export default function TestInversor() {
-  const { user, isAuthenticated, refrescarUsuario } = useAuth()
+  const { user, isAuthenticated, isLoading, refrescarUsuario } = useAuth()
   const [paso, setPaso] = useState(0)
   const [respuestas, setRespuestas] = useState<number[]>([])
   const [perfil, setPerfil] = useState<PerfilInversor | null>(null)
+  const [rehacer, setRehacer] = useState(false)
   const [guardando, setGuardando] = useState(false)
   const [guardado, setGuardado] = useState(false)
   const [error, setError] = useState('')
 
+  const perfilCuenta = user?.perfilInversor ?? null
+  const mostrarGuardado = Boolean(isAuthenticated && perfilCuenta && !rehacer)
   const pregunta = preguntasTest[paso]
-  const lista = paso < preguntasTest.length
+  const lista = !mostrarGuardado && paso < preguntasTest.length
+  const perfilVisible = mostrarGuardado ? perfilCuenta : perfil
 
   function elegir(puntos: number) {
     const nuevas = [...respuestas.slice(0, paso), puntos]
@@ -38,46 +44,57 @@ export default function TestInversor() {
     setPerfil(null)
     setGuardado(false)
     setError('')
+    setRehacer(true)
   }
 
   async function guardar() {
     if (!perfil || !user?.usuario) return
     setError('')
     setGuardando(true)
-    const supabase = createClient()
-    const { error: fallaUsuario } = await supabase
-      .from('usuario')
-      .update({ perfil_inversor: perfil })
-      .eq('usuario', user.usuario)
-
-    if (fallaUsuario) {
-      setError('No se pudo guardar el perfil. Probá de nuevo.')
+    try {
+      const supabase = createClient()
+      await guardarPerfilInversor(supabase, user.usuario, perfil)
+      await refrescarUsuario()
+      setGuardado(true)
+      setRehacer(false)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo guardar el perfil. Probá de nuevo.')
+    } finally {
       setGuardando(false)
-      return
     }
-
-    await supabase.from('persona').update({ perfil_inversor: perfil }).eq('usuario', user.usuario)
-    await refrescarUsuario()
-    setGuardado(true)
-    setGuardando(false)
   }
 
-  const progreso = Math.min(paso, preguntasTest.length) / preguntasTest.length
+  const progreso = mostrarGuardado ? 1 : Math.min(paso, preguntasTest.length) / preguntasTest.length
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-1 items-center justify-center py-24 text-stone-500">
+        Cargando tu perfil...
+      </div>
+    )
+  }
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-12 sm:py-16">
+    <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:py-16">
+      <div className="max-w-3xl">
       <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-emerald-800">Test del inversor</p>
-      <h1 className="text-4xl font-medium text-[#12372c] sm:text-5xl">¿Cuál es tu perfil?</h1>
+      <h1 className="text-4xl font-medium text-[#12372c] sm:text-5xl">
+        {mostrarGuardado ? 'Tu perfil' : '¿Cuál es tu perfil?'}
+      </h1>
       <p className="mt-4 text-lg text-stone-600">
-        Seis preguntas. Sin trampa: el resultado se guarda en tu cuenta y arma las recomendaciones.
+        {mostrarGuardado
+          ? 'Este es el perfil que quedó guardado en tu cuenta. Podés repetir el test si cambió tu situación.'
+          : 'Seis preguntas. Sin trampa: el resultado se guarda en tu cuenta y arma las recomendaciones.'}
       </p>
 
-      <div className="mt-8 h-1.5 overflow-hidden rounded-full bg-stone-200">
-        <div
-          className="h-full rounded-full bg-[#12372c] transition-all duration-500"
-          style={{ width: `${progreso * 100}%` }}
-        />
-      </div>
+      {!mostrarGuardado && (
+        <div className="mt-8 h-1.5 overflow-hidden rounded-full bg-stone-200">
+          <div
+            className="h-full rounded-full bg-[#12372c] transition-all duration-500"
+            style={{ width: `${progreso * 100}%` }}
+          />
+        </div>
+      )}
 
       {lista && pregunta && (
         <section className="mt-10">
@@ -111,11 +128,14 @@ export default function TestInversor() {
         </section>
       )}
 
-      {!lista && perfil && (
-        <section className="mt-10 rounded-[1.8rem] border border-stone-200 bg-white p-8 shadow-[0_24px_60px_-40px_rgba(18,55,44,0.5)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-800">Tu perfil</p>
-          <h2 className="mt-2 text-4xl font-medium text-[#12372c]">{etiquetaPerfil(perfil)}</h2>
-          <p className="mt-4 text-lg text-stone-600">{descripcionPerfil(perfil)}</p>
+      {perfilVisible && !lista && (
+        <section className="mt-10 rounded-[1.8rem] border border-stone-200 bg-white p-5 shadow-[0_24px_60px_-40px_rgba(18,55,44,0.5)] sm:p-8">
+          {isAuthenticated && <BannerPerfil perfil={perfilVisible} className="mb-8 animate-fade-up" />}
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-800">
+            {mostrarGuardado ? 'Guardado en tu cuenta' : 'Tu perfil'}
+          </p>
+          <h2 className="mt-2 text-4xl font-medium text-[#12372c]">{etiquetaPerfil(perfilVisible)}</h2>
+          <p className="mt-4 text-lg text-stone-600">{descripcionPerfil(perfilVisible)}</p>
 
           {!isAuthenticated && (
             <p className="mt-6 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900">
@@ -129,7 +149,7 @@ export default function TestInversor() {
           {error && <p className="mt-4 text-sm text-rose-700">{error}</p>}
 
           <div className="mt-8 flex flex-wrap gap-3">
-            {isAuthenticated && (
+            {isAuthenticated && !mostrarGuardado && (
               <button
                 type="button"
                 onClick={guardar}
@@ -159,6 +179,9 @@ export default function TestInversor() {
           </div>
         </section>
       )}
+      </div>
+
+      {isAuthenticated && perfilVisible && !lista && <GaleriaPerfiles actual={perfilVisible} />}
     </div>
   )
 }
