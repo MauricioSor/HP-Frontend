@@ -62,20 +62,20 @@ export async function guardarDatosPersona(
   opciones: { sincronizarPerfilUsuario?: boolean } = {}
 ) {
   const sincronizarPerfilUsuario = opciones.sincronizarPerfilUsuario ?? true
-  await asegurarFilaUsuario(supabase, usuario)
+  const cuenta = await asegurarFilaUsuario(supabase, usuario)
 
   if (sincronizarPerfilUsuario) {
     if (datos.perfil_inversor) {
-      await guardarPerfilInversor(supabase, usuario, datos.perfil_inversor)
+      await guardarPerfilInversor(supabase, cuenta, datos.perfil_inversor)
     } else {
       const { data, error } = await supabase
         .from('usuario')
         .update({ perfil_inversor: null })
-        .eq('usuario', usuario)
+        .eq('usuario', cuenta)
         .select('usuario')
         .maybeSingle()
       if (error) throw error
-      if (!data) throw new Error(`No hay una fila en usuario para "${usuario}".`)
+      if (!data) throw new Error(`No hay una fila en usuario para "${cuenta}".`)
     }
   }
 
@@ -86,16 +86,16 @@ export async function guardarDatosPersona(
     correo: datos.correo,
     nacimiento: datos.nacimiento,
     perfil_inversor: datos.perfil_inversor,
-    usuario,
+    usuario: cuenta,
   }
 
-  const existente = await personaDeUsuario(supabase, usuario)
+  const existente = await personaDeUsuario(supabase, cuenta)
   const { error } = existente
-    ? await supabase.from('persona').update(fila).eq('usuario', usuario)
+    ? await supabase.from('persona').update(fila).eq('usuario', cuenta)
     : await supabase.from('persona').insert(fila)
 
   if (error) throw new Error(mensajeErrorPersona(error))
-  return personaDeUsuario(supabase, usuario)
+  return personaDeUsuario(supabase, cuenta)
 }
 
 export function perfilDeFilas(usuario: FilaUsuario | null, persona: FilaPersona | null): PerfilInversor | null {

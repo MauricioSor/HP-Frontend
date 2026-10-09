@@ -70,12 +70,17 @@ export async function guardarPerfilInversor(
 }
 
 export async function asegurarFilaUsuario(supabase: SupabaseClient, nombreUsuario: string) {
+  const { data: canonico, error: errorRpc } = await supabase.rpc('asegurar_usuario_actual')
+  if (!errorRpc && canonico) return String(canonico)
+
   const { data } = await supabase.from('usuario').select('usuario').eq('usuario', nombreUsuario).maybeSingle()
-  if (data?.usuario) return
+  if (data?.usuario) return String(data.usuario)
+
   const { error } = await supabase.from('usuario').insert({
     usuario: nombreUsuario,
     rol: 0,
     estado: ESTADO_ACTIVO,
   })
-  if (error) throw new Error(error.message)
+  if (error) throw new Error(errorRpc?.message || error.message)
+  return nombreUsuario
 }

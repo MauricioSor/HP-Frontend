@@ -119,6 +119,79 @@ DROP POLICY IF EXISTS "Authenticated users can insert usuario" ON usuario;
 CREATE POLICY "Authenticated users can insert usuario" ON usuario
   FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 
+-- Crea la fila de usuario de la sesión si el alta de Auth no la dejó.
+CREATE OR REPLACE FUNCTION public.asegurar_usuario_actual()
+RETURNS text
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_email text;
+  v_meta text;
+  base_username text;
+  username text;
+  suffix int := 0;
+  encontrado text;
+BEGIN
+  IF auth.role() IS DISTINCT FROM 'authenticated' THEN
+    RAISE EXCEPTION 'tenes que estar autenticado';
+  END IF;
+
+  v_email := NULLIF(btrim(COALESCE(auth.jwt() ->> 'email', '')), '');
+  v_meta := NULLIF(btrim(COALESCE(auth.jwt() -> 'user_metadata' ->> 'usuario', '')), '');
+
+  IF v_meta IS NOT NULL THEN
+    SELECT u.usuario INTO encontrado FROM public.usuario u WHERE u.usuario = v_meta;
+    IF encontrado IS NOT NULL THEN
+      RETURN encontrado;
+    END IF;
+  END IF;
+
+  IF v_email IS NOT NULL THEN
+    SELECT p.usuario INTO encontrado
+    FROM public.persona p
+    WHERE p.correo = v_email AND p.usuario IS NOT NULL
+    LIMIT 1;
+    IF encontrado IS NOT NULL THEN
+      RETURN encontrado;
+    END IF;
+
+    SELECT u.usuario INTO encontrado FROM public.usuario u WHERE u.usuario = v_email;
+    IF encontrado IS NOT NULL THEN
+      RETURN encontrado;
+    END IF;
+  END IF;
+
+  IF v_meta IS NOT NULL THEN
+    base_username := v_meta;
+  ELSE
+    base_username := COALESCE(
+      NULLIF(regexp_replace(split_part(COALESCE(v_email, ''), '@', 1), '[^a-zA-Z0-9._]', '', 'g'), ''),
+      'user'
+    );
+    SELECT u.usuario INTO encontrado FROM public.usuario u WHERE u.usuario = base_username;
+    IF encontrado IS NOT NULL THEN
+      RETURN encontrado;
+    END IF;
+  END IF;
+
+  username := base_username;
+  WHILE EXISTS (SELECT 1 FROM public.usuario WHERE usuario = username) LOOP
+    suffix := suffix + 1;
+    username := base_username || suffix::text;
+  END LOOP;
+
+  INSERT INTO public.usuario (usuario, rol, estado)
+  VALUES (username, 0, '');
+
+  RETURN username;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.asegurar_usuario_actual() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.asegurar_usuario_actual() TO authenticated;
+
 DROP POLICY IF EXISTS "Authenticated users can update usuario" ON usuario;
 CREATE POLICY "Authenticated users can update usuario" ON usuario
   FOR UPDATE USING (auth.role() = 'authenticated')
