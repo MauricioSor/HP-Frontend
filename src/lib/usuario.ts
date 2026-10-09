@@ -1,5 +1,6 @@
 import type { SupabaseClient, User as SupabaseUser } from '@supabase/supabase-js'
 import type { PerfilInversor } from '@/lib/perfil'
+import { ESTADO_ACTIVO } from '@/lib/estados-usuario'
 
 export async function resolverNombreUsuario(
   supabase: SupabaseClient,
@@ -66,4 +67,15 @@ export async function guardarPerfilInversor(
 
   await supabase.from('persona').update({ perfil_inversor: perfil }).eq('usuario', usuario)
   return data
+}
+
+export async function asegurarFilaUsuario(supabase: SupabaseClient, nombreUsuario: string) {
+  const { data } = await supabase.from('usuario').select('usuario').eq('usuario', nombreUsuario).maybeSingle()
+  if (data?.usuario) return
+  const { error } = await supabase.from('usuario').insert({
+    usuario: nombreUsuario,
+    rol: 0,
+    estado: ESTADO_ACTIVO,
+  })
+  if (error) throw new Error(error.message)
 }

@@ -120,17 +120,27 @@ export default function Navbar() {
               )}
 
               <div className="flex items-center gap-2 rounded-full border border-stone-200/80 bg-white/70 py-1 pl-1 pr-1 xl:pr-1.5">
-                <span
+                <Link
+                  href="/mis-datos"
+                  title="Mis datos"
+                  aria-current={estaActivo(pathname, '/mis-datos') ? 'page' : undefined}
                   className={cn(
-                    'h-7 w-7 place-items-center rounded-full bg-gradient-to-br from-[#12372c] to-[#2e8a69] text-xs font-bold text-[#f4f1ea]',
-                    linkAdmin ? 'hidden xl:grid' : 'grid'
+                    'flex items-center gap-2 rounded-full py-0.5 pr-1 pl-0 transition-colors hover:bg-white',
+                    estaActivo(pathname, '/mis-datos') && 'ring-1 ring-[#12372c]/30'
                   )}
                 >
-                  {inicial}
-                </span>
-                <span className="hidden max-w-[7rem] truncate text-sm font-semibold text-[#12372c] xl:block">
-                  {user?.usuario}
-                </span>
+                  <span
+                    className={cn(
+                      'h-7 w-7 place-items-center rounded-full bg-gradient-to-br from-[#12372c] to-[#2e8a69] text-xs font-bold text-[#f4f1ea]',
+                      linkAdmin ? 'hidden xl:grid' : 'grid'
+                    )}
+                  >
+                    {inicial}
+                  </span>
+                  <span className="hidden max-w-[7rem] truncate text-sm font-semibold text-[#12372c] xl:block">
+                    {user?.usuario}
+                  </span>
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="grid h-7 w-7 place-items-center rounded-full text-stone-500 transition-colors hover:bg-rose-50 hover:text-rose-600"
@@ -186,15 +196,19 @@ export default function Navbar() {
           </div>
 
           <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-[#12372c]/[0.06] p-3 ring-1 ring-[#12372c]/10">
-            <div className="flex min-w-0 items-center gap-3">
+            <Link
+              href="/mis-datos"
+              onClick={() => setIsOpen(false)}
+              className="flex min-w-0 items-center gap-3"
+            >
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#12372c] to-[#2e8a69] font-bold text-[#f4f1ea]">
                 {inicial}
               </span>
               <div className="min-w-0">
-                <p className="text-xs text-stone-500">Sesión iniciada</p>
+                <p className="text-xs text-stone-500">Mis datos</p>
                 <p className="truncate font-semibold text-[#12372c]">{user?.usuario}</p>
               </div>
-            </div>
+            </Link>
             <button
               onClick={() => {
                 setIsOpen(false);

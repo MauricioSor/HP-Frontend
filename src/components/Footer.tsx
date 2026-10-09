@@ -18,6 +18,7 @@ export default function Footer() {
               <li><Link href="/cartera" className="transition hover:text-white">Cartera</Link></li>
               <li><Link href="/recomendado" className="transition hover:text-white">Recomendado</Link></li>
               <li><Link href="/test-inversor" className="transition hover:text-white">Test del inversor</Link></li>
+              <li><Link href="/mis-datos" className="transition hover:text-white">Mis datos</Link></li>
               <li><Link href="/suscripcion" className="transition hover:text-white">Plan Premium</Link></li>
             </ul>
           </div>

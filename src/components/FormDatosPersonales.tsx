@@ -7,8 +7,7 @@ import { useAuth } from '@/components/AuthProvider'
 import { irA, rutaSegura } from '@/lib/navegacion'
 import { Logo } from '@/components/Logo'
 import { etiquetaPerfil, normalizarPerfil, perfilesInversor } from '@/lib/perfil'
-import { ESTADO_ACTIVO } from '@/lib/estados-usuario'
-import { personaDeUsuario } from '@/lib/persona'
+import { guardarDatosPersona, personaDeUsuario } from '@/lib/persona'
 
 const supabase = createClient()
 
@@ -70,17 +69,6 @@ export default function FormDatosPersonales() {
     }
   }, [isLoading, isAuthenticated, user, precargado])
 
-  async function asegurarUsuario(nombreUsuario: string) {
-    const { data } = await supabase.from('usuario').select('usuario').eq('usuario', nombreUsuario).maybeSingle()
-    if (data?.usuario) return null
-    const { error: alta } = await supabase.from('usuario').insert({
-      usuario: nombreUsuario,
-      rol: 0,
-      estado: ESTADO_ACTIVO,
-    })
-    return alta?.message ?? null
-  }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
@@ -103,60 +91,23 @@ export default function FormDatosPersonales() {
 
     setIsSubmitting(true)
     try {
-      const errorUsuario = await asegurarUsuario(user.usuario)
-      if (errorUsuario) {
-        setError(errorUsuario)
-        return
-      }
-
-      const datos = {
-        nombre: nombre.trim(),
-        correo: correo.trim() || user.email || null,
-        nacimiento: nacimiento || null,
-        perfil_inversor: normalizarPerfil(perfil),
-        usuario: user.usuario,
-      }
-
       const perfilUsuario = normalizarPerfil(perfil)
-      if (perfilUsuario) {
-        const { data: usuarioActualizado, error: errorPerfil } = await supabase
-          .from('usuario')
-          .update({ perfil_inversor: perfilUsuario })
-          .eq('usuario', user.usuario)
-          .select('usuario')
-          .maybeSingle()
-        if (errorPerfil || !usuarioActualizado) {
-          setError(errorPerfil?.message || 'No se pudo guardar el perfil en usuario.')
-          return
-        }
-      }
-
-      if (dniFijo) {
-        const { error: actualizacion } = await supabase.from('persona').update(datos).eq('usuario', user.usuario)
-        if (actualizacion) {
-          setError(actualizacion.message)
-          return
-        }
-      } else {
-        const { error: alta } = await supabase.from('persona').insert({
+      await guardarDatosPersona(
+        supabase,
+        user.usuario,
+        {
           dni: dniNumero,
-          ...datos,
-        })
-        if (alta) {
-          if (alta.code === '23505') {
-            setError('Ese DNI ya está cargado en otra cuenta.')
-          } else if (alta.code === '23503') {
-            setError('La cuenta de usuario todavía no está lista. Recargá e intentá de nuevo.')
-          } else {
-            setError(alta.message)
-          }
-          return
-        }
-      }
+          nombre: nombre.trim(),
+          correo: correo.trim() || user.email || null,
+          nacimiento: nacimiento || null,
+          perfil_inversor: perfilUsuario,
+        },
+        { sincronizarPerfilUsuario: Boolean(perfilUsuario) }
+      )
 
       irA(next)
-    } catch {
-      setError('Error de conexión. Intentá de nuevo.')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error de conexión. Intentá de nuevo.')
     } finally {
       setIsSubmitting(false)
     }
