@@ -110,7 +110,7 @@ export default function Home() {
             ['100%', 'Acceso libre'],
             ['Guías', 'Impuestos claros'],
           ].map(([valor, label]) => (
-            <div key={label} className="bg-[#f7f4ee] px-6 py-8 text-center">
+            <div key={label} className="bg-white/80 px-6 py-8 text-center">
               <div className="font-heading text-3xl text-[#12372c] sm:text-4xl">{valor}</div>
               <div className="mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">{label}</div>
             </div>
@@ -199,7 +199,7 @@ export default function Home() {
                   </tr>
                 </tbody>
               </table>
-              <div className="border-t border-stone-100 bg-[#f7f4ee] px-6 py-3 text-xs text-stone-500">
+              <div className="border-t border-stone-100 bg-[#f1f6f2] px-6 py-3 text-xs text-stone-500">
                 * Ilustrativo. Consultá un contador.{' '}
                 <Link href="/guias/bonos-soberanos#impuestos" className="font-semibold text-emerald-800">
                   Ver la guía de bonos

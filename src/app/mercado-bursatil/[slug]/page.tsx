@@ -1,8 +1,21 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { instruments } from '@/data/instruments';
-import { ChevronRight, Calculator, AlertCircle, Info, ShieldAlert, BarChart3, Clock, DollarSign, BookOpen } from 'lucide-react';
+import {
+  ChevronRight,
+  Calculator,
+  AlertCircle,
+  Info,
+  ShieldAlert,
+  Clock,
+  DollarSign,
+  BookOpen,
+  ArrowLeft,
+  TrendingUp,
+} from 'lucide-react';
 import BotonFavorito from '@/components/BotonFavorito';
+import { LogoInstrumento, metaInstrumento } from '@/components/LogoInstrumento';
+import { cn } from '@/lib/utils';
 
 export function generateStaticParams() {
   return instruments.map((instrument) => ({
@@ -13,11 +26,11 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const instrument = instruments.find((i) => i.slug === slug);
-  
+
   if (!instrument) {
     return { title: 'Instrumento no encontrado' };
   }
-  
+
   return {
     title: `${instrument.name} | Mercado Bursátil | FinBootcamp`,
     description: instrument.shortDescription,
@@ -26,70 +39,89 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 const getRiskColor = (risk: string) => {
   switch (risk?.toLowerCase()) {
-    case 'bajo': return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
-    case 'medio': return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 border-amber-200 dark:border-amber-800';
-    case 'alto': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border-red-200 dark:border-red-800';
-    default: return 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700';
+    case 'bajo': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+    case 'medio': return 'bg-amber-100 text-amber-900 border-amber-200';
+    case 'alto': return 'bg-rose-100 text-rose-800 border-rose-200';
+    default: return 'bg-stone-100 text-stone-700 border-stone-200';
   }
 };
 
 const getTaxColor = (status: string) => {
-  return status?.toLowerCase().includes('exento') 
-    ? 'text-emerald-600 dark:text-emerald-400 font-medium' 
-    : 'text-red-600 dark:text-red-400 font-medium';
+  return status?.toLowerCase().includes('exento')
+    ? 'text-emerald-700 font-semibold'
+    : 'text-rose-700 font-semibold';
 };
+
+const tarjeta =
+  'rounded-[1.8rem] bg-white/85 p-6 shadow-[0_22px_50px_-38px_rgba(18,55,44,0.55)] ring-1 ring-stone-200/70 backdrop-blur-sm md:p-8';
 
 export default async function InstrumentDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const instrument = instruments.find((i) => i.slug === slug);
-  
+
   if (!instrument) {
     notFound();
   }
 
+  const meta = metaInstrumento(instrument.slug);
+  const tasaPorcentaje = Math.round(instrument.defaultRate * 100);
+
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
       {/* Breadcrumb */}
-      <nav className="flex text-sm text-slate-500 dark:text-slate-400 mb-8 items-center space-x-2">
-        <Link href="/" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Inicio</Link>
-        <ChevronRight className="w-4 h-4" />
-        <Link href="/mercado-bursatil" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Mercado Bursátil</Link>
-        <ChevronRight className="w-4 h-4" />
-        <span className="text-slate-900 dark:text-slate-200 font-medium">{instrument.name}</span>
+      <nav className="mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-stone-500">
+        <Link href="/" className="transition-colors hover:text-[#12372c]">Inicio</Link>
+        <ChevronRight className="h-4 w-4 text-stone-400" />
+        <Link href="/mercado-bursatil" className="transition-colors hover:text-[#12372c]">Mercado Bursátil</Link>
+        <ChevronRight className="h-4 w-4 text-stone-400" />
+        <span className="font-semibold text-[#12372c]">{instrument.name}</span>
       </nav>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-10">
-          {/* Header */}
-          <div>
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="p-4 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl">
-                <BarChart3 className="w-8 h-8" />
-              </div>
-              <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
-                {instrument.name}
-              </h1>
-            </div>
-            <div className="mb-2">
-              <BotonFavorito slug={instrument.slug} tipo="bursatil" riesgo={instrument.risk} />
-            </div>
-            
-            <div className="flex flex-wrap gap-3 mt-4">
-              <span className={`px-3 py-1 text-sm font-medium rounded-full border ${getRiskColor(instrument.risk)} flex items-center`}>
-                <ShieldAlert className="w-4 h-4 mr-2" />
+      {/* Header */}
+      <header className="relative mb-8 overflow-hidden rounded-[2rem] bg-[#12372c] text-[#f4f1ea] shadow-[0_40px_80px_-45px_rgba(18,55,44,0.8)]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_10%_-30%,rgba(212,175,106,0.28),transparent_45%),radial-gradient(ellipse_at_100%_0%,rgba(110,231,183,0.2),transparent_42%)]" />
+        <div className="grain-overlay" />
+        <div className="relative flex flex-col gap-6 px-6 py-8 sm:flex-row sm:items-center sm:px-10 sm:py-10">
+          <LogoInstrumento slug={instrument.slug} size="lg" />
+          <div className="min-w-0 flex-1">
+            <h1 className="text-3xl font-medium sm:text-5xl">{instrument.name}</h1>
+            <p className="mt-3 max-w-2xl text-emerald-50/80">{instrument.shortDescription}</p>
+            <div className="mt-5 flex flex-wrap items-center gap-2.5">
+              <span
+                className={cn(
+                  'inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-semibold',
+                  getRiskColor(instrument.risk)
+                )}
+              >
+                <ShieldAlert className="h-4 w-4" />
                 Riesgo {instrument.risk}
               </span>
-              <span className="px-3 py-1 text-sm font-medium rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center">
-                <Clock className="w-4 h-4 mr-2" />
-                Horizonte: {instrument.horizon}
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-sm font-medium text-emerald-50">
+                <Clock className="h-4 w-4" />
+                {instrument.horizon}
               </span>
+              {meta.etiquetas.map((etiqueta) => (
+                <span
+                  key={etiqueta}
+                  className="rounded-md border border-white/15 bg-white/5 px-2 py-1 font-mono text-xs text-emerald-100/80"
+                >
+                  {etiqueta}
+                </span>
+              ))}
             </div>
           </div>
+          <div className="self-start sm:self-center">
+            <BotonFavorito slug={instrument.slug} tipo="bursatil" riesgo={instrument.risk} />
+          </div>
+        </div>
+      </header>
 
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className="space-y-8 lg:col-span-2">
           {instrument.slug === 'bonos-soberanos' && (
             <Link
               href="/guias/bonos-soberanos"
-              className="flex items-start gap-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-5 hover:bg-emerald-100/70"
+              className="flex items-start gap-4 rounded-[1.6rem] border border-emerald-200 bg-emerald-50/90 p-5 transition hover:bg-emerald-100/80"
             >
               <BookOpen className="mt-0.5 h-6 w-6 shrink-0 text-emerald-700" />
               <div>
@@ -102,55 +134,65 @@ export default async function InstrumentDetailPage({ params }: { params: Promise
             </Link>
           )}
 
-          {/* Section 1: ¿Qué es? */}
-          <section className="bg-white dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-700">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 flex items-center">
-              <Info className="w-6 h-6 mr-2 text-blue-600 dark:text-blue-400" />
+          {/* ¿Qué es? */}
+          <section className={tarjeta}>
+            <h2 className="mb-4 flex items-center gap-3 text-2xl font-medium text-[#12372c]">
+              <span className="grid h-9 w-9 place-items-center rounded-xl bg-sky-100 text-sky-700">
+                <Info className="h-5 w-5" />
+              </span>
               ¿Qué es?
             </h2>
-            <div className="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300">
-              <p className="whitespace-pre-line">{instrument.description}</p>
-            </div>
+            <p className="whitespace-pre-line leading-relaxed text-stone-700">{instrument.description}</p>
           </section>
 
-          {/* Section 2: Ejemplo Práctico */}
+          {/* Ejemplo práctico */}
           {instrument.example && (
-            <section className="bg-blue-50 dark:bg-blue-900/10 rounded-2xl p-6 md:p-8 border border-blue-100 dark:border-blue-900/30">
-              <h2 className="text-xl font-bold text-blue-900 dark:text-blue-100 mb-4 flex items-center">
-                <Calculator className="w-5 h-5 mr-2" />
-                Ejemplo Práctico
+            <section className="rounded-[1.8rem] border border-sky-200/80 bg-sky-50/80 p-6 md:p-8">
+              <h2 className="mb-4 flex items-center gap-3 text-xl font-medium text-sky-950">
+                <span className="grid h-9 w-9 place-items-center rounded-xl bg-white text-sky-700 ring-1 ring-sky-200">
+                  <Calculator className="h-5 w-5" />
+                </span>
+                Ejemplo práctico
               </h2>
-              <p className="text-blue-800 dark:text-blue-200">{instrument.example}</p>
+              <p className="leading-relaxed text-sky-900">{instrument.example}</p>
             </section>
           )}
 
-          {/* Section 3: Información Impositiva */}
+          {/* Información impositiva */}
           {instrument.taxInfo && (
-            <section className="bg-white dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center">
-                <AlertCircle className="w-6 h-6 mr-2 text-amber-500" />
-                Información Impositiva
+            <section className={tarjeta}>
+              <h2 className="mb-6 flex items-center gap-3 text-2xl font-medium text-[#12372c]">
+                <span className="grid h-9 w-9 place-items-center rounded-xl bg-amber-100 text-amber-700">
+                  <AlertCircle className="h-5 w-5" />
+                </span>
+                Información impositiva
               </h2>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+              <div className="overflow-hidden rounded-2xl ring-1 ring-stone-200">
+                <table className="w-full border-collapse text-left">
                   <thead>
-                    <tr className="border-b border-slate-200 dark:border-slate-700">
-                      <th className="py-3 px-4 font-semibold text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 rounded-tl-lg">Impuesto</th>
-                      <th className="py-3 px-4 font-semibold text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 rounded-tr-lg">Tratamiento</th>
+                    <tr className="bg-[#12372c] text-[#f4f1ea]">
+                      <th className="px-4 py-3 font-medium">Impuesto</th>
+                      <th className="px-4 py-3 font-medium">Tratamiento</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr className="border-b border-slate-100 dark:border-slate-700/50">
-                      <td className="py-4 px-4 text-slate-700 dark:text-slate-300">Impuesto a las Ganancias</td>
-                      <td className={`py-4 px-4 ${getTaxColor(instrument.taxInfo.ganancias)}`}>{instrument.taxInfo.ganancias}</td>
+                  <tbody className="divide-y divide-stone-100">
+                    <tr>
+                      <td className="px-4 py-4 text-stone-700">Impuesto a las Ganancias</td>
+                      <td className={`px-4 py-4 capitalize ${getTaxColor(instrument.taxInfo.ganancias)}`}>
+                        {instrument.taxInfo.ganancias}
+                      </td>
                     </tr>
-                    <tr className="border-b border-slate-100 dark:border-slate-700/50">
-                      <td className="py-4 px-4 text-slate-700 dark:text-slate-300">Bienes Personales</td>
-                      <td className={`py-4 px-4 ${getTaxColor(instrument.taxInfo.bienesPersonales)}`}>{instrument.taxInfo.bienesPersonales}</td>
+                    <tr className="bg-[#faf9f5]">
+                      <td className="px-4 py-4 text-stone-700">Bienes Personales</td>
+                      <td className={`px-4 py-4 capitalize ${getTaxColor(instrument.taxInfo.bienesPersonales)}`}>
+                        {instrument.taxInfo.bienesPersonales}
+                      </td>
                     </tr>
-                    <tr className="border-b border-slate-100 dark:border-slate-700/50">
-                      <td className="py-4 px-4 text-slate-700 dark:text-slate-300">Impuesto a los Débitos y Créditos (ITF)</td>
-                      <td className={`py-4 px-4 font-semibold ${instrument.taxInfo.itf ? 'text-amber-600' : 'text-emerald-600'}`}>
+                    <tr>
+                      <td className="px-4 py-4 text-stone-700">Impuesto a los Débitos y Créditos (ITF)</td>
+                      <td
+                        className={`px-4 py-4 font-semibold ${instrument.taxInfo.itf ? 'text-amber-700' : 'text-emerald-700'}`}
+                      >
                         {instrument.taxInfo.itf ? 'Aplica' : 'No aplica'}
                       </td>
                     </tr>
@@ -158,22 +200,26 @@ export default async function InstrumentDetailPage({ params }: { params: Promise
                 </table>
               </div>
               {instrument.taxInfo.notes && (
-                <p className="mt-4 text-sm text-slate-500 dark:text-slate-400 italic">
-                  Nota: {instrument.taxInfo.notes}
-                </p>
+                <p className="mt-4 text-sm italic text-stone-500">Nota: {instrument.taxInfo.notes}</p>
               )}
             </section>
           )}
 
-          {/* Section 4: Simulá tu inversión */}
-          <section className="bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-2xl p-6 md:p-8 text-white shadow-md">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          {/* Simulá tu inversión */}
+          <section className="relative overflow-hidden rounded-[1.8rem] bg-gradient-to-br from-[#12372c] via-[#17503f] to-[#2e8a69] p-6 text-white shadow-[0_30px_60px_-36px_rgba(18,55,44,0.8)] md:p-8">
+            <div className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-[#d4af6a]/25 blur-3xl" />
+            <div className="relative flex flex-col items-center justify-between gap-6 md:flex-row">
               <div>
-                <h2 className="text-2xl font-bold mb-2">Simulá tu inversión</h2>
-                <p className="text-emerald-100 max-w-md">Descubrí cuánto podría crecer tu capital invirtiendo en {instrument.name} a lo largo del tiempo.</p>
+                <h2 className="mb-2 text-2xl font-medium">Simulá tu inversión</h2>
+                <p className="max-w-md text-emerald-100/90">
+                  Descubrí cuánto podría crecer tu capital invirtiendo en {instrument.name} a lo largo del tiempo.
+                </p>
               </div>
-              <Link href={`/simulador?instrument=${instrument.slug}`} className="px-6 py-3 bg-white text-emerald-700 hover:bg-emerald-50 rounded-lg font-semibold transition-colors shadow-sm whitespace-nowrap flex items-center">
-                <Calculator className="w-5 h-5 mr-2" />
+              <Link
+                href={`/simulador?instrument=${instrument.slug}`}
+                className="flex items-center whitespace-nowrap rounded-full bg-[#f4f1ea] px-6 py-3 font-semibold text-[#12372c] shadow-sm transition-colors hover:bg-white"
+              >
+                <Calculator className="mr-2 h-5 w-5" />
                 Ir al simulador
               </Link>
             </div>
@@ -181,53 +227,63 @@ export default async function InstrumentDetailPage({ params }: { params: Promise
         </div>
 
         {/* Sidebar */}
-        <div className="hidden lg:block">
-          <div className="sticky top-8 bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Resumen del Instrumento</h3>
-            
+        <aside className="hidden lg:block">
+          <div className={cn(tarjeta, 'sticky top-28 p-6 md:p-6')}>
+            <h3 className="mb-6 text-lg font-medium text-[#12372c]">Resumen del instrumento</h3>
+
             <div className="space-y-6">
               <div>
-                <span className="text-sm text-slate-500 dark:text-slate-400 block mb-1">Riesgo</span>
-                <span className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${getRiskColor(instrument.risk)}`}>
+                <span className="mb-1 block text-sm text-stone-500">Riesgo</span>
+                <span
+                  className={cn(
+                    'inline-flex rounded-full border px-3 py-1 text-sm font-semibold capitalize',
+                    getRiskColor(instrument.risk)
+                  )}
+                >
                   {instrument.risk}
                 </span>
               </div>
-              
+
               <div>
-                <span className="text-sm text-slate-500 dark:text-slate-400 block mb-1">Horizonte Recomendado</span>
-                <span className="text-slate-900 dark:text-white font-medium flex items-center">
-                  <Clock className="w-4 h-4 mr-2 text-slate-400" />
+                <span className="mb-1 block text-sm text-stone-500">Horizonte recomendado</span>
+                <span className="flex items-center font-medium text-[#12372c]">
+                  <Clock className="mr-2 h-4 w-4 text-stone-400" />
                   {instrument.horizon}
                 </span>
               </div>
-              
+
               {instrument.minInvestment && (
                 <div>
-                  <span className="text-sm text-slate-500 dark:text-slate-400 block mb-1">Inversión Mínima</span>
-                  <span className="text-slate-900 dark:text-white font-medium flex items-center">
-                    <DollarSign className="w-4 h-4 mr-2 text-slate-400" />
+                  <span className="mb-1 block text-sm text-stone-500">Inversión mínima</span>
+                  <span className="flex items-center font-medium text-[#12372c]">
+                    <DollarSign className="mr-2 h-4 w-4 text-stone-400" />
                     {instrument.minInvestment}
                   </span>
                 </div>
               )}
-              
-              {instrument.defaultRate && (
+
+              {instrument.defaultRate > 0 && (
                 <div>
-                  <span className="text-sm text-slate-500 dark:text-slate-400 block mb-1">Rendimiento Histórico/Estimado</span>
-                  <span className="text-slate-900 dark:text-white font-medium text-xl text-emerald-600 dark:text-emerald-400">
-                    ~{instrument.defaultRate}% <span className="text-sm font-normal text-slate-500">anual</span>
+                  <span className="mb-1 block text-sm text-stone-500">Tasa de referencia (simulador)</span>
+                  <span className="flex items-center gap-2 font-heading text-3xl text-emerald-700">
+                    <TrendingUp className="h-6 w-6" />~{tasaPorcentaje}%
+                    <span className="font-sans text-sm font-normal text-stone-500">anual</span>
                   </span>
                 </div>
               )}
             </div>
-            
-            <hr className="my-6 border-slate-200 dark:border-slate-700" />
-            
-            <Link href="/mercado-bursatil" className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium flex items-center justify-center">
+
+            <hr className="my-6 border-stone-200" />
+
+            <Link
+              href="/mercado-bursatil"
+              className="flex items-center justify-center gap-2 text-sm font-semibold text-[#12372c] transition hover:text-emerald-700"
+            >
+              <ArrowLeft className="h-4 w-4" />
               Volver a todos los instrumentos
             </Link>
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   );

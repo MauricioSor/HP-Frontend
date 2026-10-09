@@ -104,9 +104,44 @@ const TAMANOS = {
 } as const
 
 /**
- * Logo propio de cada instrumento: tile con degradé, brillo interior,
- * círculos decorativos y el ícono representativo.
+ * Tile genérico de logo: degradé, brillo interior, círculos decorativos
+ * y un ícono. Lo usan los instrumentos y los temas cripto.
  */
+export function LogoTile({
+  icon: Icon,
+  gradiente,
+  sombra,
+  size = 'md',
+  className,
+}: {
+  icon: LucideIcon
+  gradiente: string
+  sombra: string
+  size?: keyof typeof TAMANOS
+  className?: string
+}) {
+  const t = TAMANOS[size]
+
+  return (
+    <div
+      className={cn(
+        'relative grid shrink-0 place-items-center overflow-hidden bg-gradient-to-br text-white ring-1 ring-white/40',
+        t.caja,
+        gradiente,
+        sombra,
+        className
+      )}
+      aria-hidden="true"
+    >
+      <span className="absolute -right-3 -top-3 h-9 w-9 rounded-full bg-white/25 blur-[2px]" />
+      <span className="absolute -bottom-4 -left-3 h-10 w-10 rounded-full bg-black/15" />
+      <span className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent" />
+      <Icon className={cn('relative drop-shadow-[0_2px_3px_rgba(0,0,0,0.3)]', t.icono)} strokeWidth={1.9} />
+    </div>
+  )
+}
+
+/** Logo propio de cada instrumento bursátil. */
 export function LogoInstrumento({
   slug,
   size = 'md',
@@ -117,24 +152,13 @@ export function LogoInstrumento({
   className?: string
 }) {
   const meta = metaInstrumento(slug)
-  const Icon = meta.icon
-  const t = TAMANOS[size]
-
   return (
-    <div
-      className={cn(
-        'relative grid shrink-0 place-items-center overflow-hidden bg-gradient-to-br text-white ring-1 ring-white/40',
-        t.caja,
-        meta.gradiente,
-        meta.sombra,
-        className
-      )}
-      aria-hidden="true"
-    >
-      <span className="absolute -right-3 -top-3 h-9 w-9 rounded-full bg-white/25 blur-[2px]" />
-      <span className="absolute -bottom-4 -left-3 h-10 w-10 rounded-full bg-black/15" />
-      <span className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent" />
-      <Icon className={cn('relative drop-shadow-[0_2px_3px_rgba(0,0,0,0.3)]', t.icono)} strokeWidth={1.9} />
-    </div>
+    <LogoTile
+      icon={meta.icon}
+      gradiente={meta.gradiente}
+      sombra={meta.sombra}
+      size={size}
+      className={className}
+    />
   )
 }
