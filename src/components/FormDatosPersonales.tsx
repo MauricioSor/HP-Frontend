@@ -37,29 +37,30 @@ export default function FormDatosPersonales() {
       irA('/auth/login?redirect=/auth/datos-personales')
       return
     }
-    if (precargado === user.usuario) return
+    const cuenta = user
+    if (precargado === cuenta.usuario) return
 
     let activo = true
 
     async function precargar() {
-      const fila = await personaDeUsuario(supabase, user.usuario)
+      const fila = await personaDeUsuario(supabase, cuenta.usuario)
       if (!activo) return
 
       if (fila) {
         setDni(String(fila.dni))
         setDniFijo(true)
         setNombre(fila.nombre ?? '')
-        setCorreo(fila.correo || user.email || '')
+        setCorreo(fila.correo || cuenta.email || '')
         setNacimiento(fila.nacimiento ? fila.nacimiento.slice(0, 10) : '')
-        setPerfil(normalizarPerfil(fila.perfil_inversor) ?? user.perfilInversor ?? '')
+        setPerfil(normalizarPerfil(fila.perfil_inversor) ?? cuenta.perfilInversor ?? '')
       } else {
         const nombreMeta =
-          (typeof user.email === 'string' && user.email) || ''
+          (typeof cuenta.email === 'string' && cuenta.email) || ''
         setCorreo(nombreMeta)
         setNombre('')
-        setPerfil(user.perfilInversor ?? '')
+        setPerfil(cuenta.perfilInversor ?? '')
       }
-      setPrecargado(user.usuario)
+      setPrecargado(cuenta.usuario)
       setCargando(false)
     }
 
