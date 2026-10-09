@@ -18,15 +18,23 @@ const libre = [
 ]
 
 export default function SuscripcionPage() {
-  const { user, isAuthenticated, isLoading } = useAuth()
+  const { user, isAuthenticated, isLoading, refrescarUsuario } = useAuth()
   const [enviando, setEnviando] = useState(false)
   const [error, setError] = useState('')
+  const [modalAbierto, setModalAbierto] = useState(false)
 
   async function cambiarPlan(plan: 'premium' | 'libre') {
     setError('')
     setEnviando(true)
     const supabase = createClient()
     const { error: fallo } = await supabase.auth.updateUser({ data: { plan } })
+    if (!fallo) {
+      try {
+        await refrescarUsuario()
+      } catch {
+        // El estado se actualiza en el próximo cambio de sesión
+      }
+    }
     setEnviando(false)
     if (fallo) {
       setError('No se pudo actualizar el plan. Intentá de nuevo.')
@@ -96,6 +104,13 @@ export default function SuscripcionPage() {
                 </p>
                 <button
                   type="button"
+                  onClick={() => setModalAbierto(true)}
+                  className="inline-flex w-full items-center justify-center rounded-lg bg-[#f4f1ea] px-5 py-3 font-semibold text-[#12372c] hover:bg-white"
+                >
+                  Gestionar suscripción
+                </button>
+                <button
+                  type="button"
                   onClick={() => cambiarPlan('libre')}
                   disabled={enviando}
                   className="text-sm text-emerald-100 underline-offset-2 hover:underline disabled:opacity-60"
@@ -106,11 +121,11 @@ export default function SuscripcionPage() {
             ) : (
               <button
                 type="button"
-                onClick={() => cambiarPlan('premium')}
+                onClick={() => setModalAbierto(true)}
                 disabled={enviando}
                 className="inline-flex w-full items-center justify-center rounded-lg bg-[#f4f1ea] px-5 py-3 font-semibold text-[#12372c] hover:bg-white disabled:opacity-60"
               >
-                {enviando ? 'Activando...' : 'Suscribirme'}
+                Suscribirme
               </button>
             )}
             {error && <p className="mt-3 text-sm text-amber-200">{error}</p>}
@@ -121,6 +136,52 @@ export default function SuscripcionPage() {
       <p className="mx-auto mt-8 max-w-2xl text-center text-sm text-slate-500">
         El botón guarda el plan en tu cuenta. Todavía no cobra la tarjeta. Con Premium estos espacios dejan de mostrarse.
       </p>
+
+      {modalAbierto && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => setModalAbierto(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Pago Premium no disponible"
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-md rounded-2xl border border-stone-200 bg-white p-8 text-center shadow-xl"
+          >
+            <h2 className="text-2xl font-medium text-[#12372c]">
+              La página de pago Premium aún no está disponible
+            </h2>
+            <p className="mt-3 text-slate-600">
+              Estamos trabajando para habilitar el pago. Por ahora no podés completar la
+              suscripción.
+            </p>
+            <p className="mt-3 text-sm text-slate-500">
+              Tu plan actual: {premium ? 'Premium' : 'Libre'}
+              {enviando ? ' (actualizando...)' : ''}
+            </p>
+            {error && <p className="mt-3 text-sm text-amber-600">{error}</p>}
+            <button
+              type="button"
+              onClick={() => setModalAbierto(false)}
+              className="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-[#12372c] px-5 py-3 font-semibold text-[#f4f1ea] hover:bg-[#1a4a3c]"
+            >
+              Entendido
+            </button>
+            {/* Botón invisible solo para testear el modo premium:
+                un clic te hace premium, otro clic te vuelve a libre. */}
+            <button
+              type="button"
+              data-testid="premium-test-toggle"
+              aria-label="premium-test-toggle"
+              title="premium-test-toggle"
+              onClick={() => cambiarPlan(premium ? 'libre' : 'premium')}
+              disabled={enviando}
+              className="absolute bottom-3 right-3 h-12 w-12 cursor-default opacity-0"
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

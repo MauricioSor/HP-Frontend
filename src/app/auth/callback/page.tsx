@@ -90,7 +90,7 @@ export default function AuthCallbackPage() {
       const destinoSeguro = rutaSegura(next)
       const destino = tienePersona
         ? destinoSeguro
-        : `/auth/datos-personales?origen=google&next=${encodeURIComponent(destinoSeguro)}`
+        : `/auth/datos-personales?next=${encodeURIComponent(destinoSeguro)}`
       setMensaje(tienePersona ? 'Entrando...' : 'Finalizá el registro...')
       salirA(destino)
     }
