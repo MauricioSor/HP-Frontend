@@ -4,6 +4,7 @@ import './globals.css';
 import { AuthProvider } from '@/components/AuthProvider';
 import ConditionalLayout from '@/components/ConditionalLayout';
 import { ADSENSE_CLIENT } from '@/lib/adsense';
+import { urlDelSitio } from '@/lib/sitio';
 
 const fraunces = Fraunces({
   variable: '--font-fraunces',
@@ -15,13 +16,25 @@ const sourceSans = Source_Sans_3({
   subsets: ['latin'],
 });
 
+const descripcion =
+  'Plataforma educativa sobre el mercado financiero argentino. Aprendé a invertir, simulá rendimientos y conocé los instrumentos disponibles.'
+
 export const metadata: Metadata = {
+  metadataBase: new URL(urlDelSitio()),
   title: 'FinBootcamp - Educación Financiera',
-  description: 'Plataforma educativa sobre el mercado financiero argentino. Aprendé a invertir, simulá rendimientos y conocé los instrumentos disponibles.',
-  icons: {
-    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
-    shortcut: '/icon.svg',
-    apple: '/icon.svg',
+  description: descripcion,
+  applicationName: 'FinBootcamp',
+  openGraph: {
+    title: 'FinBootcamp',
+    description: descripcion,
+    siteName: 'FinBootcamp',
+    locale: 'es_AR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'FinBootcamp',
+    description: descripcion,
   },
 };
 

@@ -5,7 +5,20 @@ import { personaDeUsuario } from '@/lib/persona'
 import { resolverNombreUsuario } from '@/lib/usuario'
 
 // Rutas públicas que no requieren autenticación
-const publicPaths = ['/', '/auth/login', '/auth/registro', '/auth/callback', '/suscripcion', '/ads.txt', '/icon.svg', '/test-inversor']
+const publicPaths = [
+  '/',
+  '/auth/login',
+  '/auth/registro',
+  '/auth/callback',
+  '/suscripcion',
+  '/ads.txt',
+  '/icon.svg',
+  '/icon',
+  '/apple-icon',
+  '/opengraph-image',
+  '/twitter-image',
+  '/test-inversor',
+]
 const publicPrefixes = ['/api/usuarios', '/_next/', '/favicon.ico', '/guias']
 
 export async function updateSession(request: NextRequest) {
