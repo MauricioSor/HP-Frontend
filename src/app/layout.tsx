@@ -30,11 +30,13 @@ export const metadata: Metadata = {
     siteName: 'FinBootcamp',
     locale: 'es_AR',
     type: 'website',
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'FinBootcamp' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'FinBootcamp',
     description: descripcion,
+    images: ['/og.png'],
   },
 };
 

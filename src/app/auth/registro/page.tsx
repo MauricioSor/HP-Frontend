@@ -149,7 +149,6 @@ export default function RegistroPage() {
         <div className="mb-8 text-center">
           <Logo size="lg" className="justify-center" />
           <h1 className="mt-4 text-2xl font-bold text-slate-900">Crear Cuenta</h1>
-          <p className="mt-2 text-slate-500">Primero la cuenta. Los datos personales van en el paso siguiente.</p>
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-lg">
