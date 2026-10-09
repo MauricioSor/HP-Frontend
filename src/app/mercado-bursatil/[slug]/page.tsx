@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { instruments } from '@/data/instruments';
 import { ChevronRight, Calculator, AlertCircle, Info, ShieldAlert, BarChart3, Clock, DollarSign, BookOpen } from 'lucide-react';
+import BotonFavorito from '@/components/BotonFavorito';
 
 export function generateStaticParams() {
   return instruments.map((instrument) => ({
@@ -68,6 +69,9 @@ export default async function InstrumentDetailPage({ params }: { params: Promise
               <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
                 {instrument.name}
               </h1>
+            </div>
+            <div className="mb-2">
+              <BotonFavorito slug={instrument.slug} tipo="bursatil" riesgo={instrument.risk} />
             </div>
             
             <div className="flex flex-wrap gap-3 mt-4">

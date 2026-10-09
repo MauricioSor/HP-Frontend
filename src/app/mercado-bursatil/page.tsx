@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { instruments } from '@/data/instruments';
 import { ArrowUpRight, Landmark } from 'lucide-react';
+import BotonFavorito from '@/components/BotonFavorito';
 
 export const metadata = {
   title: 'Mercado Bursátil | FinBootcamp',
@@ -39,9 +40,12 @@ export default function MercadoBursatilPage() {
                 <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#12372c] text-[#f4f1ea]">
                   <Landmark className="h-5 w-5" />
                 </div>
-                <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${getRiskColor(instrument.risk)}`}>
-                  Riesgo {instrument.risk}
-                </span>
+                <div className="flex items-center gap-2">
+                  <BotonFavorito slug={instrument.slug} tipo="bursatil" riesgo={instrument.risk} compacto />
+                  <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${getRiskColor(instrument.risk)}`}>
+                    Riesgo {instrument.risk}
+                  </span>
+                </div>
               </div>
 
               <h3 className="text-xl font-medium text-[#12372c]">

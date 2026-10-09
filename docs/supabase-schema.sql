@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS usuario (
   usuario VARCHAR PRIMARY KEY,
   rol INT NOT NULL DEFAULT 0,
   alta TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  estado SMALLINT NOT NULL DEFAULT 1
+  estado SMALLINT NOT NULL DEFAULT 1,
+  perfil_inversor VARCHAR
 );
 
 -- Tabla de datos personales asociados a un usuario

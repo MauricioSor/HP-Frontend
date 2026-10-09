@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { cryptoTopics } from '@/data/crypto-topics';
 import { ShieldAlert, BookOpen, Bitcoin } from 'lucide-react';
+import BotonFavorito from '@/components/BotonFavorito';
 
 export const metadata = {
   title: 'Mercado Cripto | FinBootcamp',
@@ -37,11 +38,14 @@ export default function CryptoPage() {
                 <div className="p-3 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-lg group-hover:bg-amber-100 dark:group-hover:bg-amber-900/40 transition-colors">
                   <BookOpen className="w-6 h-6" />
                 </div>
-                {topic.risk && (
-                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${getRiskColor(topic.risk)}`}>
-                    Riesgo {topic.risk}
-                  </span>
-                )}
+                <div className="flex items-center gap-2">
+                  <BotonFavorito slug={topic.slug} tipo="cripto" riesgo={topic.risk} compacto />
+                  {topic.risk && (
+                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${getRiskColor(topic.risk)}`}>
+                      Riesgo {topic.risk}
+                    </span>
+                  )}
+                </div>
               </div>
               
               <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">

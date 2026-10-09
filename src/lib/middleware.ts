@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { esRolAdministrador } from '@/lib/roles'
 
 // Rutas públicas que no requieren autenticación
-const publicPaths = ['/', '/auth/login', '/auth/registro', '/auth/callback', '/suscripcion', '/ads.txt']
+const publicPaths = ['/', '/auth/login', '/auth/registro', '/auth/callback', '/suscripcion', '/ads.txt', '/icon.svg', '/test-inversor']
 const publicPrefixes = ['/api/usuarios', '/_next/', '/favicon.ico', '/guias']
 
 export async function updateSession(request: NextRequest) {

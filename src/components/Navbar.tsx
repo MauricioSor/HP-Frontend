@@ -4,18 +4,20 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { irA } from '@/lib/navegacion';
-import { Menu, X, TrendingUp, Bitcoin, Calculator, BarChart3, Home, LogOut, Users, User, Sparkles, BookOpen } from 'lucide-react';
+import { Menu, X, TrendingUp, Bitcoin, Calculator, BarChart3, LogOut, Users, User, Sparkles, BookOpen, Briefcase, Compass, ClipboardList } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/components/AuthProvider';
 import { Logo } from '@/components/Logo';
 import { esRolAdministrador } from '@/lib/roles';
 
 const navLinks = [
-  { name: 'Inicio', href: '/', icon: Home, soloAdmin: false },
-  { name: 'Mercado Bursátil', href: '/mercado-bursatil', icon: TrendingUp, soloAdmin: false },
+  { name: 'Mercado', href: '/mercado-bursatil', icon: TrendingUp, soloAdmin: false },
   { name: 'Cripto', href: '/cripto', icon: Bitcoin, soloAdmin: false },
   { name: 'Simulador', href: '/simulador', icon: Calculator, soloAdmin: false },
   { name: 'Cotizaciones', href: '/cotizaciones', icon: BarChart3, soloAdmin: false },
+  { name: 'Cartera', href: '/cartera', icon: Briefcase, soloAdmin: false },
+  { name: 'Recomendado', href: '/recomendado', icon: Compass, soloAdmin: false },
+  { name: 'Perfil', href: '/test-inversor', icon: ClipboardList, soloAdmin: false },
   { name: 'Guías', href: '/guias', icon: BookOpen, soloAdmin: false },
   { name: 'Premium', href: '/suscripcion', icon: Sparkles, soloAdmin: false },
   { name: 'Gestión de usuarios', href: '/admin/usuarios', icon: Users, soloAdmin: true },
@@ -43,7 +45,7 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex md:items-center md:gap-4 lg:gap-5">
+          <div className="hidden md:flex md:items-center md:gap-3 lg:gap-4 overflow-x-auto">
             {linksVisibles.map((link) => {
               const isActive = link.href === '/' ? pathname === '/' : pathname.startsWith(link.href);
               const Icon = link.icon;

@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
 import { createClient } from '@/lib/client'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
+import { normalizarPerfil, type PerfilInversor } from '@/lib/perfil'
 
 interface User {
   id: string
@@ -10,6 +11,7 @@ interface User {
   usuario: string
   rol: number
   premium: boolean
+  perfilInversor: PerfilInversor | null
 }
 
 interface AuthContextType {
@@ -18,6 +20,7 @@ interface AuthContextType {
   isLoading: boolean
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
   logout: () => Promise<void>
+  refrescarUsuario: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -28,16 +31,17 @@ const supabase = createClient()
 async function buildUser(supabaseUser: SupabaseUser): Promise<User> {
   const usuario = supabaseUser.user_metadata?.usuario || supabaseUser.email || ''
 
-  // Obtener rol desde la tabla usuario
   let rol = 0
+  let perfilInversor: PerfilInversor | null = null
   const { data } = await supabase
     .from('usuario')
-    .select('rol')
+    .select('rol, perfil_inversor')
     .eq('usuario', usuario)
     .single()
 
   if (data) {
     rol = data.rol
+    perfilInversor = normalizarPerfil(data.perfil_inversor)
   }
 
   return {
@@ -46,6 +50,7 @@ async function buildUser(supabaseUser: SupabaseUser): Promise<User> {
     usuario,
     rol,
     premium: supabaseUser.user_metadata?.plan === 'premium',
+    perfilInversor,
   }
 }
 
@@ -84,6 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               usuario: sessionUser.user_metadata?.usuario || sessionUser.email || '',
               rol: 0,
               premium: sessionUser.user_metadata?.plan === 'premium',
+              perfilInversor: null,
             })
             setIsLoading(false)
           })
@@ -146,6 +152,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
   }, [])
 
+  const refrescarUsuario = useCallback(async () => {
+    const { data } = await supabase.auth.getUser()
+    if (data.user) {
+      setUser(await buildUser(data.user))
+    }
+  }, [])
+
   return (
     <AuthContext.Provider
       value={{
@@ -154,6 +167,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         login,
         logout,
+        refrescarUsuario,
       }}
     >
       {children}

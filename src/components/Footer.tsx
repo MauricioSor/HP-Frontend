@@ -15,6 +15,9 @@ export default function Footer() {
               <li><Link href="/cripto" className="transition hover:text-white">Cripto</Link></li>
               <li><Link href="/simulador" className="transition hover:text-white">Simulador</Link></li>
               <li><Link href="/cotizaciones" className="transition hover:text-white">Cotizaciones</Link></li>
+              <li><Link href="/cartera" className="transition hover:text-white">Cartera</Link></li>
+              <li><Link href="/recomendado" className="transition hover:text-white">Recomendado</Link></li>
+              <li><Link href="/test-inversor" className="transition hover:text-white">Test del inversor</Link></li>
               <li><Link href="/suscripcion" className="transition hover:text-white">Plan Premium</Link></li>
             </ul>
           </div>

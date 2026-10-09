@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cryptoTopics } from '@/data/crypto-topics';
 import { ChevronRight, ShieldAlert, CheckCircle2, ArrowRight } from 'lucide-react';
+import BotonFavorito from '@/components/BotonFavorito';
 
 export function generateStaticParams() {
   return cryptoTopics.map((topic) => ({
@@ -9,8 +10,9 @@ export function generateStaticParams() {
   }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const topic = cryptoTopics.find((t) => t.slug === params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const topic = cryptoTopics.find((t) => t.slug === slug);
   
   if (!topic) {
     return { title: 'Tema no encontrado' };
@@ -31,15 +33,15 @@ const getRiskColor = (risk: string) => {
   }
 };
 
-export default function CryptoDetailPage({ params }: { params: { slug: string } }) {
-  const topic = cryptoTopics.find((t) => t.slug === params.slug);
+export default async function CryptoDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const topic = cryptoTopics.find((t) => t.slug === slug);
   
   if (!topic) {
     notFound();
   }
 
-  // Find related topics (just taking the next 2 for simplicity, excluding current)
-  const relatedTopics = cryptoTopics.filter(t => t.slug !== params.slug).slice(0, 2);
+  const relatedTopics = cryptoTopics.filter(t => t.slug !== slug).slice(0, 2);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -57,6 +59,9 @@ export default function CryptoDetailPage({ params }: { params: { slug: string } 
         <h1 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
           {topic.title}
         </h1>
+        <div className="mb-6">
+          <BotonFavorito slug={topic.slug} tipo="cripto" riesgo={topic.risk} />
+        </div>
         {topic.risk && (
           <div className="flex items-center space-x-3">
             <span className="text-slate-600 dark:text-slate-400 text-sm">Nivel de riesgo asociado:</span>

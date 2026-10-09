@@ -18,6 +18,11 @@ const sourceSans = Source_Sans_3({
 export const metadata: Metadata = {
   title: 'FinBootcamp - Educación Financiera',
   description: 'Plataforma educativa sobre el mercado financiero argentino. Aprendé a invertir, simulá rendimientos y conocé los instrumentos disponibles.',
+  icons: {
+    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
+    shortcut: '/icon.svg',
+    apple: '/icon.svg',
+  },
 };
 
 export default function RootLayout({
