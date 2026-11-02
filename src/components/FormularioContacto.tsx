@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Send, CheckCircle2, Mail } from 'lucide-react';
+import { Send, CheckCircle2 } from 'lucide-react';
 
 export default function FormularioContacto() {
   const [nombre, setNombre] = useState('');
@@ -9,11 +9,33 @@ export default function FormularioContacto() {
   const [motivo, setMotivo] = useState('consulta-educativa');
   const [mensaje, setMensaje] = useState('');
   const [enviado, setEnviado] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+  const [error, setError] = useState('');
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!nombre.trim() || !email.trim() || !mensaje.trim()) return;
-    setEnviado(true);
+    if (!nombre.trim() || !email.trim() || !mensaje.trim() || enviando) return;
+
+    setEnviando(true);
+    setError('');
+
+    try {
+      const respuesta = await fetch('/api/contacto', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, email, motivo, mensaje }),
+      });
+      const datos = (await respuesta.json().catch(() => null)) as { error?: string } | null;
+      if (!respuesta.ok) {
+        setError(datos?.error || 'No pudimos enviar la consulta.');
+        return;
+      }
+      setEnviado(true);
+    } catch {
+      setError('No pudimos enviar la consulta. Revisá tu conexión e intentá de nuevo.');
+    } finally {
+      setEnviando(false);
+    }
   }
 
   if (enviado) {
@@ -24,30 +46,20 @@ export default function FormularioContacto() {
         </div>
         <h3 className="text-2xl font-medium text-[#12372c]">¡Mensaje recibido!</h3>
         <p className="mx-auto mt-2 max-w-md text-stone-600">
-          Gracias por escribirnos, <strong>{nombre}</strong>. Registramos tu consulta y también podés enviarla
-          directamente desde tu correo haciendo clic abajo.
+          Gracias por escribirnos, <strong>{nombre}</strong>. La consulta llegó a la casilla del equipo y te
+          vamos a responder a <strong>{email}</strong>.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <a
-            href={`mailto:contacto@finbootcamp.com.ar?subject=${encodeURIComponent(
-              `[${motivo}] Consulta de ${nombre}`
-            )}&body=${encodeURIComponent(`${mensaje}\n\n---\nNombre: ${nombre}\nEmail: ${email}`)}`}
-            className="inline-flex items-center gap-2 rounded-full bg-[#12372c] px-6 py-2.5 text-sm font-semibold text-[#f4f1ea] transition hover:bg-[#17493b]"
-          >
-            <Mail className="h-4 w-4" />
-            Abrir en mi cliente de correo
-          </a>
-          <button
-            type="button"
-            onClick={() => {
-              setEnviado(false);
-              setMensaje('');
-            }}
-            className="inline-flex items-center rounded-full border border-stone-300 bg-white px-5 py-2.5 text-sm font-semibold text-[#12372c] transition hover:bg-stone-50"
-          >
-            Enviar otra consulta
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setEnviado(false);
+            setMensaje('');
+            setError('');
+          }}
+          className="mt-6 inline-flex items-center rounded-full border border-stone-300 bg-white px-5 py-2.5 text-sm font-semibold text-[#12372c] transition hover:bg-stone-50"
+        >
+          Enviar otra consulta
+        </button>
       </div>
     );
   }
@@ -117,12 +129,19 @@ export default function FormularioContacto() {
         />
       </div>
 
+      {error && (
+        <p className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">
+          {error}
+        </p>
+      )}
+
       <button
         type="submit"
-        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#12372c] px-7 py-3.5 text-sm font-semibold text-[#f4f1ea] shadow-[0_12px_30px_-14px_rgba(18,55,44,0.85)] transition hover:bg-[#17493b] sm:w-auto"
+        disabled={enviando}
+        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#12372c] px-7 py-3.5 text-sm font-semibold text-[#f4f1ea] shadow-[0_12px_30px_-14px_rgba(18,55,44,0.85)] transition hover:bg-[#17493b] disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
       >
         <Send className="h-4 w-4" />
-        Enviar mensaje
+        {enviando ? 'Enviando…' : 'Enviar mensaje'}
       </button>
     </form>
   );

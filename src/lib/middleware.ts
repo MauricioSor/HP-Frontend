@@ -30,6 +30,7 @@ const publicPaths = [
 ]
 const publicPrefixes = [
   '/api/usuarios',
+  '/api/contacto',
   '/_next/',
   '/favicon.ico',
   '/guias',
