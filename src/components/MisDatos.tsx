@@ -85,16 +85,21 @@ export default function MisDatos() {
 
   useEffect(() => {
     if (isLoading) return
-    if (!isAuthenticated || !user?.usuario) {
-      setCargando(false)
+    const nombreUsuario = user?.usuario
+    if (!isAuthenticated || !nombreUsuario) {
+      Promise.resolve().then(() => setCargando(false))
       return
     }
 
     let activo = true
-    setCargando(true)
-    cargar(user.usuario)
-      .then(({ filaUsuario, filaPersona }) => {
+    Promise.all([
+      usuarioDeCuenta(supabase, nombreUsuario),
+      personaDeUsuario(supabase, nombreUsuario),
+    ])
+      .then(([filaUsuario, filaPersona]) => {
         if (!activo) return
+        setCuenta(filaUsuario)
+        setPersona(filaPersona)
         hidratarFormulario(filaUsuario, filaPersona)
         if (!filaPersona) setEditando(true)
       })
@@ -109,7 +114,7 @@ export default function MisDatos() {
     return () => {
       activo = false
     }
-  }, [isLoading, isAuthenticated, user?.usuario, cargar, hidratarFormulario])
+  }, [isLoading, isAuthenticated, user?.usuario, hidratarFormulario])
 
   function empezarEdicion() {
     hidratarFormulario(cuenta, persona)

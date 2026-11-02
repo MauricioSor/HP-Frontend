@@ -4,7 +4,7 @@ import { esRolAdministrador } from '@/lib/roles'
 import { personaDeUsuario } from '@/lib/persona'
 import { resolverNombreUsuario } from '@/lib/usuario'
 
-// Rutas públicas que no requieren autenticación
+// Rutas públicas que no requieren autenticación (accesibles por usuarios y crawlers como Googlebot / Mediapartners-Google)
 const publicPaths = [
   '/',
   '/auth/login',
@@ -12,14 +12,30 @@ const publicPaths = [
   '/auth/callback',
   '/suscripcion',
   '/ads.txt',
+  '/robots.txt',
+  '/sitemap.xml',
   '/icon.svg',
   '/icon',
   '/apple-icon',
   '/opengraph-image',
   '/twitter-image',
   '/test-inversor',
+  '/simulador',
+  '/cotizaciones',
+  '/privacidad',
+  '/terminos',
+  '/contacto',
+  '/glosario',
+  '/calculadoras',
 ]
-const publicPrefixes = ['/api/usuarios', '/_next/', '/favicon.ico', '/guias']
+const publicPrefixes = [
+  '/api/usuarios',
+  '/_next/',
+  '/favicon.ico',
+  '/guias',
+  '/mercado-bursatil',
+  '/cripto',
+]
 
 export async function updateSession(request: NextRequest) {
   // El callback de Google trae el verificador PKCE en una cookie.
@@ -32,9 +48,31 @@ export async function updateSession(request: NextRequest) {
     request,
   })
 
+  const { pathname } = request.nextUrl
+
+  // Permitir rutas públicas sin autenticación
+  const isPublic =
+    publicPaths.includes(pathname) ||
+    publicPrefixes.some((prefix) => pathname.startsWith(prefix)) ||
+    Boolean(pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|webp|css|js|woff|woff2|ttf|eot|txt|xml)$/))
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    if (isPublic) {
+      return supabaseResponse
+    }
+    return redirigirConCookies(
+      supabaseResponse,
+      request,
+      `/auth/login?redirect=${encodeURIComponent(pathname)}`
+    )
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {
@@ -60,16 +98,8 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const { pathname } = request.nextUrl
-
-  // Permitir rutas públicas sin autenticación
-  const isPublic =
-    publicPaths.includes(pathname) ||
-    publicPrefixes.some((prefix) => pathname.startsWith(prefix)) ||
-    pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|webp|css|js|woff|woff2|ttf|eot)$/)
-
   if (user && pathname.startsWith('/admin')) {
-    const nombre = user.user_metadata?.usuario || user.email || ''
+    const nombre = await resolverNombreUsuario(supabase, user)
     const { data: fila } = await supabase
       .from('usuario')
       .select('rol')

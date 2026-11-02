@@ -8,5 +8,9 @@ export function urlDelSitio() {
   const vercel = process.env.VERCEL_URL?.trim()
   if (vercel) return `https://${vercel}`
 
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://finbootcamp.vercel.app'
+  }
+
   return 'http://localhost:3000'
 }

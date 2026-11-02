@@ -12,7 +12,7 @@ import { BannerPerfil, GaleriaPerfiles } from '@/components/PerfilImagen'
 import AdBanner from '@/components/AdBanner'
 
 export default function TestInversor() {
-  const { user, isAuthenticated, isLoading, refrescarUsuario } = useAuth()
+  const { user, isAuthenticated, refrescarUsuario } = useAuth()
   const [paso, setPaso] = useState(0)
   const [respuestas, setRespuestas] = useState<number[]>([])
   const [perfil, setPerfil] = useState<PerfilInversor | null>(null)
@@ -67,14 +67,6 @@ export default function TestInversor() {
   }
 
   const progreso = mostrarGuardado ? 1 : Math.min(paso, preguntasTest.length) / preguntasTest.length
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-1 items-center justify-center py-24 text-stone-500">
-        Cargando tu perfil...
-      </div>
-    )
-  }
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:py-16">
@@ -186,6 +178,48 @@ export default function TestInversor() {
       </div>
 
       {isAuthenticated && perfilVisible && !lista && <GaleriaPerfiles actual={perfilVisible} />}
+
+      <section className="mt-14 border-t border-stone-200 pt-10">
+        <h2 className="text-2xl font-medium text-[#12372c]">¿Cómo se clasifican los perfiles de inversor?</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-stone-600">
+          En el mercado de capitales argentino, toda decisión de ahorro o inversión parte de combinar tres factores:
+          el <strong>horizonte temporal</strong> (cuándo vas a necesitar el dinero), la <strong>tolerancia a la volatilidad</strong>{' '}
+          (qué caída transitoria podés soportar sin vender en pánico) y el <strong>objetivo financiero</strong> (liquidez,
+          preservación contra la inflación o crecimiento de capital a largo plazo).
+        </p>
+        <div className="mt-6 grid gap-5 md:grid-cols-3">
+          <article className="rounded-2xl border border-stone-200/80 bg-white/90 p-5">
+            <span className="inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
+              Riesgo Bajo
+            </span>
+            <h3 className="mt-3 text-lg font-medium text-[#12372c]">Perfil Conservador</h3>
+            <p className="mt-2 text-sm leading-relaxed text-stone-600">
+              Prioriza preservar el capital y contar con liquidez inmediata o de corto plazo. Suele enfocarse en
+              Cauciones Bursátiles, Fondos Comunes Money Market (T+0) y LECAPs de tramo corto.
+            </p>
+          </article>
+          <article className="rounded-2xl border border-stone-200/80 bg-white/90 p-5">
+            <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900">
+              Riesgo Medio
+            </span>
+            <h3 className="mt-3 text-lg font-medium text-[#12372c]">Perfil Moderado</h3>
+            <p className="mt-2 text-sm leading-relaxed text-stone-600">
+              Busca superar a la inflación y al dólar en horizontes de 1 a 3 años aceptando variaciones moderadas.
+              Combina instrumentos de renta fija (Bonos Soberanos, ONs) con ETFs diversificados como el S&amp;P 500.
+            </p>
+          </article>
+          <article className="rounded-2xl border border-stone-200/80 bg-white/90 p-5">
+            <span className="inline-block rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-800">
+              Riesgo Alto
+            </span>
+            <h3 className="mt-3 text-lg font-medium text-[#12372c]">Perfil Agresivo</h3>
+            <p className="mt-2 text-sm leading-relaxed text-stone-600">
+              Apunta a maximizar el crecimiento del capital en plazos largos (más de 3 a 5 años), tolerando alta
+              volatilidad en renta variable (Acciones del Merval, CEDEARs tecnológicos) y criptoactivos.
+            </p>
+          </article>
+        </div>
+      </section>
     </div>
   )
 }

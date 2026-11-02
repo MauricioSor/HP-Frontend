@@ -6,6 +6,7 @@ import { useAuth } from '@/components/AuthProvider'
 import { irA } from '@/lib/navegacion'
 import { esRolAdministrador } from '@/lib/roles'
 import { ESTADO_ACTIVO, ESTADO_INACTIVO, etiquetaEstado, esUsuarioActivo } from '@/lib/estados-usuario'
+import { etiquetaPerfil, perfilesInversor } from '@/lib/perfil'
 
 interface Usuario {
   usuario: string
@@ -42,6 +43,7 @@ export default function AdminUsuariosPage() {
   const [showPersona, setShowPersona] = useState(false)
   const [formDni, setFormDni] = useState('')
   const [formNombre, setFormNombre] = useState('')
+  const [formApellido, setFormApellido] = useState('')
   const [formCorreo, setFormCorreo] = useState('')
   const [formPerfil, setFormPerfil] = useState('')
   const [formNacimiento, setFormNacimiento] = useState('')
@@ -72,8 +74,21 @@ export default function AdminUsuariosPage() {
       irA('/')
       return
     }
-    fetchUsuarios()
-  }, [isLoading, user, fetchUsuarios])
+    let activo = true
+    fetch('/api/usuarios')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!activo || !data) return
+        setUsuarios(data.usuarios || [])
+        setPersonas(data.personas || [])
+      })
+      .catch(() => {
+        // silenciar errores de fetch
+      })
+    return () => {
+      activo = false
+    }
+  }, [isLoading, user])
 
   function resetForm() {
     setFormUsuario('')
@@ -83,6 +98,7 @@ export default function AdminUsuariosPage() {
     setShowPersona(false)
     setFormDni('')
     setFormNombre('')
+    setFormApellido('')
     setFormCorreo('')
     setFormPerfil('')
     setFormNacimiento('')
@@ -105,6 +121,7 @@ export default function AdminUsuariosPage() {
       payload.persona = {
         dni: parseInt(formDni),
         nombre: formNombre || null,
+        apellido: formApellido || null,
         correo: formCorreo || null,
         perfil_inversor: formPerfil || null,
         nacimiento: formNacimiento || null,
@@ -262,15 +279,27 @@ export default function AdminUsuariosPage() {
                         className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       />
                     </div>
-                    <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">Nombre completo</label>
-                      <input
-                        type="text"
-                        value={formNombre}
-                        onChange={(e) => setFormNombre(e.target.value)}
-                        placeholder="Juan Pérez"
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                      />
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-xs font-medium text-slate-600 mb-1">Nombre</label>
+                        <input
+                          type="text"
+                          value={formNombre}
+                          onChange={(e) => setFormNombre(e.target.value)}
+                          placeholder="Juan"
+                          className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-slate-600 mb-1">Apellido</label>
+                        <input
+                          type="text"
+                          value={formApellido}
+                          onChange={(e) => setFormApellido(e.target.value)}
+                          placeholder="Pérez"
+                          className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                      </div>
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-slate-600 mb-1">Correo electrónico</label>
@@ -283,14 +312,19 @@ export default function AdminUsuariosPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">perfil_inversor</label>
-                      <input
-                        type="text"
+                      <label className="block text-xs font-medium text-slate-600 mb-1">Perfil inversor</label>
+                      <select
                         value={formPerfil}
                         onChange={(e) => setFormPerfil(e.target.value)}
-                        placeholder="Conservador"
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                      />
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      >
+                        <option value="">Sin perfil</option>
+                        {perfilesInversor.map((item) => (
+                          <option key={item} value={item}>
+                            {etiquetaPerfil(item)}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-slate-600 mb-1">Nacimiento</label>

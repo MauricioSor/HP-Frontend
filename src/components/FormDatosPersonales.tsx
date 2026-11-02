@@ -25,13 +25,12 @@ export default function FormDatosPersonales() {
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [cargando, setCargando] = useState(true)
-  const [next, setNext] = useState('/')
-  const [precargado, setPrecargado] = useState('')
-
-  useEffect(() => {
+  const [next] = useState(() => {
+    if (typeof window === 'undefined') return '/'
     const pedido = new URLSearchParams(window.location.search).get('next') || '/'
-    setNext(rutaSegura(pedido) === '/auth/datos-personales' ? '/' : rutaSegura(pedido))
-  }, [])
+    return rutaSegura(pedido) === '/auth/datos-personales' ? '/' : rutaSegura(pedido)
+  })
+  const [precargado, setPrecargado] = useState('')
 
   useEffect(() => {
     if (isLoading) return

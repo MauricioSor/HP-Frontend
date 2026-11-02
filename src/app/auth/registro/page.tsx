@@ -9,12 +9,9 @@ import Link from 'next/link'
 import { Logo } from '@/components/Logo'
 import { ESTADO_ACTIVO } from '@/lib/estados-usuario'
 import { personaDeUsuario } from '@/lib/persona'
+import { resolverNombreUsuario } from '@/lib/usuario'
 
 const supabase = createClient()
-
-function sugerirUsuario(email: string) {
-  return email.split('@')[0]?.replace(/[^a-zA-Z0-9._]/g, '') || ''
-}
 
 export default function RegistroPage() {
   const [usuario, setUsuario] = useState('')
@@ -25,7 +22,6 @@ export default function RegistroPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [cargandoSesion, setCargandoSesion] = useState(true)
 
   useEffect(() => {
     let activo = true
@@ -36,22 +32,20 @@ export default function RegistroPage() {
         setError(params.get('detalle') || 'No se pudo vincular la cuenta de Google. Intentá de nuevo.')
       }
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser()
 
-      if (!activo) return
+        if (!activo || !user) return
 
-      if (!user) {
-        setCargandoSesion(false)
-        return
+        const usuarioSesion = await resolverNombreUsuario(supabase, user)
+        const persona = usuarioSesion ? await personaDeUsuario(supabase, usuarioSesion) : null
+        if (!activo) return
+        irA(persona?.dni ? '/' : '/auth/datos-personales')
+      } catch {
+        // Sin sesión activa o entorno local sin credenciales de Supabase
       }
-
-      const usuarioSesion =
-        (typeof user.user_metadata?.usuario === 'string' && user.user_metadata.usuario) ||
-        sugerirUsuario(user.email ?? '')
-      const persona = await personaDeUsuario(supabase, usuarioSesion)
-      irA(persona ? '/' : '/auth/datos-personales')
     }
 
     redirigirSiYaHayCuenta()
@@ -152,130 +146,123 @@ export default function RegistroPage() {
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-lg">
-          {cargandoSesion ? (
-            <div className="flex items-center justify-center gap-3 py-10 text-slate-500">
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-emerald-600 border-t-transparent" />
-              Cargando...
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {error && (
+              <div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                <AlertCircle className="h-5 w-5 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            {success && (
+              <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
+                <CheckCircle2 className="h-5 w-5 shrink-0" />
+                <span>{success}</span>
+              </div>
+            )}
+
+            <GoogleAuthButton next="/" label="Registrarse con Google" />
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-white px-3 text-slate-400">o completá el formulario</span>
+              </div>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {error && (
-                <div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-                  <AlertCircle className="h-5 w-5 shrink-0" />
-                  <span>{error}</span>
-                </div>
-              )}
 
-              {success && (
-                <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
-                  <CheckCircle2 className="h-5 w-5 shrink-0" />
-                  <span>{success}</span>
-                </div>
-              )}
+            <div>
+              <label htmlFor="usuario" className="mb-1 block text-sm font-medium text-slate-700">
+                Nombre de usuario *
+              </label>
+              <input
+                id="usuario"
+                type="text"
+                value={usuario}
+                onChange={(e) => setUsuario(e.target.value)}
+                placeholder="ej: juan.perez"
+                required
+                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 placeholder-slate-400 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
 
-              <GoogleAuthButton next="/" label="Registrarse con Google" />
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-slate-200" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="bg-white px-3 text-slate-400">o completá el formulario</span>
-                </div>
-              </div>
+            <div>
+              <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">
+                Email *
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="tu@email.com"
+                required
+                autoComplete="email"
+                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 placeholder-slate-400 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
 
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="usuario" className="mb-1 block text-sm font-medium text-slate-700">
-                  Nombre de usuario *
+                <label htmlFor="contraseña" className="mb-1 block text-sm font-medium text-slate-700">
+                  Contraseña *
                 </label>
-                <input
-                  id="usuario"
-                  type="text"
-                  value={usuario}
-                  onChange={(e) => setUsuario(e.target.value)}
-                  placeholder="ej: juan.perez"
-                  required
-                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 placeholder-slate-400 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">
-                  Email *
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="tu@email.com"
-                  required
-                  autoComplete="email"
-                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 placeholder-slate-400 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label htmlFor="contraseña" className="mb-1 block text-sm font-medium text-slate-700">
-                    Contraseña *
-                  </label>
-                  <div className="relative">
-                    <input
-                      id="contraseña"
-                      type={showPassword ? 'text' : 'password'}
-                      value={contraseña}
-                      onChange={(e) => setContraseña(e.target.value)}
-                      placeholder="Mínimo 6 caracteres"
-                      required
-                      autoComplete="new-password"
-                      className="w-full rounded-xl border border-slate-300 px-4 py-3 pr-10 text-slate-900 placeholder-slate-400 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                      tabIndex={-1}
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor="confirmar" className="mb-1 block text-sm font-medium text-slate-700">
-                    Confirmar *
-                  </label>
+                <div className="relative">
                   <input
-                    id="confirmar"
+                    id="contraseña"
                     type={showPassword ? 'text' : 'password'}
-                    value={confirmarContraseña}
-                    onChange={(e) => setConfirmarContraseña(e.target.value)}
-                    placeholder="Repetir contraseña"
+                    value={contraseña}
+                    onChange={(e) => setContraseña(e.target.value)}
+                    placeholder="Mínimo 6 caracteres"
                     required
                     autoComplete="new-password"
-                    className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 placeholder-slate-400 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full rounded-xl border border-slate-300 px-4 py-3 pr-10 text-slate-900 placeholder-slate-400 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
                 </div>
               </div>
+              <div>
+                <label htmlFor="confirmar" className="mb-1 block text-sm font-medium text-slate-700">
+                  Confirmar *
+                </label>
+                <input
+                  id="confirmar"
+                  type={showPassword ? 'text' : 'password'}
+                  value={confirmarContraseña}
+                  onChange={(e) => setConfirmarContraseña(e.target.value)}
+                  placeholder="Repetir contraseña"
+                  required
+                  autoComplete="new-password"
+                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 placeholder-slate-400 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white shadow-sm transition-all hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    Creando cuenta...
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className="h-5 w-5" />
-                    Crear cuenta y continuar
-                  </>
-                )}
-              </button>
-            </form>
-          )}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white shadow-sm transition-all hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  Creando cuenta...
+                </>
+              ) : (
+                <>
+                  <UserPlus className="h-5 w-5" />
+                  Crear cuenta y continuar
+                </>
+              )}
+            </button>
+          </form>
         </div>
 
         <div className="mt-6 space-y-2 text-center">

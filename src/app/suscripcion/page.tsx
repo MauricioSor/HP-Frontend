@@ -18,7 +18,7 @@ const libre = [
 ]
 
 export default function SuscripcionPage() {
-  const { user, isAuthenticated, isLoading, refrescarUsuario } = useAuth()
+  const { user, isAuthenticated, refrescarUsuario } = useAuth()
   const [enviando, setEnviando] = useState(false)
   const [error, setError] = useState('')
   const [modalAbierto, setModalAbierto] = useState(false)
@@ -88,9 +88,7 @@ export default function SuscripcionPage() {
           </ul>
 
           <div className="mt-8">
-            {isLoading ? (
-              <p className="text-sm text-emerald-100">Cargando tu cuenta...</p>
-            ) : !isAuthenticated ? (
+            {!isAuthenticated ? (
               <Link
                 href="/auth/login?redirect=/suscripcion"
                 className="inline-flex w-full items-center justify-center rounded-lg bg-[#f4f1ea] px-5 py-3 font-semibold text-[#12372c] hover:bg-white"

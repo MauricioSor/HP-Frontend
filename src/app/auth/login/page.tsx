@@ -17,14 +17,13 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [redirect, setRedirect] = useState('/')
+  const [redirect] = useState(() => {
+    if (typeof window === 'undefined') return '/'
+    const pedido = new URLSearchParams(window.location.search).get('redirect') || '/'
+    return pedido.startsWith('/') && !pedido.startsWith('//') ? pedido : '/'
+  })
 
   const { login, isAuthenticated, isLoading } = useAuth()
-
-  useEffect(() => {
-    const pedido = new URLSearchParams(window.location.search).get('redirect') || '/'
-    setRedirect(pedido.startsWith('/') && !pedido.startsWith('//') ? pedido : '/')
-  }, [])
 
   useEffect(() => {
     if (isLoading || !isAuthenticated || isSubmitting) return

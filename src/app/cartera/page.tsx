@@ -17,8 +17,10 @@ export default function CarteraPage() {
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState('')
 
+  const nombreUsuario = user?.usuario ?? ''
+
   const cargar = useCallback(async () => {
-    if (!user?.usuario) {
+    if (!nombreUsuario) {
       setFavoritos([])
       setCargando(false)
       return
@@ -26,7 +28,7 @@ export default function CarteraPage() {
     setCargando(true)
     try {
       const supabase = createClient()
-      const lista = await listarFavoritos(supabase, user.usuario)
+      const lista = await listarFavoritos(supabase, nombreUsuario)
       setFavoritos(lista)
       setError('')
     } catch {
@@ -34,12 +36,35 @@ export default function CarteraPage() {
     } finally {
       setCargando(false)
     }
-  }, [user?.usuario])
+  }, [nombreUsuario])
 
   useEffect(() => {
     if (isLoading) return
-    cargar()
-  }, [isLoading, cargar])
+    if (!nombreUsuario) {
+      Promise.resolve().then(() => {
+        setFavoritos([])
+        setCargando(false)
+      })
+      return
+    }
+    let activo = true
+    const supabase = createClient()
+    listarFavoritos(supabase, nombreUsuario)
+      .then((lista) => {
+        if (!activo) return
+        setFavoritos(lista)
+        setError('')
+      })
+      .catch(() => {
+        if (activo) setError('No se pudo leer la cartera.')
+      })
+      .finally(() => {
+        if (activo) setCargando(false)
+      })
+    return () => {
+      activo = false
+    }
+  }, [isLoading, nombreUsuario])
 
   const items = useMemo(
     () =>

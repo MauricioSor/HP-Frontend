@@ -24,13 +24,11 @@ export default function BotonFavorito({
   const [cargando, setCargando] = useState(false)
 
   useEffect(() => {
-    if (!user?.usuario) {
-      setActivo(false)
-      return
-    }
+    const nombreUsuario = user?.usuario
+    if (!nombreUsuario) return
     let vivo = true
     const supabase = createClient()
-    listarFavoritos(supabase, user.usuario)
+    listarFavoritos(supabase, nombreUsuario)
       .then((lista) => {
         if (vivo) setActivo(lista.some((item) => item.slug === slug))
       })
