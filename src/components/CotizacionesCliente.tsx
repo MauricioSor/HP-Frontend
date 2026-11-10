@@ -246,7 +246,7 @@ export default function CotizacionesCliente() {
       script.type = 'text/javascript';
       script.async = true;
       script.innerHTML = JSON.stringify({
-        symbol: 'BCBA:IMV',
+        symbol: 'INDEX:MERV',
         width: '100%',
         height: '100%',
         locale: 'es',
@@ -285,7 +285,7 @@ export default function CotizacionesCliente() {
         <section className="flex h-[420px] flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
           <h2 className="mb-2 flex items-center text-xl font-bold text-slate-900 dark:text-white">
             <LineChart className="mr-2 h-6 w-6 text-blue-600" />
-            Índice S&amp;P Merval (BCBA:IMV)
+            Índice S&amp;P Merval
           </h2>
           <p className="mb-4 text-xs text-slate-500">
             Mide la evolución en pesos de la canasta de acciones más líquidas de Bolsas y Mercados Argentinos (BYMA).

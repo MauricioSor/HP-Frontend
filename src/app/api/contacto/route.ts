@@ -21,14 +21,6 @@ function limitado(ip: string) {
 }
 
 export async function POST(request: NextRequest) {
-  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'local'
-  if (limitado(ip)) {
-    return NextResponse.json(
-      { success: false, error: 'Esperá unos minutos antes de enviar otra consulta.' },
-      { status: 429 }
-    )
-  }
-
   let body: unknown
   try {
     body = await request.json()
@@ -51,6 +43,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { success: false, error: 'El mensaje tiene que tener entre 1 y 5000 caracteres.' },
       { status: 400 }
+    )
+  }
+
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'local'
+  if (limitado(ip)) {
+    return NextResponse.json(
+      { success: false, error: 'Esperá unos minutos antes de enviar otra consulta.' },
+      { status: 429 }
     )
   }
 
