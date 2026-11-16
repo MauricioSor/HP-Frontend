@@ -115,8 +115,8 @@ export default function PrivacidadPage() {
             <h3 className="text-lg font-semibold text-[#12372c]">Cookies publicitarias</h3>
             <ul className="list-disc space-y-2.5 pl-5 text-sm leading-relaxed text-stone-700">
               <li>
-                <strong>Quién las usa:</strong> el plan libre muestra un banner de Adsterra. Quien tiene el plan
-                Premium no ve ese espacio.
+                <strong>Quién las usa:</strong> el plan libre muestra banners de Adsterra. Quien tiene el plan
+                Premium no ve esos espacios.
               </li>
               <li>
                 <strong>Para qué:</strong> la red publicitaria puede guardar una cookie para contar la impresión
