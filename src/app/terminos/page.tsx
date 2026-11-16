@@ -162,7 +162,7 @@ export default function TerminosPage() {
         <section className="space-y-3">
           <h2 className="text-2xl font-medium text-[#12372c]">6. Publicidad y Enlaces a Terceros</h2>
           <p className="leading-relaxed">
-            FinBootcamp exhibe anuncios publicitarios provistos por la red <strong>Google AdSense</strong>. Los
+            FinBootcamp exhibe anuncios publicitarios provistos por la red <strong>Adsterra</strong>. Los
             anuncios están claramente diferenciados del contenido editorial y educativo. FinBootcamp no
             respalda ni garantiza los productos o servicios ofrecidos por anunciantes externos, y el acceso a
             sitios de terceros se realiza bajo exclusiva cuenta y riesgo del visitante.

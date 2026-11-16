@@ -3,7 +3,6 @@ import { Fraunces, Source_Sans_3 } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/components/AuthProvider';
 import ConditionalLayout from '@/components/ConditionalLayout';
-import { ADSENSE_CLIENT } from '@/lib/adsense';
 import { urlDelSitio } from '@/lib/sitio';
 
 const fraunces = Fraunces({
@@ -47,13 +46,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <head>
-        <script
-          async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-          crossOrigin="anonymous"
-        />
-      </head>
       <body
         className={`${fraunces.variable} ${sourceSans.variable} min-h-screen flex flex-col font-sans antialiased`}
         suppressHydrationWarning

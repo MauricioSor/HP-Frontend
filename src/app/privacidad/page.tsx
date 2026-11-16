@@ -5,7 +5,7 @@ import { ShieldCheck, Cookie, Lock, UserCheck, ExternalLink, FileText, ChevronRi
 export const metadata: Metadata = {
   title: 'Política de Privacidad y Uso de Cookies | FinBootcamp',
   description:
-    'Política de privacidad, protección de datos personales (Ley 25.326) y uso de cookies propias y de terceros (Google AdSense) en FinBootcamp.',
+    'Política de privacidad, protección de datos personales (Ley 25.326) y uso de cookies propias y de terceros publicitarios en FinBootcamp.',
 };
 
 export default function PrivacidadPage() {
@@ -30,7 +30,7 @@ export default function PrivacidadPage() {
           <h1 className="text-3xl font-medium sm:text-5xl">Política de Privacidad y Cookies</h1>
           <p className="mt-4 text-lg leading-relaxed text-emerald-50/85">
             En FinBootcamp valoramos y protegemos tu privacidad. Este documento detalla qué información
-            recopilamos, cómo utilizamos las cookies propias y publicitarias (incluyendo Google AdSense) y
+            recopilamos, cómo utilizamos las cookies propias y las de la publicidad de terceros, y
             cuáles son tus derechos bajo la legislación vigente en la República Argentina.
           </p>
           <p className="mt-4 text-xs text-emerald-100/60">
@@ -99,46 +99,32 @@ export default function PrivacidadPage() {
 
         <hr className="border-stone-200" />
 
-        <section id="cookies-adsense" className="space-y-4">
+        <section id="cookies-publicidad" className="space-y-4">
           <h2 className="flex items-center gap-2.5 text-2xl font-medium text-[#12372c]">
             <Cookie className="h-6 w-6 text-[#c99a45]" />
-            3. Uso de Cookies, Google AdSense y Publicidad de Terceros
+            3. Uso de Cookies y Publicidad de Terceros
           </h2>
           <p className="leading-relaxed">
             FinBootcamp utiliza cookies propias y de terceros para garantizar el funcionamiento técnico de la
             sesión de usuario, recordar tus preferencias y financiar el mantenimiento gratuito del contenido
-            educativo mediante espacios publicitarios gestionados por <strong>Google AdSense</strong>.
+            educativo mediante espacios publicitarios de la red <strong>Adsterra</strong>. Esos anuncios pueden
+            usar cookies de terceros para medir visitas y elegir qué mostrar.
           </p>
 
           <div className="space-y-3 rounded-2xl border border-stone-200 bg-[#faf7f1] p-5 sm:p-6">
-            <h3 className="text-lg font-semibold text-[#12372c]">
-              Información obligatoria sobre Google AdSense y cookies publicitarias
-            </h3>
+            <h3 className="text-lg font-semibold text-[#12372c]">Cookies publicitarias</h3>
             <ul className="list-disc space-y-2.5 pl-5 text-sm leading-relaxed text-stone-700">
               <li>
-                <strong>Proveedores terceros:</strong> Los proveedores terceros, incluido Google, utilizan
-                cookies para mostrar anuncios relevantes en función de las visitas anteriores del usuario a
-                este sitio web o a otros sitios web en Internet.
+                <strong>Quién las usa:</strong> el plan libre muestra un banner de Adsterra. Quien tiene el plan
+                Premium no ve ese espacio.
               </li>
               <li>
-                <strong>Uso de cookies publicitarias por parte de Google:</strong> El uso de cookies de
-                publicidad (como la cookie de DoubleClick / DART) permite a Google y a sus socios mostrar
-                anuncios a nuestros usuarios basados en su visita a FinBootcamp y/o a otros sitios de Internet.
+                <strong>Para qué:</strong> la red publicitaria puede guardar una cookie para contar la impresión
+                y limitar cuántas veces aparece un aviso.
               </li>
               <li>
-                <strong>Cómo inhabilitar la publicidad personalizada:</strong> Los usuarios pueden inhabilitar
-                el uso de la publicidad personalizada en cualquier momento accediendo a la{' '}
-                <a
-                  href="https://adssettings.google.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 font-semibold text-emerald-800 underline hover:text-emerald-950"
-                >
-                  Configuración de anuncios de Google
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-                . Asimismo, podés inhabilitar el uso de cookies de terceros para la publicidad personalizada
-                visitando{' '}
+                <strong>Cómo limitarlas:</strong> podés bloquear las cookies de terceros en el navegador o
+                visitar{' '}
                 <a
                   href="https://www.aboutads.info/choices/"
                   target="_blank"
@@ -146,21 +132,6 @@ export default function PrivacidadPage() {
                   className="inline-flex items-center gap-1 font-semibold text-emerald-800 underline hover:text-emerald-950"
                 >
                   www.aboutads.info/choices
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-                .
-              </li>
-              <li>
-                <strong>Cómo utiliza Google los datos:</strong> Para conocer en detalle cómo Google recopila y
-                procesa la información en los sitios que utilizan sus servicios, podés consultar la página
-                oficial de Google:{' '}
-                <a
-                  href="https://policies.google.com/technologies/partner-sites?hl=es"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 font-semibold text-emerald-800 underline hover:text-emerald-950"
-                >
-                  Cómo utiliza Google la información de sitios o aplicaciones que utilizan nuestros servicios
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
                 .
