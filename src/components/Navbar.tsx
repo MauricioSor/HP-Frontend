@@ -18,6 +18,7 @@ import {
   Sparkles,
   BookOpen,
   BookA,
+  GraduationCap,
   Briefcase,
   Compass,
   ClipboardList,
@@ -28,16 +29,17 @@ import { Logo } from '@/components/Logo';
 import { esRolAdministrador } from '@/lib/roles';
 
 const navLinks = [
-  { name: 'Mercado', href: '/mercado-bursatil', icon: TrendingUp, soloAdmin: false, soloAutenticado: false },
-  { name: 'Cripto', href: '/cripto', icon: Bitcoin, soloAdmin: false, soloAutenticado: false },
-  { name: 'Simulador', href: '/simulador', icon: Calculator, soloAdmin: false, soloAutenticado: false },
-  { name: 'Cotizaciones', href: '/cotizaciones', icon: BarChart3, soloAdmin: false, soloAutenticado: false },
+  { name: 'Acerca de', href: '/contacto', icon: GraduationCap, soloAdmin: false, soloAutenticado: false, soloInvitado: true },
+  { name: 'Mercado', href: '/mercado-bursatil', icon: TrendingUp, soloAdmin: false, soloAutenticado: true },
+  { name: 'Cripto', href: '/cripto', icon: Bitcoin, soloAdmin: false, soloAutenticado: true },
+  { name: 'Simulador', href: '/simulador', icon: Calculator, soloAdmin: false, soloAutenticado: true },
+  { name: 'Cotizaciones', href: '/cotizaciones', icon: BarChart3, soloAdmin: false, soloAutenticado: true },
   { name: 'Cartera', href: '/cartera', icon: Briefcase, soloAdmin: false, soloAutenticado: true },
   { name: 'Recomendado', href: '/recomendado', icon: Compass, soloAdmin: false, soloAutenticado: true },
-  { name: 'Perfil', href: '/test-inversor', icon: ClipboardList, soloAdmin: false, soloAutenticado: false },
-  { name: 'Guías', href: '/guias', icon: BookOpen, soloAdmin: false, soloAutenticado: false },
-  { name: 'Glosario', href: '/glosario', icon: BookA, soloAdmin: false, soloAutenticado: false },
-  { name: 'Premium', href: '/suscripcion', icon: Sparkles, soloAdmin: false, soloAutenticado: false },
+  { name: 'Perfil', href: '/test-inversor', icon: ClipboardList, soloAdmin: false, soloAutenticado: true },
+  { name: 'Guías', href: '/guias', icon: BookOpen, soloAdmin: false, soloAutenticado: true },
+  { name: 'Glosario', href: '/glosario', icon: BookA, soloAdmin: false, soloAutenticado: true },
+  { name: 'Premium', href: '/suscripcion', icon: Sparkles, soloAdmin: false, soloAutenticado: true },
   { name: 'Gestión de usuarios', href: '/admin/usuarios', icon: Users, soloAdmin: true, soloAutenticado: true },
 ];
 
@@ -53,6 +55,7 @@ export default function Navbar() {
   const linksVisibles = navLinks.filter((link) => {
     if (link.soloAdmin && !esRolAdministrador(user?.rol)) return false;
     if (link.soloAutenticado && !isAuthenticated) return false;
+    if ('soloInvitado' in link && link.soloInvitado && isAuthenticated) return false;
     return true;
   });
   const linksPrincipales = linksVisibles.filter((link) => !link.soloAdmin);

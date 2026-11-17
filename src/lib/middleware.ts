@@ -10,8 +10,6 @@ const publicPaths = [
   '/auth/login',
   '/auth/registro',
   '/auth/callback',
-  '/suscripcion',
-  '/ads.txt',
   '/robots.txt',
   '/sitemap.xml',
   '/icon.svg',
@@ -19,23 +17,14 @@ const publicPaths = [
   '/apple-icon',
   '/opengraph-image',
   '/twitter-image',
-  '/test-inversor',
-  '/simulador',
-  '/cotizaciones',
   '/privacidad',
   '/terminos',
   '/contacto',
-  '/glosario',
-  '/calculadoras',
 ]
 const publicPrefixes = [
-  '/api/usuarios',
   '/api/contacto',
   '/_next/',
   '/favicon.ico',
-  '/guias',
-  '/mercado-bursatil',
-  '/cripto',
 ]
 
 export async function updateSession(request: NextRequest) {

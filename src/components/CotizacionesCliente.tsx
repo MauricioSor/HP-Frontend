@@ -242,19 +242,33 @@ export default function CotizacionesCliente() {
 
     if (!nodo.querySelector('script, iframe')) {
       const script = document.createElement('script');
-      script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js';
+      script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js';
       script.type = 'text/javascript';
       script.async = true;
       script.innerHTML = JSON.stringify({
-        symbol: 'INDEX:MERV',
+        symbols: [['S&P Merval', 'INDEX:MERV|1D']],
+        chartOnly: false,
         width: '100%',
         height: '100%',
         locale: 'es',
-        dateRange: '1M',
         colorTheme: 'light',
-        isTransparent: true,
         autosize: true,
-        largeChartUrl: '',
+        showVolume: false,
+        showMA: false,
+        hideDateRanges: false,
+        hideMarketStatus: true,
+        hideSymbolLogo: false,
+        scalePosition: 'right',
+        scaleMode: 'Normal',
+        fontFamily: '-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif',
+        fontSize: '10',
+        noTimeScale: false,
+        valuesTracking: '1',
+        changeMode: 'price-and-percent',
+        chartType: 'area',
+        lineWidth: 2,
+        lineType: 0,
+        dateRanges: ['1m|1D', '3m|1D', '12m|1D', '60m|1W'],
       });
       nodo.appendChild(script);
     }
@@ -282,7 +296,7 @@ export default function CotizacionesCliente() {
       <AdBanner slot="cotizaciones-horizontal" format="horizontal" className="mb-8" />
 
       <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <section className="flex h-[420px] flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <section className="flex h-[560px] flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
           <h2 className="mb-2 flex items-center text-xl font-bold text-slate-900 dark:text-white">
             <LineChart className="mr-2 h-6 w-6 text-blue-600" />
             Índice S&amp;P Merval

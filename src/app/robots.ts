@@ -13,12 +13,12 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: 'Googlebot',
         allow: '/',
-        disallow: ['/admin', '/api'],
+        disallow: ['/admin', '/api', '/auth/datos-personales', '/mis-datos'],
       },
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/api'],
+        disallow: ['/admin', '/api', '/auth/datos-personales', '/mis-datos'],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
